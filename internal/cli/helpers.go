@@ -15,6 +15,35 @@ func (a *app) context() context.Context {
 	return context.Background()
 }
 
+// projectDefault finds the .agent-memory marker once per invocation.
+func (a *app) projectDefault() store.ProjectDefault {
+	if !a.projectSet {
+		a.projectSet = true
+		if wd, err := os.Getwd(); err == nil {
+			a.project = store.FindProjectDefault(wd)
+		}
+	}
+	return a.project
+}
+
+// resolveContext applies explicit > .agent-memory > global for one command.
+// For reads a marker problem is a warning, printed to stderr unless -q.
+func (a *app) resolveContext(s *store.Store, explicit string, write bool) (string, error) {
+	slug, warn, err := a.projectDefault().Resolve(s, explicit, write)
+	if warn != "" {
+		a.hint("note: %s\n", warn)
+	}
+	return slug, err
+}
+
+func projectJSON(p store.ProjectDefault) map[string]any {
+	out := map[string]any{"path": p.Path, "context": p.Context, "error": ""}
+	if p.Err != nil {
+		out["error"] = p.Err.Error()
+	}
+	return out
+}
+
 // searchRequest maps CLI flags onto an engine request.
 func searchRequest(f *searchFlags, query string) engine.SearchRequest {
 	req := engine.SearchRequest{

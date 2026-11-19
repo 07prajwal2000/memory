@@ -11,7 +11,7 @@ commands:
   context ls               list contexts
   context rm <slug>        delete a context and its memories (--yes)
   context expiry <slug> <days|none>
-  ls [--context C]         list memories of a context (default global)
+  ls [--context C]         list memories of a context (default: project, else global)
   get [name-or-id]         read one memory, or the default file and contexts
   upsert [body|-]          create or update a memory
   delete <id>              delete a memory
@@ -149,7 +149,7 @@ context work now expires never
 mem ls [--context C] [--limit N]
 ```
 
-Lists memories without bodies. Default context is `global`.
+Lists memories without bodies. Default context is the one named by a project [`.agent-memory`](configuration.md#project-file-agent-memory) file, else `global`.
 
 ```bash
 mem ls --context work
@@ -222,7 +222,7 @@ mem upsert [--context C] [--name N] [--id ID] [--tag T]... [--append]
 
 | Flag | Meaning |
 |---|---|
-| `--context C` | Target context; defaults to `global` |
+| `--context C` | Target context; defaults to the project's [`.agent-memory`](configuration.md#project-file-agent-memory) context, else `global` |
 | `--name N` | Update-or-create by name inside the context |
 | `--id ID` | Update (and optionally rename) an existing memory |
 | `--tag T` | Add a tag; repeat the flag for several tags |
@@ -292,8 +292,8 @@ mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N] [--f
 
 | Flag | Meaning |
 |---|---|
-| `--context C` | Also search this context |
-| `--no-global` | Exclude `global`; requires `--context` |
+| `--context C` | Also search this context (default: the project's [`.agent-memory`](configuration.md#project-file-agent-memory) context) |
+| `--no-global` | Exclude `global`; requires a context (explicit or from `.agent-memory`) |
 | `--limit N` | Number of results (default 8, max 50) |
 | `--per-doc N` | Chunks per document (default 1) |
 | `--fuzzy` / `--no-fuzzy` | Force fuzzy matching on or off for this query |
@@ -353,7 +353,7 @@ Progress goes to stderr; the summary goes to stdout. `-q` silences the progress,
 mem status
 ```
 
-Shows version, config path, data directory, counts, index state, and whether the models and the model server are present and valid. It never starts the model.
+Shows version, config path, data directory, the default context found from a project `.agent-memory` file (`none` if absent), counts, index state, and whether the models and the model server are present and valid. It never starts the model.
 
 ```bash
 mem status

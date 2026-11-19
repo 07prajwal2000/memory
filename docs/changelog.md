@@ -2,6 +2,12 @@
 
 Notable changes. This project follows semantic versioning.
 
+## 0.2.0
+
+### Added
+
+- Per-project default context: an optional `.agent-memory` file (`context = "<slug>"`) in a project folder or any parent. Calls without a context use it instead of `global` for `upsert`, `search`, `get` and `ls`, in the CLI and the MCP server. An explicit context always wins; a marker naming a missing context fails writes and falls back to `global` for reads. `mem status` shows the detected file, and the MCP `initialize` instructions mention it. See [Configuration](configuration.md#project-file-agent-memory).
+
 ## 0.1.1
 
 ### Added

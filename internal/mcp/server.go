@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"memory/internal/engine"
+	"memory/internal/store"
 )
 
 const (
@@ -28,6 +29,13 @@ type options struct {
 	logger        *log.Logger
 	serverVersion string
 	serverName    string
+	project       store.ProjectDefault
+}
+
+// WithProjectDefault sets the .agent-memory marker found at startup. Calls
+// without a context use it; the initialize instructions mention it.
+func WithProjectDefault(p store.ProjectDefault) Option {
+	return func(o *options) { o.project = p }
 }
 
 // WithLogger sets the logger for error output. Default writes errors to os.Stderr.
@@ -83,6 +91,7 @@ type session struct {
 	logger        *log.Logger
 	serverVersion string
 	serverName    string
+	project       store.ProjectDefault
 
 	clientMu   sync.Mutex
 	clientName string
@@ -98,6 +107,7 @@ func newSession(eng *engine.Engine, w *writer, opts options) *session {
 		logger:        opts.logger,
 		serverVersion: opts.serverVersion,
 		serverName:    opts.serverName,
+		project:       opts.project,
 		clientName:    "mcp",
 		inFlight:      make(map[string]context.CancelFunc),
 	}
@@ -283,7 +293,7 @@ func (s *session) handleInitialize(_ context.Context, req Request) {
 	s.clientMu.Unlock()
 
 	protoVer := NegotiateProtocolVersion(params.ProtocolVersion)
-	instructions := FormatInstructions(s.eng)
+	instructions := FormatInstructions(s.eng) + projectInstructions(s.project)
 
 	res := InitializeResult{
 		ProtocolVersion: protoVer,

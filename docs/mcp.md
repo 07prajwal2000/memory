@@ -38,13 +38,13 @@ Then the agent asks for the tool list. There are exactly four tools.
 
 ## `search`
 
-Search the `global` context plus the context you name. Use it to recall decisions, preferences and past work.
+Search the `global` context plus the context you name (or the project default, see [below](#project-default-context)). Use it to recall decisions, preferences and past work.
 
 | Argument | Type | Required | Meaning |
 |---|---|---|---|
 | `query` | string | yes | What to look for |
-| `context` | string | no | Also search this context |
-| `no_global` | boolean | no | Exclude `global`; requires `context` |
+| `context` | string | no | Also search this context; defaults to the project's `.agent-memory` context |
+| `no_global` | boolean | no | Exclude `global`; requires a context (explicit or the project default) |
 | `limit` | integer | no | 1–50, default 8 |
 | `fuzzy` | boolean | no | Default `true`; set `false` for exact-word precision |
 
@@ -76,7 +76,7 @@ The three useful shapes:
 
 - **No arguments**: default file plus every live context. The agent's first call in a session.
 - **`context` only**: that context's memories (name, id, version, size).
-- **`id`** or **`name` + `context`**: one full note, including the metadata header.
+- **`id`** or **`name` + `context`**: one full note, including the metadata header. Without `context`, a `name` is looked up in the project default context if there is one, else in `global`.
 
 Real no-argument result, shortened:
 
@@ -91,7 +91,7 @@ Create or update a memory. This is the only write tool besides `delete`.
 | Argument | Type | Required | Meaning |
 |---|---|---|---|
 | `body` | string | yes | Markdown content, up to 1 MiB |
-| `context` | string | no | Target context; default `global` |
+| `context` | string | no | Target context; defaults to the project's `.agent-memory` context, else `global` |
 | `name` | string | no | Update-or-create by name |
 | `id` | string | no | Update (and optionally rename) an existing memory |
 | `tags` | array | no | Up to 20 tags, each up to 64 characters |
@@ -125,6 +125,16 @@ Delete a memory by id.
 | `id` | string | yes | Stable id of the memory |
 
 Contexts cannot be deleted through MCP, and neither can the default file. An agent that needs a note gone should usually fix it with `upsert` instead.
+
+## Project default context
+
+If the folder the server starts in (or a parent) contains an [`.agent-memory`](configuration.md#project-file-agent-memory) file, the server uses its context when a call passes none, and appends a paragraph like this to the `initialize` instructions:
+
+```text
+Default context for this session: "proj" (from ...\proj\.agent-memory). Calls without a context use it plus global; pass context="global" for notes that apply across projects.
+```
+
+An explicit `context` argument always wins. Without the file, nothing changes. A marker that names a missing context makes `upsert` fail with an error that says how to create it; `search` and `get` fall back to `global` and put a `note:` line first in the result. The file is read once at startup, from the server's working directory; if your client starts `mem mcp` elsewhere, pass `context` explicitly or set the server's `cwd`. Full reference: [Project file](configuration.md#project-file-agent-memory).
 
 ## Trying it by hand
 

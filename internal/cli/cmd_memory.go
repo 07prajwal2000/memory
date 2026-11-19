@@ -29,7 +29,7 @@ type lsFlags struct {
 
 func parseLS(fs *flag.FlagSet, a *app, args []string) ([]string, error) {
 	f := &lsFlags{}
-	fs.StringVar(&f.context, "context", "", "context slug (default global)")
+	fs.StringVar(&f.context, "context", "", "context slug (default: .agent-memory context, else global)")
 	fs.IntVar(&f.limit, "limit", 0, "show at most N memories")
 	pos, err := collectArgs(fs, args)
 	if err != nil {
@@ -53,7 +53,10 @@ func runLS(a *app, _ []string) (int, error) {
 	if _, err := s.SweepExpired(); err != nil {
 		return ExitError, err
 	}
-	slug := f.context
+	slug, err := a.resolveContext(s, f.context, false)
+	if err != nil {
+		return ExitError, err
+	}
 	if slug == "" {
 		slug = store.GlobalContext
 	}
@@ -106,7 +109,7 @@ type getFlags struct {
 
 func parseGet(fs *flag.FlagSet, a *app, args []string) ([]string, error) {
 	f := &getFlags{}
-	fs.StringVar(&f.context, "context", "", "context slug (default global)")
+	fs.StringVar(&f.context, "context", "", "context slug (default: .agent-memory context, else global)")
 	pos, err := collectArgs(fs, args)
 	if err != nil {
 		return nil, err
@@ -134,7 +137,11 @@ func runGet(a *app, _ []string) (int, error) {
 		return runGetDefault(a, s, f.context)
 	}
 
-	m, err := s.Get(f.context, f.pos[0])
+	slug, err := a.resolveContext(s, f.context, false)
+	if err != nil {
+		return ExitError, err
+	}
+	m, err := s.Get(slug, f.pos[0])
 	if err != nil {
 		return ExitError, err
 	}
@@ -175,17 +182,25 @@ func runGetDefault(a *app, s *store.Store, contextSlug string) (int, error) {
 		}
 		_ = cur
 	}
+	project := a.projectDefault()
 	if a.globals.json {
-		return ExitOK, a.emit(map[string]any{
+		out := map[string]any{
 			"default_file": memoryJSON(def),
 			"context":      current,
 			"contexts":     contextsJSON(contexts),
 			"memories":     memoriesJSON(memories),
-		})
+		}
+		if project.Found() {
+			out["project_default"] = projectJSON(project)
+		}
+		return ExitOK, a.emit(out)
 	}
 	a.say("%s", def.Body)
 	if def.Body != "" && !strings.HasSuffix(def.Body, "\n") {
 		a.say("\n")
+	}
+	if project.Found() {
+		a.say("\nDefault context: %s\n", project.Summary())
 	}
 	a.say("\n## Contexts\n\n")
 	for _, c := range contexts {
@@ -235,7 +250,7 @@ type upsertFlags struct {
 
 func parseUpsert(fs *flag.FlagSet, a *app, args []string) ([]string, error) {
 	f := &upsertFlags{}
-	fs.StringVar(&f.context, "context", "", "context slug (default global)")
+	fs.StringVar(&f.context, "context", "", "context slug (default: .agent-memory context, else global)")
 	fs.StringVar(&f.name, "name", "", "memory name")
 	fs.StringVar(&f.id, "id", "", "memory id to update")
 	fs.StringVar(&f.by, "by", "", "who is writing")
@@ -273,8 +288,12 @@ func runUpsert(a *app, _ []string) (int, error) {
 	defer eng.Close()
 	a.warnSetupNeeded()
 
+	slug, err := a.resolveContext(eng.Store, f.context, true)
+	if err != nil {
+		return ExitError, err
+	}
 	in := store.UpsertInput{
-		Context:   f.context,
+		Context:   slug,
 		ID:        f.id,
 		Name:      f.name,
 		Body:      body,
@@ -424,7 +443,13 @@ func runSearch(a *app, _ []string) (int, error) {
 	defer eng.Close()
 	a.warnSetupNeeded()
 
-	res, err := eng.Search(a.context(), searchRequest(f, query))
+	slug, err := a.resolveContext(eng.Store, f.context, false)
+	if err != nil {
+		return ExitError, err
+	}
+	req := searchRequest(f, query)
+	req.Context = slug
+	res, err := eng.Search(a.context(), req)
 	if err != nil {
 		return ExitError, err
 	}
@@ -625,6 +650,7 @@ func runStatus(a *app, pos []string) (int, error) {
 		"in_sync":         inSync,
 		"warnings":        warnings,
 		"error":           engineErr,
+		"project_default": projectJSON(a.projectDefault()),
 	}
 	if a.globals.json {
 		return ExitOK, a.emit(payload)
@@ -632,6 +658,7 @@ func runStatus(a *app, pos []string) (int, error) {
 	a.say("mem %s\n", Version)
 	a.say("config      %s\n", a.cfgPath)
 	a.say("data dir    %s\n", cfg.DataDir)
+	a.say("default ctx %s\n", a.projectDefault().Summary())
 	a.say("contexts    %d\n", contexts)
 	a.say("memories    %d\n", memories)
 	a.say("indexed     %d documents (%s)\n", indexedDocs, syncWord(inSync))

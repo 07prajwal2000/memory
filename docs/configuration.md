@@ -35,6 +35,7 @@ A command-line `--config` or `--data-dir` overrides both. Note that `--data-dir`
 | Models (`bge-small`, optionally the reranker) | `~/.mem/models` |
 | `llama-server` | `~/.mem/bin` (the `bin` directory next to `models`) |
 | Dashboard | `http://127.0.0.1:7777` |
+| Project default context | none; optional [`.agent-memory`](#project-file-agent-memory) file in the project folder or a parent |
 | Temp context lifetime | 7 days |
 | Model server idle timeout | 300 seconds |
 
@@ -102,6 +103,56 @@ sidecar_path
 allowed_hosts
 search_fuzzy             true
 ```
+
+## Project file: `.agent-memory`
+
+An optional file in a project folder that names the project's default context. Without it, a write that does not name a context goes to `global`, which is where agents tend to dump project notes by accident.
+
+| | |
+|---|---|
+| File name | `.agent-memory` |
+| Format | TOML, UTF-8 |
+| Key | `context`: the slug of an existing context. Other keys are ignored |
+| Searched for | In the working directory of the `mem` process, then each parent directory up to the filesystem root. The nearest file wins |
+| Precedence | explicit `--context` / MCP `context` argument, then `.agent-memory`, then `global` |
+| Created by | You, by hand. `mem` never writes this file |
+
+```toml
+context = "proj"
+```
+
+When a usable file is found and no context is given:
+
+- `upsert` writes to that context instead of `global`.
+- `search` searches that context plus `global`, exactly as if you had passed `--context`. `--no-global` is then allowed.
+- `get` and `ls` with a name resolve it in that context. `get` with no arguments still returns the default file and the context list, and adds a `Default context:` line (`project_default` in JSON).
+- `delete` takes an id and is unchanged. An explicit context, including `global`, always wins.
+
+`mem` never creates contexts for you, and neither can agents. If the file names a context that does not exist, a write fails and nothing is saved:
+
+```bash
+mem upsert --name b.md "x"
+```
+
+```text
+mem: not found: ...\proj\.agent-memory names context "ghost", which does not exist; create it with `mem context create ghost`
+```
+
+The exit code is `3`. Create the context with `mem context create ghost`, or fix the file. The same problem on a read (`search`, `get`, `ls`) falls back to `global` and prints a note on stderr (hidden by `-q`; in the MCP server it is added to the result):
+
+```text
+note: not found: ...\proj\.agent-memory names context "ghost", which does not exist; create it with `mem context create ghost`; using global
+```
+
+A file that cannot be read, is not valid TOML, has no `context`, or has an invalid slug is treated the same way: writes fail with a message naming the file, reads fall back to `global` with a note.
+
+`mem status` shows what was detected (`default ctx` in text, `project_default` in `--json`):
+
+```text
+default ctx "proj" (from ...\proj\.agent-memory)
+```
+
+The MCP server looks for the file once, when it starts, and adds a sentence about it to its `initialize` instructions. That only works if the agent starts `mem mcp` inside the project folder. Some clients start servers from another directory; then pass `context` explicitly or set the server's `cwd` in the client's MCP configuration. See [MCP](mcp.md#project-default-context). Consider adding `.agent-memory` to `.gitignore` if the context name is personal; commit it if the whole team shares one.
 
 ## Models
 

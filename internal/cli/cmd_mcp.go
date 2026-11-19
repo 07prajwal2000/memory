@@ -76,6 +76,7 @@ func runMCP(a *app, pos []string) (int, error) {
 		a.io.Out,
 		eng,
 		mcp.WithServerVersion(Version),
+		mcp.WithProjectDefault(a.projectDefault()),
 		mcp.WithLogger(log.New(a.io.Err, "[mcp] ", log.LstdFlags)),
 	); err != nil {
 		fmt.Fprintf(a.io.Err, "mem mcp: %v\n", err)

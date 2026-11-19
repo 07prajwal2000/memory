@@ -28,7 +28,7 @@ commands:
   context ls               list contexts
   context rm <slug>        delete a context and its memories (--yes)
   context expiry <slug> <days|none>
-  ls [--context C]         list memories of a context (default global)
+  ls [--context C]         list memories of a context (default: project, else global)
   get [name-or-id]         read one memory, or the default file and contexts
   upsert [body|-]          create or update a memory
   delete <id>              delete a memory

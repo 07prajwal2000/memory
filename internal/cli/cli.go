@@ -32,7 +32,7 @@ const (
 
 // Version is the release version reported by `mem version` and the HTTP
 // User-Agent used by `mem init`.
-var Version = "0.1.1"
+var Version = "0.2.0"
 
 // IO carries the streams a command may use, so tests can drive commands in
 // process without touching the real terminal.
@@ -88,6 +88,9 @@ type app struct {
 	state any
 
 	hinted bool
+
+	project    store.ProjectDefault
+	projectSet bool
 }
 
 type globals struct {

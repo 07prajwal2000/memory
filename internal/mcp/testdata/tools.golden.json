@@ -1,12 +1,12 @@
 {
   "tools": [
     {
-      "description": "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context (unless no_global is true, which requires context). Fuzzy matching is on by default, set fuzzy:false for exact-word precision. Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\").",
+      "description": "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context, which defaults to the project's .agent-memory context if present (unless no_global is true, which requires a context). Fuzzy matching is on by default, set fuzzy:false for exact-word precision. Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\").",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
           "context": {
-            "description": "Optional context slug to search in addition to 'global'.",
+            "description": "Optional context slug to search in addition to 'global' (defaults to the project's .agent-memory context).",
             "type": "string"
           },
           "fuzzy": {
@@ -20,7 +20,7 @@
             "type": "integer"
           },
           "no_global": {
-            "description": "Exclude the 'global' context. Requires 'context' to be specified.",
+            "description": "Exclude the 'global' context. Requires a context (explicit or the project default).",
             "type": "boolean"
           },
           "query": {
@@ -36,12 +36,12 @@
       "name": "search"
     },
     {
-      "description": "Retrieve memories or context information. Call with NO arguments to orient yourself: returns the user's global instructions file (readme.md) and all active contexts (permanent/expiring) with memory counts. Call with only 'context' to list that context's memories (name, id, version, size). Call with 'id' or 'name'+'context' (defaults to 'global') to retrieve the full markdown note with metadata headers (id, version, tags). Use 'version' for subsequent safe upserts. Do not pass both 'id' and 'name'. Example: get(context=\"backend\", name=\"auth/jwt\").",
+      "description": "Retrieve memories or context information. Call with NO arguments to orient yourself: returns the user's global instructions file (readme.md) and all active contexts (permanent/expiring) with memory counts. Call with only 'context' to list that context's memories (name, id, version, size). Call with 'id' or 'name'+'context' (context defaults to the project's .agent-memory context, else 'global') to retrieve the full markdown note with metadata headers (id, version, tags). Use 'version' for subsequent safe upserts. Do not pass both 'id' and 'name'. Example: get(context=\"backend\", name=\"auth/jwt\").",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
           "context": {
-            "description": "Context slug. If used alone, lists that context's memories. If used with name, scopes the memory lookup (defaults to 'global').",
+            "description": "Context slug. If used alone, lists that context's memories. If used with name, scopes the memory lookup (defaults to the project's .agent-memory context, else 'global').",
             "type": "string"
           },
           "id": {
@@ -58,7 +58,7 @@
       "name": "get"
     },
     {
-      "description": "Create or update a markdown memory note. Use to persist knowledge, decisions, or session logs across sessions. IDs are stable identifiers. Resolution: pass 'id' to update/rename an existing memory; pass 'name' to update-or-create; omit both to create an unnamed memory (<id>.md). Context defaults to 'global'; agents cannot create contexts (user creates them via CLI). Set 'if_version' to avoid overwriting concurrent edits (fetch version first with 'get'). Set 'append: true' to add lines to the end of a log. Example: upsert(context=\"backend\", name=\"auth/jwt\", body=\"Use RS256 for tokens.\", tags=[\"auth\",\"jwt\"], if_version=2).",
+      "description": "Create or update a markdown memory note. Use to persist knowledge, decisions, or session logs across sessions. IDs are stable identifiers. Resolution: pass 'id' to update/rename an existing memory; pass 'name' to update-or-create; omit both to create an unnamed memory (<id>.md). Context defaults to the project's .agent-memory context if present, else 'global'; agents cannot create contexts (user creates them via CLI). Set 'if_version' to avoid overwriting concurrent edits (fetch version first with 'get'). Set 'append: true' to add lines to the end of a log. Example: upsert(context=\"backend\", name=\"auth/jwt\", body=\"Use RS256 for tokens.\", tags=[\"auth\",\"jwt\"], if_version=2).",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -71,7 +71,7 @@
             "type": "string"
           },
           "context": {
-            "description": "Target context slug (defaults to 'global'). Context must already exist.",
+            "description": "Target context slug (defaults to the project's .agent-memory context, else 'global'). Must already exist.",
             "type": "string"
           },
           "id": {

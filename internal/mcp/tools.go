@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	maxBodyBytes = 1 << 20      // 1 MiB
-	maxGetBody   = 200 * 1024   // 200 KiB
+	maxBodyBytes = 1 << 20    // 1 MiB
+	maxGetBody   = 200 * 1024 // 200 KiB
 	maxNameLen   = 200
 	maxTagsCount = 20
 	maxTagLen    = 64
@@ -24,11 +24,11 @@ const (
 )
 
 const (
-	searchDescription = "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context (unless no_global is true, which requires context). Fuzzy matching is on by default, set fuzzy:false for exact-word precision. Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\")."
+	searchDescription = "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context, which defaults to the project's .agent-memory context if present (unless no_global is true, which requires a context). Fuzzy matching is on by default, set fuzzy:false for exact-word precision. Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\")."
 
-	getDescription = "Retrieve memories or context information. Call with NO arguments to orient yourself: returns the user's global instructions file (readme.md) and all active contexts (permanent/expiring) with memory counts. Call with only 'context' to list that context's memories (name, id, version, size). Call with 'id' or 'name'+'context' (defaults to 'global') to retrieve the full markdown note with metadata headers (id, version, tags). Use 'version' for subsequent safe upserts. Do not pass both 'id' and 'name'. Example: get(context=\"backend\", name=\"auth/jwt\")."
+	getDescription = "Retrieve memories or context information. Call with NO arguments to orient yourself: returns the user's global instructions file (readme.md) and all active contexts (permanent/expiring) with memory counts. Call with only 'context' to list that context's memories (name, id, version, size). Call with 'id' or 'name'+'context' (context defaults to the project's .agent-memory context, else 'global') to retrieve the full markdown note with metadata headers (id, version, tags). Use 'version' for subsequent safe upserts. Do not pass both 'id' and 'name'. Example: get(context=\"backend\", name=\"auth/jwt\")."
 
-	upsertDescription = "Create or update a markdown memory note. Use to persist knowledge, decisions, or session logs across sessions. IDs are stable identifiers. Resolution: pass 'id' to update/rename an existing memory; pass 'name' to update-or-create; omit both to create an unnamed memory (<id>.md). Context defaults to 'global'; agents cannot create contexts (user creates them via CLI). Set 'if_version' to avoid overwriting concurrent edits (fetch version first with 'get'). Set 'append: true' to add lines to the end of a log. Example: upsert(context=\"backend\", name=\"auth/jwt\", body=\"Use RS256 for tokens.\", tags=[\"auth\",\"jwt\"], if_version=2)."
+	upsertDescription = "Create or update a markdown memory note. Use to persist knowledge, decisions, or session logs across sessions. IDs are stable identifiers. Resolution: pass 'id' to update/rename an existing memory; pass 'name' to update-or-create; omit both to create an unnamed memory (<id>.md). Context defaults to the project's .agent-memory context if present, else 'global'; agents cannot create contexts (user creates them via CLI). Set 'if_version' to avoid overwriting concurrent edits (fetch version first with 'get'). Set 'append: true' to add lines to the end of a log. Example: upsert(context=\"backend\", name=\"auth/jwt\", body=\"Use RS256 for tokens.\", tags=[\"auth\",\"jwt\"], if_version=2)."
 
 	deleteDescription = "Delete a memory permanently by its stable 'id'. Use only when the user explicitly requests deletion or when a memory is completely obsolete. Prefer 'upsert' to correct, update, or supersede information rather than deleting. Contexts and the default instructions file ('global/readme.md') cannot be deleted. Memory IDs can be found via 'search' or 'get'. Example: delete(id=\"mem_01h2x3y4z5\")."
 )
@@ -52,11 +52,11 @@ func BuiltinTools() []Tool {
 					},
 					"context": {
 						Type:        "string",
-						Description: "Optional context slug to search in addition to 'global'.",
+						Description: "Optional context slug to search in addition to 'global' (defaults to the project's .agent-memory context).",
 					},
 					"no_global": {
 						Type:        "boolean",
-						Description: "Exclude the 'global' context. Requires 'context' to be specified.",
+						Description: "Exclude the 'global' context. Requires a context (explicit or the project default).",
 					},
 					"limit": {
 						Type:        "integer",
@@ -81,7 +81,7 @@ func BuiltinTools() []Tool {
 				Properties: map[string]Property{
 					"context": {
 						Type:        "string",
-						Description: "Context slug. If used alone, lists that context's memories. If used with name, scopes the memory lookup (defaults to 'global').",
+						Description: "Context slug. If used alone, lists that context's memories. If used with name, scopes the memory lookup (defaults to the project's .agent-memory context, else 'global').",
 					},
 					"name": {
 						Type:        "string",
@@ -107,7 +107,7 @@ func BuiltinTools() []Tool {
 					},
 					"context": {
 						Type:        "string",
-						Description: "Target context slug (defaults to 'global'). Context must already exist.",
+						Description: "Target context slug (defaults to the project's .agent-memory context, else 'global'). Must already exist.",
 					},
 					"name": {
 						Type:        "string",
@@ -178,6 +178,20 @@ func toolSuccess(text string, structured any) CallToolResult {
 	}
 }
 
+// resolveContext applies explicit > .agent-memory > global. For reads a
+// marker problem yields a warning and the global default; for writes an error.
+func (s *session) resolveContext(explicit string, write bool) (string, string, error) {
+	return s.project.Resolve(s.eng.Store, explicit, write)
+}
+
+// withNote prepends a warning line to a tool's text output.
+func withNote(warning, text string) string {
+	if warning == "" {
+		return text
+	}
+	return "note: " + warning + "\n\n" + text
+}
+
 // executeSearch handles the search tool.
 type searchArgs struct {
 	Query    string `json:"query"`
@@ -201,7 +215,8 @@ func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallTo
 		return toolError("query is required and cannot be empty")
 	}
 
-	if args.NoGlobal && args.Context == "" {
+	ctxSlug, warn, _ := s.resolveContext(args.Context, false)
+	if args.NoGlobal && ctxSlug == "" {
 		return toolError("no_global cannot be used without specifying a context; global is the default search space")
 	}
 
@@ -215,7 +230,7 @@ func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallTo
 
 	res, err := s.eng.Search(ctx, engine.SearchRequest{
 		Query:    args.Query,
-		Context:  args.Context,
+		Context:  ctxSlug,
 		NoGlobal: args.NoGlobal,
 		Limit:    limit,
 		PerDoc:   1,
@@ -223,7 +238,7 @@ func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallTo
 	})
 	if err != nil {
 		if errors.Is(err, store.ErrNotFound) {
-			return toolError("context '%s' does not exist; contexts are created by the user with `mem context create`; use 'global' or an existing context (call get with no arguments to list them)", args.Context)
+			return toolError("context '%s' does not exist; contexts are created by the user with `mem context create`; use 'global' or an existing context (call get with no arguments to list them)", ctxSlug)
 		}
 		return toolError("search failed: %v", err)
 	}
@@ -244,6 +259,9 @@ func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallTo
 	hitsJSON := make([]HitJSON, 0, len(res.Hits))
 	var sb strings.Builder
 
+	if warn != "" {
+		res.Degraded = append([]string{warn}, res.Degraded...)
+	}
 	if len(res.Degraded) > 0 {
 		for _, d := range res.Degraded {
 			sb.WriteString("note: ")
@@ -384,6 +402,10 @@ func (s *session) executeGet(_ context.Context, raw json.RawMessage) CallToolRes
 			})
 		}
 
+		if s.project.Found() {
+			sb.WriteString("\nDefault context: " + s.project.Summary() + "\n")
+		}
+
 		structured := map[string]any{
 			"default_file": map[string]any{
 				"id":         df.ID,
@@ -396,6 +418,13 @@ func (s *session) executeGet(_ context.Context, raw json.RawMessage) CallToolRes
 				"body":       df.Body,
 			},
 			"contexts": ctxList,
+		}
+		if s.project.Found() {
+			structured["project_default"] = map[string]any{
+				"path":    s.project.Path,
+				"context": s.project.Context,
+				"usable":  s.project.Err == nil,
+			}
 		}
 		return toolSuccess(strings.TrimSpace(sb.String()), structured)
 	}
@@ -465,6 +494,7 @@ func (s *session) executeGet(_ context.Context, raw json.RawMessage) CallToolRes
 	// 3. ID or Name (+ optional context)
 	var mem store.Memory
 	var err error
+	var warn string
 	if args.ID != "" {
 		if args.Context != "" {
 			mem, err = s.eng.Store.Get(args.Context, args.ID)
@@ -497,7 +527,8 @@ func (s *session) executeGet(_ context.Context, raw json.RawMessage) CallToolRes
 			return toolError("get memory: %v", err)
 		}
 	} else if args.Name != "" {
-		ctxSlug := args.Context
+		ctxSlug, w, _ := s.resolveContext(args.Context, false)
+		warn = w
 		if ctxSlug == "" {
 			ctxSlug = store.GlobalContext
 		}
@@ -543,7 +574,7 @@ func (s *session) executeGet(_ context.Context, raw json.RawMessage) CallToolRes
 		"body":       body,
 		"truncated":  truncated,
 	}
-	return toolSuccess(strings.TrimSpace(sb.String()), structured)
+	return toolSuccess(withNote(warn, strings.TrimSpace(sb.String())), structured)
 }
 
 // executeUpsert handles the upsert tool.
@@ -584,7 +615,10 @@ func (s *session) executeUpsert(_ context.Context, raw json.RawMessage) CallTool
 		}
 	}
 
-	targetCtx := args.Context
+	targetCtx, _, rerr := s.resolveContext(args.Context, true)
+	if rerr != nil {
+		return toolError("%v", rerr)
+	}
 	if targetCtx == "" {
 		targetCtx = store.GlobalContext
 	}

@@ -1,6 +1,6 @@
 {
   "name": "@07prajwal2000/agent-memory-PLATFORM-ARCH",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Prebuilt binary package for agent-memory on PLATFORM-ARCH",
   "os": [
     "PLATFORM"

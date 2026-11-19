@@ -378,6 +378,8 @@ Search always includes `global` as well as the context you ask for, unless you p
 
 Use `global` for knowledge about you or about all your work. Use a project context for knowledge about that project.
 
+To make a project's folder default to its own context instead of `global`, put an `.agent-memory` file in it (`context = "proj"`). An explicit `--context` still wins. See [Project file](configuration.md#project-file-agent-memory).
+
 ## Temp contexts
 
 A temp context is an ordinary context with an expiry date. It is made for handing work between agents: one agent writes its working notes, the next agent reads them, and the context disappears when it is no longer needed.
@@ -703,7 +705,7 @@ commands:
   context ls               list contexts
   context rm <slug>        delete a context and its memories (--yes)
   context expiry <slug> <days|none>
-  ls [--context C]         list memories of a context (default global)
+  ls [--context C]         list memories of a context (default: project, else global)
   get [name-or-id]         read one memory, or the default file and contexts
   upsert [body|-]          create or update a memory
   delete <id>              delete a memory
@@ -841,7 +843,7 @@ context work now expires never
 mem ls [--context C] [--limit N]
 ```
 
-Lists memories without bodies. Default context is `global`.
+Lists memories without bodies. Default context is the one named by a project [`.agent-memory`](configuration.md#project-file-agent-memory) file, else `global`.
 
 ```bash
 mem ls --context work
@@ -914,7 +916,7 @@ mem upsert [--context C] [--name N] [--id ID] [--tag T]... [--append]
 
 | Flag | Meaning |
 |---|---|
-| `--context C` | Target context; defaults to `global` |
+| `--context C` | Target context; defaults to the project's [`.agent-memory`](configuration.md#project-file-agent-memory) context, else `global` |
 | `--name N` | Update-or-create by name inside the context |
 | `--id ID` | Update (and optionally rename) an existing memory |
 | `--tag T` | Add a tag; repeat the flag for several tags |
@@ -984,8 +986,8 @@ mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N] [--f
 
 | Flag | Meaning |
 |---|---|
-| `--context C` | Also search this context |
-| `--no-global` | Exclude `global`; requires `--context` |
+| `--context C` | Also search this context (default: the project's [`.agent-memory`](configuration.md#project-file-agent-memory) context) |
+| `--no-global` | Exclude `global`; requires a context (explicit or from `.agent-memory`) |
 | `--limit N` | Number of results (default 8, max 50) |
 | `--per-doc N` | Chunks per document (default 1) |
 | `--fuzzy` / `--no-fuzzy` | Force fuzzy matching on or off for this query |
@@ -1045,7 +1047,7 @@ Progress goes to stderr; the summary goes to stdout. `-q` silences the progress,
 mem status
 ```
 
-Shows version, config path, data directory, counts, index state, and whether the models and the model server are present and valid. It never starts the model.
+Shows version, config path, data directory, the default context found from a project `.agent-memory` file (`none` if absent), counts, index state, and whether the models and the model server are present and valid. It never starts the model.
 
 ```bash
 mem status
@@ -1200,13 +1202,13 @@ Then the agent asks for the tool list. There are exactly four tools.
 
 ## `search`
 
-Search the `global` context plus the context you name. Use it to recall decisions, preferences and past work.
+Search the `global` context plus the context you name (or the project default, see [below](#project-default-context)). Use it to recall decisions, preferences and past work.
 
 | Argument | Type | Required | Meaning |
 |---|---|---|---|
 | `query` | string | yes | What to look for |
-| `context` | string | no | Also search this context |
-| `no_global` | boolean | no | Exclude `global`; requires `context` |
+| `context` | string | no | Also search this context; defaults to the project's `.agent-memory` context |
+| `no_global` | boolean | no | Exclude `global`; requires a context (explicit or the project default) |
 | `limit` | integer | no | 1–50, default 8 |
 | `fuzzy` | boolean | no | Default `true`; set `false` for exact-word precision |
 
@@ -1238,7 +1240,7 @@ The three useful shapes:
 
 - **No arguments**: default file plus every live context. The agent's first call in a session.
 - **`context` only**: that context's memories (name, id, version, size).
-- **`id`** or **`name` + `context`**: one full note, including the metadata header.
+- **`id`** or **`name` + `context`**: one full note, including the metadata header. Without `context`, a `name` is looked up in the project default context if there is one, else in `global`.
 
 Real no-argument result, shortened:
 
@@ -1253,7 +1255,7 @@ Create or update a memory. This is the only write tool besides `delete`.
 | Argument | Type | Required | Meaning |
 |---|---|---|---|
 | `body` | string | yes | Markdown content, up to 1 MiB |
-| `context` | string | no | Target context; default `global` |
+| `context` | string | no | Target context; defaults to the project's `.agent-memory` context, else `global` |
 | `name` | string | no | Update-or-create by name |
 | `id` | string | no | Update (and optionally rename) an existing memory |
 | `tags` | array | no | Up to 20 tags, each up to 64 characters |
@@ -1287,6 +1289,16 @@ Delete a memory by id.
 | `id` | string | yes | Stable id of the memory |
 
 Contexts cannot be deleted through MCP, and neither can the default file. An agent that needs a note gone should usually fix it with `upsert` instead.
+
+## Project default context
+
+If the folder the server starts in (or a parent) contains an [`.agent-memory`](configuration.md#project-file-agent-memory) file, the server uses its context when a call passes none, and appends a paragraph like this to the `initialize` instructions:
+
+```text
+Default context for this session: "proj" (from ...\proj\.agent-memory). Calls without a context use it plus global; pass context="global" for notes that apply across projects.
+```
+
+An explicit `context` argument always wins. Without the file, nothing changes. A marker that names a missing context makes `upsert` fail with an error that says how to create it; `search` and `get` fall back to `global` and put a `note:` line first in the result. The file is read once at startup, from the server's working directory; if your client starts `mem mcp` elsewhere, pass `context` explicitly or set the server's `cwd`. Full reference: [Project file](configuration.md#project-file-agent-memory).
 
 ## Trying it by hand
 
@@ -1358,6 +1370,7 @@ A command-line `--config` or `--data-dir` overrides both. Note that `--data-dir`
 | Models (`bge-small`, optionally the reranker) | `~/.mem/models` |
 | `llama-server` | `~/.mem/bin` (the `bin` directory next to `models`) |
 | Dashboard | `http://127.0.0.1:7777` |
+| Project default context | none; optional [`.agent-memory`](#project-file-agent-memory) file in the project folder or a parent |
 | Temp context lifetime | 7 days |
 | Model server idle timeout | 300 seconds |
 
@@ -1425,6 +1438,56 @@ sidecar_path
 allowed_hosts
 search_fuzzy             true
 ```
+
+## Project file: `.agent-memory`
+
+An optional file in a project folder that names the project's default context. Without it, a write that does not name a context goes to `global`, which is where agents tend to dump project notes by accident.
+
+| | |
+|---|---|
+| File name | `.agent-memory` |
+| Format | TOML, UTF-8 |
+| Key | `context`: the slug of an existing context. Other keys are ignored |
+| Searched for | In the working directory of the `mem` process, then each parent directory up to the filesystem root. The nearest file wins |
+| Precedence | explicit `--context` / MCP `context` argument, then `.agent-memory`, then `global` |
+| Created by | You, by hand. `mem` never writes this file |
+
+```toml
+context = "proj"
+```
+
+When a usable file is found and no context is given:
+
+- `upsert` writes to that context instead of `global`.
+- `search` searches that context plus `global`, exactly as if you had passed `--context`. `--no-global` is then allowed.
+- `get` and `ls` with a name resolve it in that context. `get` with no arguments still returns the default file and the context list, and adds a `Default context:` line (`project_default` in JSON).
+- `delete` takes an id and is unchanged. An explicit context, including `global`, always wins.
+
+`mem` never creates contexts for you, and neither can agents. If the file names a context that does not exist, a write fails and nothing is saved:
+
+```bash
+mem upsert --name b.md "x"
+```
+
+```text
+mem: not found: ...\proj\.agent-memory names context "ghost", which does not exist; create it with `mem context create ghost`
+```
+
+The exit code is `3`. Create the context with `mem context create ghost`, or fix the file. The same problem on a read (`search`, `get`, `ls`) falls back to `global` and prints a note on stderr (hidden by `-q`; in the MCP server it is added to the result):
+
+```text
+note: not found: ...\proj\.agent-memory names context "ghost", which does not exist; create it with `mem context create ghost`; using global
+```
+
+A file that cannot be read, is not valid TOML, has no `context`, or has an invalid slug is treated the same way: writes fail with a message naming the file, reads fall back to `global` with a note.
+
+`mem status` shows what was detected (`default ctx` in text, `project_default` in `--json`):
+
+```text
+default ctx "proj" (from ...\proj\.agent-memory)
+```
+
+The MCP server looks for the file once, when it starts, and adds a sentence about it to its `initialize` instructions. That only works if the agent starts `mem mcp` inside the project folder. Some clients start servers from another directory; then pass `context` explicitly or set the server's `cwd` in the client's MCP configuration. See [MCP](mcp.md#project-default-context). Consider adding `.agent-memory` to `.gitignore` if the context name is personal; commit it if the whole team shares one.
 
 ## Models
 
@@ -2211,6 +2274,12 @@ Source: https://07prajwal2000.github.io/memory/changelog.md
 # Changelog
 
 Notable changes. This project follows semantic versioning.
+
+## 0.2.0
+
+### Added
+
+- Per-project default context: an optional `.agent-memory` file (`context = "<slug>"`) in a project folder or any parent. Calls without a context use it instead of `global` for `upsert`, `search`, `get` and `ls`, in the CLI and the MCP server. An explicit context always wins; a marker naming a missing context fails writes and falls back to `global` for reads. `mem status` shows the detected file, and the MCP `initialize` instructions mention it. See [Configuration](configuration.md#project-file-agent-memory).
 
 ## 0.1.1
 

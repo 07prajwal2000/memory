@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"memory/internal/engine"
+	"memory/internal/store"
 )
 
 // JSON-RPC 2.0 error codes.
@@ -70,6 +71,18 @@ func FormatInstructions(eng *engine.Engine) string {
 		truncated = truncated[:lastNL]
 	}
 	return truncated + InstructionTruncSuffix
+}
+
+// projectInstructions is the paragraph appended to the instructions when an
+// .agent-memory marker was found; empty when there is none.
+func projectInstructions(p store.ProjectDefault) string {
+	switch {
+	case !p.Found():
+		return ""
+	case p.Err != nil:
+		return "\n\nWarning: ignoring unusable project default context file: " + p.Err.Error()
+	}
+	return "\n\nDefault context for this session: \"" + p.Context + "\" (from " + p.Path + "). Calls without a context use it plus global; pass context=\"global\" for notes that apply across projects."
 }
 
 // Request is an incoming JSON-RPC 2.0 message.

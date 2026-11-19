@@ -60,7 +60,7 @@ Habits that keep the store useful:
 - **Create or overwrite by name**: `upsert(name="deploy/staging.md", context="web-app", body="...", tags=["deploy"])`.
 - **Add to a log**: `upsert(name="status/migration.md", body="- 14:20 step 3 done", append=true)`.
 - **Edit an existing note without clobbering someone else's edit**: `get` it, change the text, `upsert` with `if_version` set to the version you read. On a conflict error, `get` again, merge both changes, and retry. Never retry blindly with a stale version.
-- Without `context`, the write goes to `global`. Use `global` for knowledge about the user or that spans projects; use a project context for project knowledge.
+- Without `context`, the write goes to the project's default context if one is set, else to `global`. A project may have an `.agent-memory` file naming its default context; the MCP server instructions tell you which one ("Default context for this session"), and `get` with no arguments shows it. Writes, `get` by name and `search` then use it. Use `context="global"` for knowledge about the user or that spans projects; use a project context for project knowledge.
 - Writing to a context that does not exist fails. Contexts are created by the user (see below).
 
 After a write, a note may say that semantic indexing is pending or failed. The memory is saved and keyword search already finds it; `mem sync` repairs the rest. Mention it to the user only if it persists.
@@ -89,7 +89,7 @@ All commands accept `--json` for machine-readable output and `--context C` where
 ```
 mem get                                   # default file + contexts (orient)
 mem get <name-or-id> [--context C]        # read one memory
-mem ls [--context C] [--limit N]          # list memories (default context: global)
+mem ls [--context C] [--limit N]          # list memories (default: project context, else global)
 mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N] [--no-fuzzy]
 mem upsert [--context C] [--name N] [--id ID] [--tag T]... [--append] [--if-version V] [--by WHO] [body | -]
 mem delete <id>

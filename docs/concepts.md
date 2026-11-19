@@ -75,6 +75,8 @@ Search always includes `global` as well as the context you ask for, unless you p
 
 Use `global` for knowledge about you or about all your work. Use a project context for knowledge about that project.
 
+To make a project's folder default to its own context instead of `global`, put an `.agent-memory` file in it (`context = "proj"`). An explicit `--context` still wins. See [Project file](configuration.md#project-file-agent-memory).
+
 ## Temp contexts
 
 A temp context is an ordinary context with an expiry date. It is made for handing work between agents: one agent writes its working notes, the next agent reads them, and the context disappears when it is no longer needed.
