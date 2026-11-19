@@ -62,6 +62,8 @@ deploy/staging.md        fxpkh7wubztw       1  2026-11-19 12:16
 - **Looking for a command?** [Command line](cli.md).
 - **Connecting an agent?** [MCP server](mcp.md) and [The agent skill](skill.md).
 
+AI tools can read this documentation as [llms.txt](https://07prajwal2000.github.io/memory/llms.txt) or [llms-full.txt](https://07prajwal2000.github.io/memory/llms-full.txt).
+
 <div class="next-steps">
 
 **Next steps:** [Quick start](quickstart.md) → [Concepts](concepts.md)

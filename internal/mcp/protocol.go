@@ -99,13 +99,15 @@ type RPCError struct {
 type ClientInfo struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
+	Title   string `json:"title,omitempty"`
 }
 
 // InitializeParams contains the client parameters for the initialize method.
 type InitializeParams struct {
-	ProtocolVersion string         `json:"protocolVersion"`
-	Capabilities    map[string]any `json:"capabilities"`
-	ClientInfo      ClientInfo     `json:"clientInfo"`
+	ProtocolVersion string          `json:"protocolVersion"`
+	Capabilities    map[string]any  `json:"capabilities"`
+	ClientInfo      ClientInfo      `json:"clientInfo"`
+	Meta            json.RawMessage `json:"_meta,omitempty"`
 }
 
 // ServerCapabilities defines capabilities supported by this server.
@@ -156,6 +158,17 @@ type Tool struct {
 	InputSchema InputSchema `json:"inputSchema"`
 }
 
+// ToolsListParams contains parameters for tools/list.
+type ToolsListParams struct {
+	Cursor *string         `json:"cursor,omitempty"`
+	Meta   json.RawMessage `json:"_meta,omitempty"`
+}
+
+// PingParams contains parameters for ping.
+type PingParams struct {
+	Meta json.RawMessage `json:"_meta,omitempty"`
+}
+
 // ToolsListResult is returned by tools/list.
 type ToolsListResult struct {
 	Tools []Tool `json:"tools"`
@@ -165,6 +178,7 @@ type ToolsListResult struct {
 type CallToolParams struct {
 	Name      string          `json:"name"`
 	Arguments json.RawMessage `json:"arguments,omitempty"`
+	Meta      json.RawMessage `json:"_meta,omitempty"`
 }
 
 // ContentItem represents a content block in a tool result.
@@ -182,6 +196,7 @@ type CallToolResult struct {
 
 // CancelledParams holds parameters for notifications/cancelled.
 type CancelledParams struct {
-	RequestID any    `json:"requestId"`
-	Reason    string `json:"reason,omitempty"`
+	RequestID any             `json:"requestId"`
+	Reason    string          `json:"reason,omitempty"`
+	Meta      json.RawMessage `json:"_meta,omitempty"`
 }

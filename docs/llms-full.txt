@@ -1,0 +1,2238 @@
+# mem — full documentation
+
+> Generated from the Markdown sources of https://07prajwal2000.github.io/memory/ for tools that read the docs in one fetch. Regenerate with `node docs/scripts/build-llms.mjs`; do not edit by hand.
+
+Every documentation page in sidebar order, each preceded by its source URL.
+
+---
+
+Source: https://07prajwal2000.github.io/memory/README.md
+
+# What is mem?
+
+`mem` gives you and your AI coding agents a shared long-term memory: notes stored as plain markdown files on your disk, searchable by keyword and by meaning.
+
+If you have ever repeated the same context to an agent — the deploy command, the naming rule, the reason you rejected a library — `mem` is for that. Your agent saves the note once. In a later session, in another project, or in a different agent, it searches for it and finds it. You can read and edit every note with a text editor.
+
+> **Note:**
+> The npm packages are **not published yet**. The install commands on this site show the names they will be published under. Until then, [build from source](quickstart.md#from-source).
+
+## Three reasons to use it
+
+- **It survives the session.** Agents forget everything when the conversation ends. A note in `mem` does not.
+- **You own the data.** Memories are markdown files in a folder you choose. The search index is derived and can be rebuilt from the files.
+- **It works with the agents you already use.** One command connects Claude Code, and any client that reads `mcpServers` JSON can connect the same way.
+
+## A 60-second demo
+
+After [installing and running `mem init`](quickstart.md), this is a whole session:
+
+```bash
+mem context create work
+mem upsert --context work --name deploy/staging.md --tag deploy \
+  "Deploys run from the release branch only. Staging lives at https://staging.example.internal."
+
+mem search "where do deploys run" --context work --no-global --limit 2
+```
+
+Real output from the search:
+
+```text
+1. deploy/staging.md (work/fxpkh7wubztw) score=0.1013 [vec,bm25,name]
+   matched: deploys, run, deploy
+   Deploys run from the release branch only. Staging lives at https://staging.example.internal.
+2. release/checklist.md (work/n37iccu7dqwn) score=0.0900 [vec,bm25]
+   matched: run
+   # Release checklist
+
+   - run tests
+   - tag the commit
+```
+
+The `[vec,bm25,name]` part tells you which search legs matched: vector similarity (`vec`), keyword search (`bm25`), and the memory name (`name`). You do not need it to use search, but it explains why a result appeared.
+
+The note is also a file on disk. Here is what `mem ls` shows:
+
+```text
+NAME                     ID           VERSION  UPDATED
+deploy/staging.md        fxpkh7wubztw       1  2026-11-19 12:16
+```
+
+## What you get
+
+- **`mem`**, a command-line tool for creating contexts, writing and reading memories, and searching.
+- **`mem mcp`**, a Model Context Protocol server over stdio, so an agent can search and write memories as part of its normal work.
+- **`mem server`**, a local dashboard at `http://127.0.0.1:7777` for browsing and editing memories in a browser.
+- **An agent skill**, a short manual that tells an agent *when* and *how* to use the store, installed with `npx skills add 07prajwal2000/memory` or `mem skill --install`.
+
+## Where to go next
+
+- **New here?** [Quick start](quickstart.md) takes you from zero to an agent that remembers.
+- **Want the model?** [Concepts](concepts.md) explains memories, contexts and the default file.
+- **Looking for a command?** [Command line](cli.md).
+- **Connecting an agent?** [MCP server](mcp.md) and [The agent skill](skill.md).
+
+AI tools can read this documentation as [llms.txt](https://07prajwal2000.github.io/memory/llms.txt) or [llms-full.txt](https://07prajwal2000.github.io/memory/llms-full.txt).
+
+<div class="next-steps">
+
+**Next steps:** [Quick start](quickstart.md) → [Concepts](concepts.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/quickstart.md
+
+# Quick start
+
+From an empty machine to an agent that remembers, in five steps.
+
+**You need:** a terminal. For the npm route, Node.js 18 or newer. For the source route, Go 1.23 or newer and Node.js 18 or newer.
+
+## 1. Install
+
+> **Note:**
+> The packages are **not published yet**. The npm commands below are the names they will use. Until publication, use [the source route](#from-source).
+
+Global install (the commands `mem`, `memory` and `agent-memory` are aliases):
+
+```bash
+npm i -g @07prajwal2000/agent-memory
+```
+
+Or run one-off without a global install:
+
+```bash
+npx @07prajwal2000/agent-memory init
+```
+
+If a global install fails with `EEXIST` because another package owns one of those command names, use `npm i -g --force @07prajwal2000/agent-memory`, or stay on `npx`.
+
+### From source
+
+Build the dashboard assets first, then the binary:
+
+```bash
+cd web
+npm ci
+npm run build:real
+cd ..
+go build -o mem ./cmd/mem
+```
+
+Put the `mem` binary somewhere on your `PATH`.
+
+## 2. Run `mem init`
+
+```bash
+mem init
+```
+
+`mem init` asks a few questions:
+- where to keep data, models and the `llama-server` binary (defaults under `~/.mem`);
+- which port the dashboard should use (default `7777`);
+- how many days a temporary context lasts by default (default `7`);
+- how long the local model server may sit idle before it stops (default `300` seconds);
+- whether to install the optional reranker (default **no**; see [Configuration](configuration.md#rerank)).
+
+Then it downloads two small files:
+- **llama.cpp's `llama-server`** for your OS and CPU (about 24 MB), verified against a pinned size and SHA-256;
+- **the `bge-small-en-v1.5` embedding model** (about 35 MB), which turns text into vectors for semantic search.
+
+Real output from `mem init` on Windows (paths abbreviated):
+
+```text
+  ok  model server responds (384-dimensional embedding)
+
+mem is set up.
+  data    ...\demo\data
+  models  ...\full\models
+  server  ...\full\bin\llama-server.exe
+  config  ...\demo\config.toml
+
+next steps:
+  Claude Code:  claude mcp add mem -- mem mcp
+  generic MCP:  {"mcpServers":{"mem":{"command":"mem","args":["mcp"]}}}
+  dashboard:    mem server --port 7811
+  agent skill:  npx skills add <owner>/<repo> (or `mem skill --install`)
+  restart your agent so it picks up the MCP server
+```
+
+Useful variants:
+
+```bash
+mem init --yes                      # accept defaults and skip the questions
+mem init --force                    # reinstall the model server and models
+mem init --no-download              # set up config and data only, no network
+mem init --offline-dir ./usb-stick  # install from a folder instead of the network
+```
+
+`--no-download` gives you a usable CLI and dashboard, but indexed search stays unavailable until a real `mem init` succeeds. You will see this warning:
+
+```text
+  warning: llama-server was not installed; indexed search will stay unavailable until `mem init` succeeds
+```
+
+The config file is written to your platform's user config directory:
+
+| OS | Config file |
+|---|---|
+| Windows | `%APPDATA%\mem\config.toml` |
+| Linux | `~/.config/mem/config.toml` (or `$XDG_CONFIG_HOME/mem/config.toml`) |
+| macOS | `~/Library/Application Support/mem/config.toml` |
+
+Data defaults to `~/.mem/data`, models to `~/.mem/models`, and `llama-server` to `~/.mem/bin`. See [Configuration](configuration.md) for every key and environment variable.
+
+## 3. Write a memory and search for it
+
+Create a context for a project, write one note, and search:
+
+```bash
+mem context create work
+mem upsert --context work --name deploy/staging.md --tag deploy \
+  "Deploys run from the release branch only. Staging lives at https://staging.example.internal."
+mem search "where do deploys run" --context work --no-global
+```
+
+Real output:
+
+```text
+1. deploy/staging.md (work/fxpkh7wubztw) score=0.1013 [vec,bm25,name]
+   matched: deploys, run, deploy
+   Deploys run from the release branch only. Staging lives at https://staging.example.internal.
+```
+
+Read it back by name:
+
+```bash
+mem get deploy/staging.md --context work
+```
+
+```text
+---
+# deploy/staging.md (fxpkh7wubztw, v1, updated 2026-11-19 12:16 by cli)
+# tags: deploy
+---
+Deploys run from the release branch only. Staging lives at https://staging.example.internal.
+```
+
+`mem get` with no arguments is the orientation call: it prints the default file (`global/readme.md`) and the list of contexts. Try it once.
+
+## 4. Connect your agent
+
+For Claude Code with the binary on your `PATH`:
+
+```bash
+claude mcp add mem -- mem mcp
+```
+
+With `npx`:
+
+```bash
+claude mcp add mem -- npx -y @07prajwal2000/agent-memory mcp
+```
+
+For any client that reads an `mcpServers` JSON block (Claude Desktop, for example):
+
+```json
+{
+  "mcpServers": {
+    "mem": {
+      "command": "mem",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Or, through `npx`:
+
+```json
+{
+  "mcpServers": {
+    "mem": {
+      "command": "npx",
+      "args": ["-y", "@07prajwal2000/agent-memory", "mcp"]
+    }
+  }
+}
+```
+
+Restart the agent after adding the server. Cursor, Codex, Gemini CLI and others that read `mcpServers` JSON use the same command or block; check your agent's MCP documentation for where that file lives.
+
+You do not need to run `mem mcp` yourself. The agent starts it and speaks JSON-RPC over stdin and stdout. If you want to check it by hand, see [MCP server](mcp.md#trying-it-by-hand).
+
+## 5. Teach your agent to use it
+
+Connecting the server gives the agent the four tools, but not the habits. Install the skill:
+
+```bash
+npx skills add 07prajwal2000/memory
+```
+
+If you do not have Node, `mem` ships the same text and can install it for you:
+
+```bash
+mem skill --install --agent claude-code
+```
+
+Real output from a project directory:
+
+```text
+installed ...\.claude\skills\mem\SKILL.md
+```
+
+Run it again and it says `already up to date`. Use `--global` for your home directory instead of the current project. [The agent skill](skill.md) explains what the text teaches.
+
+## Where to go next
+
+- [Concepts](concepts.md): what a context is, why `global` is special, what the default file does.
+- [Search](search.md): how hybrid and fuzzy search behave, and how to write better queries.
+- [Recipes](recipes.md): project contexts, handoffs, logs, backups, CI.
+
+<div class="next-steps">
+
+**Next steps:** [Concepts](concepts.md) → [Command line](cli.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/concepts.md
+
+# Concepts
+
+Four ideas explain almost everything `mem` does: **memories**, **contexts**, the **global context**, and the **default file**.
+
+## Memory
+
+A memory is one markdown note. It has:
+
+- a stable **id** (for example `fxpkh7wubztw`), generated once and never reused;
+- an optional **name** such as `deploy/staging.md`, which is how you and your agent refer to it;
+- a **version** that goes up on every write;
+- optional **tags**;
+- a **body**, up to 1 MiB of markdown or plain text;
+- `updated_at` and `updated_by` metadata.
+
+A memory is not a chat log. It is a small, specific note: a decision and its reason, a preference, a gotcha, a runbook. One topic per note works best.
+
+### Names and unnamed memories
+
+Names are optional, lowercase, and use `/` as a folder separator:
+
+```text
+deploy/staging.md
+auth/token-refresh.md
+prefs/code-style.md
+```
+
+If you omit the extension, `.md` is added. If you omit the name entirely, the memory is stored under its id (`fxpkh7wubztw.md`) with `has_name=false`. Named memories are much easier to find by browsing, so give them names when you can.
+
+## Context
+
+A context is a folder of memories. Use one per project, or one per topic:
+
+```bash
+mem context create work
+```
+
+Real output:
+
+```text
+created context work
+```
+
+Contexts are created, expired and removed **only from the CLI, by you**. Agents using the MCP server can read and write memories, but they cannot create contexts. If an agent writes to a context that does not exist, the write fails; that is deliberate, so an agent cannot scatter folders across your disk.
+
+List them:
+
+```bash
+mem context ls
+```
+
+```text
+SLUG                     MEMORIES  CREATED           EXPIRES
+global                          1  2026-11-19 12:18  never
+handoff                         0  2026-11-19 12:18  2026-11-21 12:18
+work                            4  2026-11-19 12:16  never
+```
+
+Each context has a slug. A slug is 1–32 characters, lowercase letters, digits and single hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`). `global` is reserved.
+
+## The global context
+
+`global` always exists, never expires, and cannot be removed or expired:
+
+```bash
+mem context rm global --yes
+```
+
+```text
+mem: reserved: the global context cannot be removed
+hint: the global context always exists and cannot be removed or expired
+```
+
+Search always includes `global` as well as the context you ask for, unless you pass `--no-global`. That is what lets a preference saved once apply everywhere.
+
+Use `global` for knowledge about you or about all your work. Use a project context for knowledge about that project.
+
+## Temp contexts
+
+A temp context is an ordinary context with an expiry date. It is made for handing work between agents: one agent writes its working notes, the next agent reads them, and the context disappears when it is no longer needed.
+
+```bash
+mem context create handoff --expiry 2   # expires in 2 days
+mem context create scratch --temp       # uses the default expiry (7 days)
+mem context create                      # auto-named temp context, e.g. tmp-e8ob
+```
+
+Real output:
+
+```text
+created context handoff (expires 2026-11-21 12:18)
+created context scratch (expires 2026-11-26 12:18)
+created context tmp-e8ob (expires 2026-11-26 12:15)
+```
+
+Change or remove the expiry:
+
+```bash
+mem context expiry handoff 14
+mem context expiry handoff none
+```
+
+```text
+context handoff now expires 2026-12-03 12:15
+context handoff now expires never
+```
+
+An expired context behaves as if it does not exist: reads return "not found" and its memories are removed. Expiry is swept when commands and the dashboard run. If a note must survive, move it to a permanent context first.
+
+## The default file
+
+Every context has a default file, `readme.md`. The one in `global` is special: it is your standing instructions to agents, the same idea as an `AGENTS.md` or `CLAUDE.md`, but delivered through the MCP server.
+
+- When an MCP client connects, the server's `instructions` field contains this file.
+- `mem get` with no arguments prints this file, then the contexts, then the current context's memories.
+- The dashboard shows it as `global/readme.md`.
+
+Edit it like any other memory:
+
+```bash
+mem upsert --name readme.md --context global "Prefer small diffs. Ask before deleting files."
+```
+
+The default file cannot be deleted (`delete` refuses it), but you can overwrite it.
+
+## Versions and conflicts
+
+Every write bumps the version. That gives you optimistic concurrency: read a note, then write it back only if nobody changed it in between.
+
+```bash
+mem upsert --context work --name auth/token.md --if-version 2 "attempt"
+```
+
+```text
+mem: conflict: memory "t4epatooy5gv" is at version 1, not 2
+hint: fetch the memory again, then retry with the current --if-version
+```
+
+Exit code `4` means conflict. The fix is always the same: `get` the note again, merge your change, and retry with the version you just read. Never retry blindly with the old version.
+
+The same rule applies to agents through the MCP `upsert` tool's `if_version` argument.
+
+## Where files live
+
+Everything is under the data directory, which defaults to `~/.mem/data`:
+
+```text
+~/.mem/data/
+  contexts/
+    global/
+      readme.md
+    work/
+      deploy/staging.md
+      auth/token.md
+  index.db     # metadata: contexts, ids, versions, tags
+  search.db    # full-text and vector index, derived
+```
+
+The markdown files are the source of truth. `index.db` records the metadata, and `search.db` is a derived index you can rebuild with `mem sync`. Back up the whole data directory if you want everything; copying just `contexts/` gives you the notes themselves.
+
+## Limits worth knowing
+
+| Thing | Limit |
+|---|---|
+| Context slug | 1–32 characters, lowercase letters, digits, hyphens |
+| Memory name | up to 200 characters, `[a-z0-9._/-]`, lowercase |
+| Body | 1 MiB |
+| Tags | up to 20, each up to 64 characters |
+| Search `limit` (CLI/MCP/REST) | up to 50; default 8 |
+| Search `per-doc` (REST/CLI) | default 1 chunk per document |
+
+<div class="next-steps">
+
+**Next steps:** [How search works](search.md) → [Command line](cli.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/search.md
+
+# How search works
+
+`mem` combines keyword search and meaning-based search, then merges the results. By default it also tolerates typos and partial words.
+
+## Two searches, one list
+
+When you write a memory, `mem` splits it into small chunks at headings and paragraphs, then stores two things for each chunk:
+
+1. **Keywords.** A full-text index (SQLite FTS5 with BM25 ranking) records the words. This is why an exact error code, flag or function name is found reliably.
+2. **Meaning.** A small local embedding model (`bge-small-en-v1.5`) turns the text into a 384-dimensional vector. This is why "how long do access tokens last" can find a note that says "tokens expire after 15 minutes" without sharing those words.
+
+At query time both searches run, and their ranked lists are merged with a method called reciprocal rank fusion. The result is one list where a chunk can be strong on keywords, on meaning, or both. The `sources` field tells you which legs matched: `bm25` for keywords, `vec` for meaning, `name` for the memory's name, heading or tags, `fuzzy` for a typo or prefix expansion, and `rerank` when the optional reranker reordered the list.
+
+Reranking is **off by default**. When enabled, a second small model scores the top candidates against the query. In our tests the tiny reranker did not improve ranking enough to justify its memory and latency, so it is opt-in. See [Configuration](configuration.md#rerank).
+
+## Fuzzy matching is on by default
+
+Fuzzy matching is what makes search feel forgiving while you type. It adds three behaviors:
+
+- **Prefix expansion.** The last word is treated as a prefix, so `migrat` finds `migrations`.
+- **Typo tolerance.** A word close to a known word is expanded: `refrsh` finds `refresh`, `drivn` finds `driven`.
+- **Morphology.** The index uses Porter stemming, so `refresh`, `refreshing` and `refreshed` match each other.
+
+Names, path segments, headings and tags are searched too, which is why `deploy/staging.md` is easy to find by name.
+
+Exact matches always outrank fuzzy-only matches. A fuzzy hit is a suggestion, not a replacement. When a result matched only through fuzzy expansion, human output marks it with `~`.
+
+Real examples:
+
+```bash
+mem search refrsh --context work --limit 3
+```
+
+```text
+1. readme.md (global/eebfzjok4nhm) score=0.0933 [vec,fuzzy]
+   matched: refresh
+   ...
+2. auth/token.md (work/t4epatooy5gv) score=0.0723 [vec,fuzzy,name]
+   matched: toke, token
+   Access tokens expire after 15 minutes; refresh tokens last 30 days.
+```
+
+```bash
+mem search "table drivn tests" --context work --limit 3
+```
+
+```text
+2. prefs/code-style.md (work/y5maamtampm2) score=0.0812 [vec,bm25,fuzzy]
+   matched: table, tests, tabl, driven, test
+   Prefer small pure functions and table-driven Go tests. No comments unless they explain why.
+```
+
+## Turning fuzzy matching off
+
+Every surface has a switch. All of them default to on.
+
+| Where | How to turn it off |
+|---|---|
+| CLI, one query | `mem search ... --no-fuzzy` |
+| CLI, force on for one query | `mem search ... --fuzzy` |
+| MCP server default | `mem mcp --no-fuzzy` |
+| MCP `search` tool, one call | `"fuzzy": false` |
+| Saved config | `mem config search_fuzzy false` |
+| REST `GET /api/search` | `fuzzy=0` |
+
+For contrast, the same typo query with fuzzy off:
+
+```bash
+mem search "databse migratons" --context work --no-fuzzy
+```
+
+```text
+3. db/migrations.md (work/wi67lnntnaq5) score=0.0667 [vec]
+   Schema changes go through goose migrations in db/migrations; never edit the live schema by hand.
+```
+
+The note is still found (the vector leg and the name help), but the keyword leg no longer guesses. Use `--no-fuzzy` when you need exact-word precision or when fuzzy results are noisy.
+
+## Writing queries that work
+
+- **Ask like a colleague.** "how do we deploy the staging API" works better than `deploy`.
+- **Add exact identifiers when you have them.** Error codes, flags, function names, ticket ids and configuration keys are matched literally and are the strongest signal you can give.
+- **Start narrow, then widen.** Search one context first. If you get nothing, drop `--context` or raise `--limit`.
+- **Prefer the words the note would contain.** The embedding model is small; a paraphrase is fine, but a completely different vocabulary may miss.
+- **Name your notes.** A good name (`auth/token-refresh.md`) is indexed and often decides the match.
+- **Keep one topic per note.** A short note has a clear vector; a long mixed note has an average of everything.
+
+## Why a note may not be found
+
+- **It is not indexed yet.** If the embedder was down when you wrote it, keyword search still works and `mem status` shows pending vectors. Run `mem sync`.
+- **You searched the wrong scope.** Search covers `global` plus the context you pass. A note in `work` is invisible when you search only `global`; a note in `global` is hidden by `--no-global`.
+- **The context expired.** A temp context disappears with its notes. `mem context ls` shows what still exists.
+- **Fuzzy is off and the query has a typo.** Either fix the spelling or drop `--no-fuzzy`.
+- **The words are too generic.** `the`, `fix`, `error` match many chunks; add a distinctive term.
+- **The result is below the limit.** Raise `--limit` (max 50) or use `--per-doc` to see more chunks of the same document.
+- **You edited the markdown by hand.** The files are the source of truth, but the index is derived. Run `mem sync` to pick up external edits.
+
+## Speed
+
+Search runs locally. On the corpus used for benchmarking (real Go source, 39,000 and 200,000 chunks), the search pipeline measured **10 ms p50 / 26 ms p95** at 39k chunks and **51 ms p50 / 150 ms p95** at 200k, including embedding the query. The first query after the model server has stopped pays a one-time model start of a few hundred milliseconds.
+
+<div class="next-steps">
+
+**Next steps:** [Dashboard](dashboard.md) → [Recipes](recipes.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/skill.md
+
+# The agent skill
+
+The MCP server gives an agent four tools. The **skill** teaches it when and how to use them. Connecting the server without the skill works, but the agent may never think to search before asking you a question it could have answered itself.
+
+## Install it
+
+With Node.js:
+
+```bash
+npx skills add 07prajwal2000/memory
+```
+
+This is the normal route and the one the agent-skill ecosystem uses. If you do not have Node, the same text is embedded in the `mem` binary:
+
+```bash
+mem skill --install --agent claude-code
+```
+
+Real output from a project directory:
+
+```text
+installed ...\.claude\skills\mem\SKILL.md
+```
+
+Run it again:
+
+```text
+...\.claude\skills\mem\SKILL.md: already up to date
+```
+
+Useful flags:
+
+| Flag | Meaning |
+|---|---|
+| `--install` | Write the skill file instead of printing it |
+| `--global` | Install under your home directory instead of the current project |
+| `--agent NAME` | Target one agent; repeatable. Without it, detected agents are used |
+| `--force` | Overwrite a skill file whose contents differ |
+
+Supported agent names: `claude-code` (alias `claude`), `command-code`, `universal` (aliases `amp`, `replit`, `codex`, `cline`, `agents`, `kimi-code-cli`, `warp`, `zed`), `antigravity`, `opencode`, `cursor`, `gemini-cli` (alias `gemini`), `github-copilot` (alias `copilot`).
+
+Where the file goes depends on the agent: for example `.claude/skills/mem/SKILL.md`, `.commandcode/skills/mem/SKILL.md`, or `.agents/skills/mem/SKILL.md` for the universal format. With `--global` the same paths are resolved under your home directory.
+
+If no supported agent is detected in the current directory and you did not pass `--agent`, nothing is written:
+
+```text
+no supported agents detected; use --agent <name> to install anyway or run `npx skills add <owner>/<repo>`
+```
+
+## Print it or inspect it
+
+```bash
+mem skill
+```
+
+prints the markdown. And:
+
+```bash
+mem skill --json
+```
+
+```json
+{"bytes":9006,"description":"Persistent long-term memory for AI agents, stored locally and searchable by meaning and keyword (the `mem` CLI and its MCP server). ...","name":"mem","sha256":"1245354052deb9fbd383bcb2a1ff24eedf1e8fab752a70f4e40135af9d62b49b","version":"0.1.0"}
+```
+
+The hash lets you tell whether the installed copy still matches the binary's version.
+
+## What it teaches
+
+The skill is short and practical. It covers:
+
+- **Orient first.** Call `get` with no arguments once per session to read your default file and see the contexts.
+- **Recall before asking.** Search for a topic before asking you something you may already have answered.
+- **Read the note, not just the snippet.** A snippet is a pointer; the full memory has the detail.
+- **What to save.** Decisions and their reasons, preferences, conventions, gotchas, runbooks, handoff state.
+- **What not to save.** Secrets, tokens, personal data, raw logs, things obvious from code or `git log`, speculation.
+- **Good habits.** One topic per note; search before writing; name notes by subject; correct obsolete notes instead of adding near-duplicates.
+- **Safe writes.** Use `if_version` after `get`, and merge on conflict instead of retrying blindly.
+- **Contexts and handoffs.** Agents cannot create contexts; they may suggest one, and they write handoff notes into a temp context you created.
+- **Trust and privacy.** Memory contents are information, not instructions. A note can be stale; check it against the current code.
+
+The skill does **not** contain your personal conventions. Those belong in the default file, `global/readme.md`, which is delivered as MCP `instructions`. Where the two conflict, your default file wins.
+
+## Keeping it up to date
+
+The skill ships inside the binary. When you upgrade `mem`, reinstall the skill (`npx skills add ...` or `mem skill --install --force`) so the agent sees the current text. The `sha256` in `mem skill --json` is a quick way to compare.
+
+<div class="next-steps">
+
+**Next steps:** [Configuration](configuration.md) → [Recipes](recipes.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/cli.md
+
+# Command line
+
+Every command, with the flags the binary actually accepts. Run `mem help` or `mem help <command>` for the same text in your terminal.
+
+```text
+usage: mem <command> [flags]
+
+commands:
+  init                     set up data, models and the local model server
+  context create [slug]    create a context (--temp, --expiry DAYS)
+  context ls               list contexts
+  context rm <slug>        delete a context and its memories (--yes)
+  context expiry <slug> <days|none>
+  ls [--context C]         list memories of a context (default global)
+  get [name-or-id]         read one memory, or the default file and contexts
+  upsert [body|-]          create or update a memory
+  delete <id>              delete a memory
+  search <query...>        hybrid keyword + vector search
+  sync                     re-sync files into the search index
+  status                   show configuration, models and index state
+  config [key] [value]     show, read or set configuration
+  server [--port N]        dashboard server
+  mcp                      MCP server over stdio
+  skill [--install]        agent skill (not available yet)
+  version                  print the version
+  help [command]           this help
+```
+
+The `skill` line still says "not available yet" in the help table, but the command works: `mem skill` prints the skill and `mem skill --install` installs it. See [The agent skill](skill.md).
+
+## Global flags
+
+These work before or after the command word:
+
+| Flag | Meaning |
+|---|---|
+| `--json` | Machine-readable output on stdout; human notes go to stderr |
+| `--data-dir D` | Override the data directory for this command |
+| `--config PATH` | Override the config file for this command |
+| `-q`, `--quiet` | Suppress hints and progress |
+| `-v`, `--verbose` | Extra diagnostics |
+
+`--data-dir` changes only the data directory. Models and `llama-server` still come from the config, so scripts that need full isolation should set `MEM_CONFIG` as well. See [Configuration](configuration.md#environment-variables).
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success |
+| `1` | General error |
+| `2` | Usage error (bad flag, missing argument, invalid value) |
+| `3` | Not found (memory or context does not exist) |
+| `4` | Conflict or version mismatch, or a reserved thing was refused |
+
+With `--json`, an error still exits non-zero and prints one object on stdout:
+
+```json
+{"code":3,"error":"not found: memory \"missing.md\" does not exist in context \"work\"","hint":"run `mem ls` to list the memories in that context"}
+```
+
+The same line goes to stderr as `mem: ...`, followed by `hint:`.
+
+## `mem init`
+
+```text
+mem init [--yes] [--force] [--data-dir D] [--models-dir D] [--port N] [--expiry DAYS]
+         [--idle-timeout SECONDS] [--with-rerank] [--no-download] [--offline-dir D]
+```
+
+| Flag | Meaning |
+|---|---|
+| `--yes` | Take defaults and any flags you pass; skip the questions |
+| `--force` | Reinstall the model server and models even if they look valid |
+| `--data-dir D` | Where memories, `index.db` and `search.db` live |
+| `--models-dir D` | Where model files live; `llama-server` goes in the sibling `bin/` |
+| `--port N` | Dashboard port saved in the config |
+| `--expiry DAYS` | Default lifetime for temp contexts |
+| `--idle-timeout SECONDS` | How long the model server may sit idle before it stops |
+| `--with-rerank` | Also install the optional reranker model |
+| `--no-download` | Configure and seed only; make no network requests |
+| `--offline-dir D` | Install from a local folder instead of the network |
+
+`mem init` is idempotent. It never deletes data, and it writes `sidecar_path` into the config after a successful install. [Quick start](quickstart.md#2-run-mem-init) shows the full output.
+
+## `mem context`
+
+```text
+mem context create [slug] [--temp] [--expiry DAYS] | ls | rm <slug> [--yes] | expiry <slug> <days|none>
+```
+
+Create:
+
+```bash
+mem context create work
+mem context create handoff --expiry 2
+mem context create scratch --temp
+mem context create
+```
+
+```text
+created context work
+created context handoff (expires 2026-11-21 12:18)
+created context scratch (expires 2026-11-26 12:18)
+created context tmp-e8ob (expires 2026-11-26 12:15)
+```
+
+No slug means an auto-named temp context (`tmp-xxxx`). `--expiry` without `--temp` also implies a temp context. `--expiry 0` or a negative value is a usage error.
+
+List:
+
+```bash
+mem context ls
+```
+
+```text
+SLUG                     MEMORIES  CREATED           EXPIRES
+global                          1  2026-11-19 12:18  never
+handoff                         0  2026-11-19 12:18  2026-11-21 12:18
+work                            4  2026-11-19 12:16  never
+```
+
+Remove:
+
+```bash
+mem context rm handoff --yes
+```
+
+```text
+deleted context handoff (0 memories)
+```
+
+Without `--yes` on a terminal, `rm` asks you to type the slug. `global` cannot be removed (exit `4`).
+
+Change expiry:
+
+```bash
+mem context expiry work 14
+mem context expiry work none
+```
+
+```text
+context work now expires 2026-12-03 12:15
+context work now expires never
+```
+
+## `mem ls`
+
+```text
+mem ls [--context C] [--limit N]
+```
+
+Lists memories without bodies. Default context is `global`.
+
+```bash
+mem ls --context work
+```
+
+```text
+NAME                                     ID           VERSION  UPDATED
+db/migrations.md                         wi67lnntnaq5       1  2026-11-19 12:16
+deploy/staging.md                        fxpkh7wubztw       1  2026-11-19 12:16
+auth/token.md                            t4epatooy5gv       1  2026-11-19 12:16
+```
+
+`--limit 0` or no limit lists everything (the CLI's own default).
+
+JSON:
+
+```json
+[{"context":"work","id":"wi67lnntnaq5","name":"db/migrations.md","tags":["db"],"updated_at":"2026-11-19T12:16:19Z","updated_by":"cli","version":1}]
+```
+
+## `mem get`
+
+```text
+mem get [name-or-id] [--context C]
+```
+
+Read one memory by name or id:
+
+```bash
+mem get deploy/staging.md --context work
+```
+
+```text
+---
+# deploy/staging.md (fxpkh7wubztw, v1, updated 2026-11-19 12:16 by cli)
+# tags: deploy
+---
+Deploys run from the release branch only. Staging lives at https://staging.example.internal.
+```
+
+With no arguments, `get` prints the default file, the contexts, and the current context's memories. This is what an agent calls to orient itself:
+
+```bash
+mem get
+```
+
+```text
+# Memory
+
+This store keeps long-term memory for AI agents as markdown files. ...
+
+## Contexts
+
+* global                      1 memories  expires never
+  work                        4 memories  expires never
+
+## Memories in global
+
+readme.md                                eebfzjok4nhm v1
+```
+
+The `*` marks the current context.
+
+## `mem upsert`
+
+```text
+mem upsert [--context C] [--name N] [--id ID] [--tag T]... [--append]
+           [--if-version V] [--by WHO] [body | -]
+```
+
+| Flag | Meaning |
+|---|---|
+| `--context C` | Target context; defaults to `global` |
+| `--name N` | Update-or-create by name inside the context |
+| `--id ID` | Update (and optionally rename) an existing memory |
+| `--tag T` | Add a tag; repeat the flag for several tags |
+| `--append` | Add to the end instead of replacing |
+| `--if-version V` | Write only if the current version equals `V` |
+| `--by WHO` | Record who wrote it (default `cli`) |
+
+Resolution order is **id**, then **name**, then create an unnamed memory. A body can be an argument or stdin:
+
+```bash
+mem upsert --context work --name auth/token.md --tag auth --by alice \
+  "Access tokens expire after 15 minutes; refresh tokens last 30 days."
+```
+
+```text
+t4epatooy5gv v1 (work/auth/token.md)
+```
+
+Multi-line body from stdin (use `-`, or omit the argument with piped input):
+
+```bash
+cat <<'EOF' | mem upsert --context work --name release/checklist.md -
+# Release checklist
+
+- run tests
+- tag the commit
+EOF
+```
+
+```text
+n37iccu7dqwn v1 (work/release/checklist.md)
+```
+
+Append a line to a log:
+
+```bash
+echo "- 09:00 started migration" | mem upsert --context work --name status/log.md --append -
+```
+
+```text
+4cx2snmck2m2 v1 (work/status/log.md)
+```
+
+Writing to an unknown context fails with exit `3` and a hint to create it.
+
+## `mem delete`
+
+```text
+mem delete <id>
+```
+
+```bash
+mem delete y5maamtampm2
+```
+
+```text
+deleted y5maamtampm2
+```
+
+Takes an **id**, not a name. Find the id with `mem ls` or `mem search`. The default file `global/readme.md` cannot be deleted. A malformed id is a usage error (exit `2`); a well-formed id that does not exist is not found (exit `3`).
+
+## `mem search`
+
+```text
+mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N] [--fuzzy] [--no-fuzzy]
+```
+
+| Flag | Meaning |
+|---|---|
+| `--context C` | Also search this context |
+| `--no-global` | Exclude `global`; requires `--context` |
+| `--limit N` | Number of results (default 8, max 50) |
+| `--per-doc N` | Chunks per document (default 1) |
+| `--fuzzy` / `--no-fuzzy` | Force fuzzy matching on or off for this query |
+
+```bash
+mem search "where do deploys run" --context work --no-global --limit 2
+```
+
+```text
+1. deploy/staging.md (work/fxpkh7wubztw) score=0.1013 [vec,bm25,name]
+   matched: deploys, run, deploy
+   Deploys run from the release branch only. Staging lives at https://staging.example.internal.
+2. release/checklist.md (work/n37iccu7dqwn) score=0.0900 [vec,bm25]
+   matched: run
+   # Release checklist
+
+   - run tests
+   - tag the commit
+```
+
+Notes printed with `note:` (for example "embedder unavailable") mean search ran in a reduced mode. [How search works](search.md) explains the brackets, the scores and fuzzy matching.
+
+JSON:
+
+```json
+{"degraded":null,"hits":[{"chunk":2,"context":"global","heading":"# Memory > ## Conventions","id":"5py22udtiqgp","matched_terms":["token","refresh"],"name":"readme.md","score":0.09757575757575758,"snippet":"## Conventions\n\n- One topic per memory...","sources":["vec","bm25"]},{"chunk":0,"context":"work","heading":"","id":"z54l6mnsc7te","matched_terms":["token","refresh"],"name":"auth/token.md","score":0.0818262987012987,"snippet":"Access tokens expire after 15 minutes; refresh tokens last 30 days.","sources":["vec","bm25","name"]}],"took_ms":224.838}
+```
+
+`degraded` is `null` when both search legs worked, or a list of human-readable notices otherwise.
+
+## `mem sync`
+
+```text
+mem sync
+```
+
+Rebuilds the search index from the files. Use it after an embedder outage, after editing files by hand, or when `mem status` says the index is out of sync.
+
+```bash
+mem sync
+```
+
+```text
+index 1/4 global/eebfzjok4nhm
+index 2/4 work/fxpkh7wubztw
+index 3/4 work/t4epatooy5gv
+index 4/4 work/wi67lnntnaq5
+
+synced 4 documents: 0 added, 0 updated, 0 removed, 4 unchanged, 0 pending vectors filled (0.0s)
+```
+
+Progress goes to stderr; the summary goes to stdout. `-q` silences the progress, `--json` gives you the summary as an object.
+
+## `mem status`
+
+```text
+mem status
+```
+
+Shows version, config path, data directory, counts, index state, and whether the models and the model server are present and valid. It never starts the model.
+
+```bash
+mem status
+```
+
+```text
+mem 0.1.0
+config      ...\demo\config.toml
+data dir    ...\demo\data
+contexts    2
+memories    4
+indexed     4 documents (in sync)
+ok          embedding ...\full\models\bge-small-en-v1.5-q8_0.gguf
+ok          llama-server ...\full\bin\llama-server.exe
+reranker    off (opt-in)
+```
+
+If something is missing or damaged, the lines read `missing` or `broken` and a `fix` line tells you to run `mem init --force`. [Troubleshooting](troubleshooting.md#mem-status-says-the-model-server-is-broken) covers the repair.
+
+## `mem config`
+
+```text
+mem config [key] [value]
+```
+
+```bash
+mem config                     # every setting
+mem config port                # one value
+mem config port 7812           # set and save
+```
+
+```text
+7812
+port = 7812
+```
+
+Values are validated before they are saved. [Configuration](configuration.md) lists every key.
+
+## `mem server`
+
+```text
+mem server [--port N] [--host H] [--allowed-host HOST] [--token T|--token-file F] [--open]
+```
+
+Starts the dashboard. Default `http://127.0.0.1:7777`. See [Dashboard](dashboard.md) for the screens and security model.
+
+## `mem mcp`
+
+```text
+mem mcp [--no-fuzzy] [--fuzzy]
+```
+
+Serves the Model Context Protocol on stdin/stdout. Protocol messages are the only thing on stdout; logs go to stderr. See [MCP server](mcp.md).
+
+## `mem skill`
+
+```text
+mem skill [--install] [--global] [--agent NAME]... [--force]
+```
+
+Without `--install`, prints the skill markdown. With `--install`, writes it to the agent directories it detects in the current project, or to the ones you name with `--agent`. `--global` uses your home directory. See [The agent skill](skill.md).
+
+## `mem version` and `mem help`
+
+```bash
+mem version
+mem version --json
+```
+
+```text
+mem 0.1.0 (go windows/amd64, go1.27.0)
+{"arch":"amd64","go":"go1.27.0","name":"mem","os":"windows","version":"0.1.0"}
+```
+
+```bash
+mem help
+mem help upsert
+```
+
+`help` exits `0`, including for a command with no extra help text.
+
+## Using `--json` in scripts
+
+With `--json`, stdout is exactly one JSON value, so it pipes cleanly:
+
+```bash
+mem search "deploy branch" --context work --json | jq '.hits[] | {name, score}'
+```
+
+Errors keep the same contract:
+
+```bash
+mem --json get missing.md --context work
+```
+
+```json
+{"code":3,"error":"not found: memory \"missing.md\" does not exist in context \"work\"","hint":"run `mem ls` to list the memories in that context"}
+```
+
+Check the exit code, not the presence of output. A search with no hits is still a success (`0`) and returns `{"hits":[],...}`.
+
+<div class="next-steps">
+
+**Next steps:** [MCP server](mcp.md) → [Configuration](configuration.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/mcp.md
+
+# MCP server
+
+`mem mcp` is a Model Context Protocol server over stdin/stdout. Your agent starts it, asks what tools exist, and calls them. You never call the tools yourself; you just connect the server once.
+
+MCP is the small protocol that lets a program expose tools to an AI agent. `mem` speaks it directly, so anything that can launch a child process and exchange JSON-RPC lines can use it.
+
+## Connect it
+
+The [quick start](quickstart.md#4-connect-your-agent) has the exact commands. In short, for Claude Code:
+
+```bash
+claude mcp add mem -- mem mcp
+```
+
+or, for clients configured with an `mcpServers` block:
+
+```json
+{
+  "mcpServers": {
+    "mem": { "command": "mem", "args": ["mcp"] }
+  }
+}
+```
+
+Restart the agent after changing its MCP configuration.
+
+## What the agent sees
+
+On `initialize`, the server reports its name and version and sends your default file as `instructions`. Real response, with the middle of the instructions shortened:
+
+```json
+{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"mem","version":"0.1.0"},"instructions":"Persistent memory shared across your sessions, stored locally.\nTools: search, get, upsert, delete. The text below is the user's own global instructions file; follow it.\n\n# Memory\n\nThis store keeps long-term memory for AI agents as markdown files. ...\n"}}
+```
+
+That means your standing instructions in `global/readme.md` reach every agent that connects, without anyone pasting them into a chat.
+
+Then the agent asks for the tool list. There are exactly four tools.
+
+## `search`
+
+Search the `global` context plus the context you name. Use it to recall decisions, preferences and past work.
+
+| Argument | Type | Required | Meaning |
+|---|---|---|---|
+| `query` | string | yes | What to look for |
+| `context` | string | no | Also search this context |
+| `no_global` | boolean | no | Exclude `global`; requires `context` |
+| `limit` | integer | no | 1–50, default 8 |
+| `fuzzy` | boolean | no | Default `true`; set `false` for exact-word precision |
+
+Example call:
+
+```json
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"search","arguments":{"query":"which port does the dashboard use","context":"work","limit":2}}}
+```
+
+Real result:
+
+```json
+{"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"1. work/mcp/note.md (id: a4z4ik46dk3n, chunk 0, score 0.098)\nmatched: port, the, dashboard\nThe dashboard defaults to port 7777 and binds to 127.0.0.1.\n\n2. work/status/log.md (id: 4cx2snmck2m2, chunk 0, score 0.083)\n- 09:00 started migration\n- 09:40 step 2 done\n\ntook_ms: 222"}],"structuredContent":{"degraded":null,"hits":[{"id":"a4z4ik46dk3n","doc_id":"a4z4ik46dk3n","context":"work","name":"mcp/note.md","heading":"","snippet":"The dashboard defaults to port 7777 and binds to 127.0.0.1.","chunk":0,"score":0.09818181818181819,"sources":["vec","bm25"],"matched_terms":["port","the","dashboard"]},{"id":"4cx2snmck2m2","doc_id":"4cx2snmck2m2","context":"work","name":"status/log.md","heading":"","snippet":"- 09:00 started migration\n- 09:40 step 2 done","chunk":0,"score":0.08333333333333333,"sources":["vec"],"matched_terms":[]}],"took_ms":222}}}
+```
+
+The `content` text is for the model to read. `structuredContent` is the same data in a typed shape for clients that prefer it.
+
+## `get`
+
+Retrieve one memory, list a context, or orient.
+
+| Argument | Type | Required | Meaning |
+|---|---|---|---|
+| `id` | string | no | Stable id; mutually exclusive with `name` |
+| `name` | string | no | Memory name inside a context |
+| `context` | string | no | Scope for `name`; alone, lists that context |
+
+The three useful shapes:
+
+- **No arguments**: default file plus every live context. The agent's first call in a session.
+- **`context` only**: that context's memories (name, id, version, size).
+- **`id`** or **`name` + `context`**: one full note, including the metadata header.
+
+Real no-argument result, shortened:
+
+```json
+{"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"# Memory\n\nThis store keeps long-term memory for AI agents as markdown files. ...\n\n---\n## Live Contexts\n- global (permanent, 1 memories)\n- work (permanent, 6 memories)"}],"structuredContent":{"contexts":[{"slug":"global","is_global":true,"created_at":"2026-11-19T12:16:48Z","expires_at":null,"memory_count":1},{"slug":"work","is_global":false,"created_at":"2026-11-19T12:16:54Z","expires_at":null,"memory_count":6}],"default_file":{"body":"# Memory\n...","context":"global","id":"eebfzjok4nhm","name":"readme.md","tags":["system"],"updated_at":"2026-11-19T12:16:48Z","updated_by":"mem","version":1}}}}}
+```
+
+## `upsert`
+
+Create or update a memory. This is the only write tool besides `delete`.
+
+| Argument | Type | Required | Meaning |
+|---|---|---|---|
+| `body` | string | yes | Markdown content, up to 1 MiB |
+| `context` | string | no | Target context; default `global` |
+| `name` | string | no | Update-or-create by name |
+| `id` | string | no | Update (and optionally rename) an existing memory |
+| `tags` | array | no | Up to 20 tags, each up to 64 characters |
+| `append` | boolean | no | Add to the end instead of replacing |
+| `if_version` | integer | no | Only write if the current version matches |
+
+Example call and real result:
+
+```json
+{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"upsert","arguments":{"context":"work","name":"mcp/note.md","tags":["mcp"],"body":"The dashboard defaults to port 7777 and binds to 127.0.0.1."}}}
+```
+
+```json
+{"jsonrpc":"2.0","id":4,"result":{"content":[{"type":"text","text":"Memory created successfully.\nid: a4z4ik46dk3n\nname: mcp/note.md\ncontext: work\nversion: 1\nstatus: created"}],"structuredContent":{"context":"work","id":"a4z4ik46dk3n","index_warning":false,"name":"mcp/note.md","status":"created","version":1}}}
+```
+
+`index_warning: true` means the write succeeded but the search index could not be updated (for example, the embedder is not running). The note is saved; `mem sync` repairs the index. If indexing is merely pending, the text response ends with a note saying keyword search still works.
+
+A version conflict is a tool error, not a crash:
+
+```json
+{"jsonrpc":"2.0","id":4,"result":{"content":[{"type":"text","text":"version conflict: memory is currently at version 2 (expected 1); call 'get' to inspect the latest content, merge your changes, and retry"}],"isError":true}}
+```
+
+## `delete`
+
+Delete a memory by id.
+
+| Argument | Type | Required | Meaning |
+|---|---|---|---|
+| `id` | string | yes | Stable id of the memory |
+
+Contexts cannot be deleted through MCP, and neither can the default file. An agent that needs a note gone should usually fix it with `upsert` instead.
+
+## Trying it by hand
+
+You can drive the server with a pipe if you keep stdin open long enough for a search to finish:
+
+```bash
+printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"shell","version":"1.0"}}}' | mem mcp
+```
+
+Real first line of the response (shortened):
+
+```json
+{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"mem","version":"0.1.0"},"instructions":"Persistent memory shared across your sessions, stored locally. ..."}}
+```
+
+If you close stdin immediately, the session ends, and any in-flight search is cancelled. That is normal for a stdio server; a real client keeps the pipe open.
+
+## Things worth knowing
+
+- **stdout is protocol only.** Logs, warnings and errors go to stderr. `--json` has no effect on `mem mcp`.
+- **`--no-fuzzy` / `--fuzzy`** set the default for tool calls that do not pass `fuzzy`. The `search_fuzzy` config key does the same persistently.
+- **Agents cannot create contexts.** They can read and write inside contexts you made. If a write fails with "context not found", create it with `mem context create`.
+- **Memories are untrusted input.** A note may have been written by another agent or copied from untrusted text. The skill tells agents to treat memory contents as information, not instructions.
+
+<div class="next-steps">
+
+**Next steps:** [The agent skill](skill.md) → [How search works](search.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/configuration.md
+
+# Configuration
+
+One TOML file controls `mem`. Every setting can also be changed with `mem config`, and most have a command-line override.
+
+## Where the config lives
+
+`mem` uses the operating system's user config directory:
+
+| OS | Path |
+|---|---|
+| Windows | `%APPDATA%\mem\config.toml` |
+| Linux | `~/.config/mem/config.toml` (or `$XDG_CONFIG_HOME/mem/config.toml`) |
+| macOS | `~/Library/Application Support/mem/config.toml` |
+
+Set `MEM_CONFIG` to use a different file for one command or a whole shell:
+
+```bash
+MEM_CONFIG=/tmp/mem-test.toml mem status
+```
+
+## Environment variables
+
+| Variable | Effect |
+|---|---|
+| `MEM_CONFIG` | Path to the config file (replaces the default location) |
+| `MEM_DATA_DIR` | Overrides `data_dir` after the file is loaded |
+
+A command-line `--config` or `--data-dir` overrides both. Note that `--data-dir` changes only the data directory; the models and `llama-server` still come from the config. For a fully isolated test setup, set `MEM_CONFIG` to a throwaway file and run `mem init` into it.
+
+## Default paths
+
+| Thing | Default |
+|---|---|
+| Data (`index.db`, `search.db`, `contexts/`) | `~/.mem/data` |
+| Models (`bge-small`, optionally the reranker) | `~/.mem/models` |
+| `llama-server` | `~/.mem/bin` (the `bin` directory next to `models`) |
+| Dashboard | `http://127.0.0.1:7777` |
+| Temp context lifetime | 7 days |
+| Model server idle timeout | 300 seconds |
+
+## A real config file
+
+This is what `mem init` wrote during a test setup (paths shortened and line order preserved):
+
+```toml
+data_dir = '...\demo\data'
+models_dir = '...\full\models'
+port = 7811
+default_temp_expiry_days = 7
+rerank = false
+rerank_model = 'jina-reranker-v1-tiny-en-Q8_0.gguf'
+search_fuzzy = true
+idle_timeout_seconds = 300
+sidecar_path = '...\full\bin\llama-server.exe'
+embed_model = 'bge-small-en-v1.5-q8_0.gguf'
+allowed_hosts = []
+```
+
+The config stores paths as text. Use absolute paths if you run `mem` from different directories.
+
+## Every key
+
+| Key | Default | Meaning |
+|---|---|---|
+| `data_dir` | `~/.mem/data` | Memories and the two databases |
+| `models_dir` | `~/.mem/models` | Model files; `llama-server` lives in the sibling `bin/` |
+| `port` | `7777` | Dashboard port |
+| `default_temp_expiry_days` | `7` | Default lifetime of a temp context |
+| `idle_timeout_seconds` | `300` | Stop the model server after this much idle time |
+| `embed_model` | `bge-small-en-v1.5-q8_0.gguf` | Embedding model file inside `models_dir` |
+| `rerank` | `false` | Enable the optional reranker |
+| `rerank_model` | `jina-reranker-v1-tiny-en-Q8_0.gguf` | Reranker file inside `models_dir` |
+| `sidecar_path` | installed path | Explicit path to `llama-server`; wins over the default location |
+| `allowed_hosts` | empty | Extra `Host` values the dashboard may serve (tunnels, reverse proxies) |
+| `search_fuzzy` | `true` | Default fuzzy matching for CLI, MCP and REST search |
+
+Read or change them with:
+
+```bash
+mem config
+mem config port
+mem config port 7812
+```
+
+```text
+7812
+port = 7812
+```
+
+`mem config` validates values before saving and writes the file atomically. The full key list from a real run:
+
+```text
+data_dir                 ...\demo\data
+models_dir               ...\full\models
+port                     7777
+default_temp_expiry_days 7
+idle_timeout_seconds     300
+embed_model              bge-small-en-v1.5-q8_0.gguf
+rerank                   false
+rerank_model             jina-reranker-v1-tiny-en-Q8_0.gguf
+sidecar_path
+allowed_hosts
+search_fuzzy             true
+```
+
+## Models
+
+`mem` uses two small GGUF models, both downloaded by `mem init` and both optional in the sense that `mem` still works without them (with reduced search).
+
+| Model | Size | Dimensions | Used for |
+|---|---|---|---|
+| `bge-small-en-v1.5-q8_0.gguf` | ~35 MB | 384 | Embedding memories and queries |
+| `jina-reranker-v1-tiny-en-Q8_0.gguf` | ~35 MB | — | Optional reranking of search candidates |
+
+They run through `llama-server`, a local HTTP server that `mem` starts on demand and stops after the idle timeout. Nothing is sent to a remote service.
+
+The embedding model is required for semantic (`vec`) search. Without it, search is keyword-only and says so. The reranker is never required.
+
+## Rerank
+
+Reranking takes the top search candidates and asks a second model to score them against the query. It is **off by default**.
+
+We tested the tiny reranker and it did not beat plain fusion enough to justify the extra model, memory and latency. It is there if you want to experiment:
+
+```bash
+mem init --with-rerank
+mem config rerank true
+```
+
+The status surfaces show `rerank: disabled` when it is off and a normal model state when it is on. If you enable reranking but the model is missing, `mem status` says so.
+
+## Idle timeout
+
+`llama-server` costs a few hundred milliseconds to start. `mem` keeps it running while it is useful and stops it after `idle_timeout_seconds` (default 300) of inactivity. The next search or write starts it again.
+
+This is why the first search in a fresh CLI process can take longer than the next one, and why a long-lived MCP server is faster than a sequence of one-shot commands: it reuses the same model process.
+
+## Dashboard hosts and tokens
+
+`allowed_hosts` is the config form of `mem server --allowed-host`:
+
+```toml
+allowed_hosts = ["my-tunnel.ngrok-free.app"]
+```
+
+If any configured host is non-loopback, `mem server` requires a token (`--token` or `--token-file`). See [Dashboard](dashboard.md#running-behind-a-tunnel).
+
+## Precedence
+
+When more than one source sets a value, the most specific wins:
+
+1. A command-line flag (`--data-dir`, `--port`, `--config`).
+2. An environment variable (`MEM_CONFIG`, `MEM_DATA_DIR`).
+3. The config file.
+4. Built-in defaults.
+
+<div class="next-steps">
+
+**Next steps:** [Dashboard](dashboard.md) → [Troubleshooting](troubleshooting.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/dashboard.md
+
+# Dashboard
+
+`mem server` starts a local web app for browsing and editing your memories. It is the same data the CLI and agents use, with a markdown editor and a search box.
+
+```bash
+mem server
+```
+
+```text
+mem dashboard listening on http://127.0.0.1:7777
+```
+
+Open that address. Use `--open` to launch your browser automatically, and `--port N` to choose another port (the config default is `7777`).
+
+## A short tour
+
+- **Contexts sidebar.** Every live context, with its memory count and expiry. `global` is always first. Selecting a context shows its default file and memories.
+- **Memory list.** Name, version, size and last update. You can open a memory or create a new one.
+- **Markdown editor.** Edit the body and save with `Ctrl+S` (`Cmd+S` on macOS). The editor tracks the version you loaded, so two editors cannot silently overwrite each other.
+- **Version conflict dialog.** If someone else saved first, the save is rejected with a conflict, and the dialog offers to copy your text, reload theirs, or overwrite with yours.
+- **Search.** `Ctrl+K` (`Cmd+K`) opens the search spotlight. The full search page shows timings and any degraded-search notice.
+- **Status page.** Version, data directory, index sync state, and whether the embedding and rerank models are stopped, starting, ready, disabled, or in error.
+
+Real response from the status page's API:
+
+```json
+{"version":"0.1.0","data_dir":"...\\demo\\data","uptime_s":3,"config":{"default_temp_expiry_days":7,"rerank":false},"models":{"embed":{"state":"stopped"},"rerank":{"enabled":false,"state":"disabled"}},"index":{"docs":7,"chunks":9,"in_sync":true,"pending":0}}
+```
+
+`state: "stopped"` is normal until something needs an embedding. The dashboard does not start the model just to show status.
+
+The dashboard is mobile-friendly: below tablet width the sidebar becomes a navigation drawer.
+
+## Security model
+
+The server is safe by default because it is meant to run on your machine, not on the internet.
+
+- **Loopback only by default.** It binds `127.0.0.1`, so other machines cannot reach it.
+- **Host checking.** Requests must carry a `Host` header for a local host (`127.0.0.1`, `localhost`, `[::1]`) or a host you explicitly allow. This blocks DNS-rebinding tricks.
+- **Origin checking.** State-changing requests with an `Origin` header must be same-origin. A page on another site cannot make your browser delete memories.
+- **No cookies.** Authentication, when enabled, is a bearer token.
+- **Content Security Policy.** The app only loads its own scripts and styles; `connect-src 'self'` means the page cannot call other origins.
+
+## Setting a token
+
+If you want a password, pass one on the command line or in a file:
+
+```bash
+mem server --token "a-long-random-string"
+mem server --token-file ./token.txt
+```
+
+The startup line then includes the token so you can click it:
+
+```text
+mem dashboard listening on http://127.0.0.1:7777/?token=a-long-random-string
+```
+
+The app keeps the token for the session and sends it on every API call. Static files still load without a token so the page can appear; the API refuses without one. Real behaviour:
+
+```text
+GET /api/status  (no token)      -> 401
+GET /api/status  (Bearer token)  -> 200
+GET /               (no token)   -> 200
+```
+
+## Running behind a tunnel
+
+A tunnel changes the host name, so you must allow it and you must set a token. The server refuses to start with a non-loopback allowed host and no token:
+
+```bash
+mem server --port 7777 --allowed-host my-tunnel.ngrok-free.app
+```
+
+```text
+mem: refusing to start with non-loopback allowed host "my-tunnel.ngrok-free.app" without an authentication token (pass --token or --token-file)
+```
+
+The working form:
+
+```bash
+mem server --port 7777 --allowed-host my-tunnel.ngrok-free.app --token "a-long-random-string"
+```
+
+`--allowed-host` is repeatable. The same list can live in the config as `allowed_hosts`. Binding to a non-loopback address (for example `--host 0.0.0.0`) also requires a token:
+
+```text
+mem: refusing to bind non-loopback host "0.0.0.0" without an authentication token (pass --token or --token-file)
+```
+
+Treat a tunnelled dashboard as a public service: anyone with the URL and token can read and edit every memory.
+
+## Port already in use
+
+If another process owns the port:
+
+```text
+mem: port 7815 is already in use; specify a different port with --port <port> or stop the existing process
+```
+
+Exit code is `1`. Pick another port or stop the other process.
+
+## Stopping it
+
+`Ctrl+C` shuts the server down gracefully: it stops accepting connections, gives in-flight requests up to five seconds, closes the database, and releases the port. Expired contexts are swept on startup and every ten minutes while it runs.
+
+<div class="next-steps">
+
+**Next steps:** [The agent skill](skill.md) → [Configuration](configuration.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/recipes.md
+
+# Recipes
+
+Practical setups you can copy. Each one uses only real commands.
+
+## 1. One context per repository
+
+Keep project knowledge separate from personal preferences:
+
+```bash
+mem context create acme-api
+mem upsert --context acme-api --name deploy/staging.md --tag deploy \
+  "Staging deploys run from the release branch. https://staging.example.internal"
+mem upsert --context acme-api --name conventions/errors.md \
+  "Return wrapped errors with %w; log once at the handler, not in every layer."
+```
+
+Search only that project when you mean only that project:
+
+```bash
+mem search "staging deploy branch" --context acme-api --no-global
+```
+
+Tell agents which context belongs to the repo by adding a line to your default file:
+
+```bash
+mem upsert --name readme.md --context global \
+  "In the acme-api repo, use memory context 'acme-api'."
+```
+
+The default file is delivered as MCP `instructions`, so every connected agent sees it.
+
+## 2. Hand off work between two agents
+
+Create a temp context, write the state, pass the slug to the next agent:
+
+```bash
+mem context create handoff --expiry 2
+```
+
+```text
+created context handoff (expires 2026-11-21 12:18)
+```
+
+```bash
+mem upsert --context handoff --name state/progress.md \
+  "Migration is done through 0042. Next: run 0043, then verify the backfill. Failing test: TestOrderTotals."
+```
+
+Tell the next agent: *search context `handoff` and read `state/progress.md`*. It can continue while the notes exist. Before the context expires, move anything durable:
+
+```bash
+mem get state/progress.md --context handoff
+mem upsert --context acme-api --name migrations/backfill.md "..."   # durable copy
+```
+
+Demo agents that use the skill are told not to delete contexts or change expiries on their own.
+
+## 3. Keep a daily log with `--append`
+
+`--append` adds to the end instead of replacing. Pipe the new line from stdin:
+
+```bash
+echo "- 09:00 started migration" | mem upsert --context work --name status/log.md --append -
+echo "- 09:40 step 2 done" | mem upsert --context work --name status/log.md --append -
+```
+
+```text
+4cx2snmck2m2 v1 (work/status/log.md)
+4cx2snmck2m2 v2 (work/status/log.md)
+```
+
+Read it back:
+
+```bash
+mem get status/log.md --context work
+```
+
+```text
+---
+# status/log.md (4cx2snmck2m2, v2, updated 2026-11-19 12:17 by cli)
+---
+- 09:00 started migration
+- 09:40 step 2 done
+```
+
+Appending still takes the write lock and bumps the version, so two agents appending at the same time do not lose lines.
+
+## 4. Edit safely with `--if-version`
+
+Read the note, note its version, write back only if nobody changed it:
+
+```bash
+mem get auth/token.md --context work
+```
+
+The header shows `(t4epatooy5gv, v1, ...)`. Now:
+
+```bash
+mem upsert --context work --name auth/token.md --if-version 1 "Access tokens expire after 20 minutes."
+```
+
+If the version is no longer 1, the write is refused:
+
+```text
+mem: conflict: memory "t4epatooy5gv" is at version 1, not 2
+hint: fetch the memory again, then retry with the current --if-version
+```
+
+The recovery is always: `get` again, merge both changes by hand, retry with the version you just read. The same pattern works through MCP with `if_version`, and through the dashboard's conflict dialog.
+
+## 5. Back up or move your data
+
+Everything that matters is under the data directory (default `~/.mem/data`):
+
+```text
+contexts/       the markdown memories
+index.db        contexts, ids, versions, tags
+search.db       derived search index
+```
+
+Back up the whole directory while `mem` is not writing:
+
+```bash
+# macOS / Linux
+cp -a ~/.mem/data ~/backups/mem-data-$(date +%F)
+
+# Windows PowerShell
+Copy-Item -Recurse "$env:USERPROFILE\.mem\data" "$env:USERPROFILE\backups\mem-data"
+```
+
+To move to another machine: install `mem`, run `mem init`, then copy the data directory into place (or set `data_dir` to the copied folder). If you copy only `contexts/`, rebuild the metadata and index with `mem sync` and check `mem status`.
+
+To test a restore without touching your real store, point a throwaway config at the copy:
+
+```bash
+MEM_CONFIG=/tmp/mem-restore.toml mem --data-dir /tmp/mem-restore-data status
+```
+
+## 6. Deal with an expired context
+
+An expired temp context behaves as if it never existed, and its memories are removed. There is no undo button. Two options:
+
+**If you have a backup:** recreate the context and restore its folder, then rebuild the index:
+
+```bash
+mem context create recovered
+# copy the backed-up contexts/recovered/* files into the data dir
+mem sync
+mem status
+```
+
+**If you do not:** recreate the slug and re-add what you remember. Search the rest of the store first; useful notes often exist in a permanent context:
+
+```bash
+mem search "the thing you lost" --limit 20
+```
+
+To stop a handoff from expiring while you still need it:
+
+```bash
+mem context expiry handoff none
+```
+
+## 7. Use it from CI or a script
+
+Set a throwaway config and data directory, use `--json`, and check the exit code:
+
+```bash
+export MEM_CONFIG="$PWD/.mem-ci.toml"
+export MEM_DATA_DIR="$PWD/.mem-ci-data"
+mem init --yes --no-download
+mem context create build
+mem upsert --context build --name last-run.md "Build 1842 passed on main."
+
+hits=$(mem search "last build" --context build --json)
+echo "$hits"
+```
+
+A search with no hits is still success and returns `{"hits":[]...}`; do not treat empty output as failure. Errors exit non-zero and print one JSON object, for example:
+
+```json
+{"code":3,"error":"not found: memory \"missing.md\" does not exist in context \"work\"","hint":"run `mem ls` to list the memories in that context"}
+```
+
+`--no-download` is deliberate in CI: it avoids the 60 MB of models, and keyword search still works for exact identifiers.
+
+## 8. Share one store between several agents
+
+Point every agent at the same `mem` binary and config. Each agent runs its own `mem mcp` process, but they all read and write the same files.
+
+A simple split that works well:
+
+- `global` for preferences and cross-project knowledge;
+- one permanent context per repository;
+- a fresh temp context per handoff.
+
+Writes are synchronous and versioned, and the index detects changes made by other processes, so an agent does not need a lock. If you see a conflict, it means two writers raced on the same note; the fix is the same `get`-and-merge from recipe 4.
+
+<div class="next-steps">
+
+**Next steps:** [Troubleshooting](troubleshooting.md) → [FAQ](faq.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/troubleshooting.md
+
+# Troubleshooting
+
+Real errors, what they mean, and the fix. Start with `mem status`; it answers most of these questions directly.
+
+## "embedder unavailable" or "keyword-only results"
+
+You will see this when the local embedding model is not installed or not running:
+
+```text
+note: embedder unavailable: sidecar embed url: sidecar start llama-server: exec: "llama-server": executable file not found in %PATH%
+1. smoke.md (global/yc2nxix4mt2a) score=0.0073 [bm25]
+   matched: release, branch, releas
+   Deploys run from the release branch only.
+```
+
+Search still works by keyword. Two things to do:
+
+1. Run `mem init` to install the model server and the embedding model.
+2. If they are installed but the index is behind, run `mem sync` and check `mem status`.
+
+While the embedder is down, write with words you would actually search for; exact identifiers work best.
+
+## "indexed search is not set up yet"
+
+You set up without downloading models (`mem init --no-download`), or the install failed:
+
+```text
+indexed search is not set up yet; run `mem init`
+```
+
+Everything else works. Run `mem init` (with network) or `mem init --offline-dir <folder>` when you have the files.
+
+## `mem status` says the model server is broken
+
+```text
+missing     embedding ...\models\bge-small-en-v1.5-q8_0.gguf
+broken      llama-server (not found)  (llama-server : path is empty)
+fix         run `mem init --force` to reinstall the llama-server and models
+```
+
+Run the suggested fix:
+
+```bash
+mem init --force
+```
+
+`--force` reinstalls `llama-server` and the models even when they look valid. Use it after a failed download, a partial install, a moved `models_dir`, or antivirus interference.
+
+## Conflict (exit code 4)
+
+```text
+mem: conflict: memory "t4epatooy5gv" is at version 1, not 2
+hint: fetch the memory again, then retry with the current --if-version
+```
+
+Someone (or something) wrote the note after you read it. Do what the hint says:
+
+```bash
+mem get auth/token.md --context work   # read the current version
+```
+
+Merge the changes, then write with the version you just read. Do not retry with the old number; it will fail again.
+
+## Not found (exit code 3)
+
+```text
+mem: not found: memory "missing.md" does not exist in context "work"
+hint: run `mem ls` to list the memories in that context
+```
+
+Causes, in order of likelihood:
+
+- the name or id is wrong;
+- you are in the wrong context (the default for reads and writes is `global`);
+- the context is a temp context that expired.
+
+```bash
+mem context ls
+mem ls --context work
+```
+
+An id that is malformed is a usage error (exit `2`), not "not found".
+
+## Port already in use
+
+```text
+mem: port 7815 is already in use; specify a different port with --port <port> or stop the existing process
+```
+
+Exit code `1`. Either stop the process using the port or pick another:
+
+```bash
+mem server --port 7816
+```
+
+## `npm i -g` fails with `EEXIST`
+
+Another global package already owns `mem`, `memory` or `agent-memory`. Either overwrite:
+
+```bash
+npm i -g --force @07prajwal2000/agent-memory
+```
+
+or avoid the global install and use `npx @07prajwal2000/agent-memory ...`.
+
+## Windows SmartScreen or antivirus blocks `llama-server`
+
+`mem init` downloads a prebuilt `llama-server` binary. Windows may warn about it or quarantine it.
+
+- If SmartScreen asks, choose to keep the file only if you trust the source you configured.
+- If antivirus removed it, `mem status` shows it missing or broken. Run `mem init --force` after adding an exclusion for `~/.mem/bin`, or install from an `--offline-dir` you prepared.
+
+Search stays keyword-only until the binary is back.
+
+## A body that starts with `-` is treated as a flag
+
+```text
+mem: unknown flag "- 09:00 started migration"; run `mem help` for usage
+exit=2
+```
+
+The body was passed as an argument beginning with `-`, so the flag parser claimed it. Put the body on stdin and use `-` as the argument:
+
+```bash
+echo "- 09:00 started migration" | mem upsert --context work --name status/log.md --append -
+```
+
+This is the reliable form for logs and any multi-line text.
+
+## Search results look unrelated
+
+A result with `sources: ["vec"]` and a very low score means only the semantic leg matched, weakly. Common causes:
+
+- the model server is not actually running (check `mem status`);
+- the index is out of sync (`mem sync`);
+- the query is too generic (`the`, `fix`, `error`);
+- the store is large and the useful note is below the result limit (raise `--limit`).
+
+If you want exact behavior, add `--no-fuzzy` and use the words the note contains.
+
+## `mem skill --install` finds no agents
+
+```text
+no supported agents detected; use --agent <name> to install anyway or run `npx skills add <owner>/<repo>`
+```
+
+You are in a directory without a known agent config folder. Name the agent explicitly:
+
+```bash
+mem skill --install --agent claude-code
+```
+
+Or use `--global` to install under your home directory.
+
+## Dashboard returns 401
+
+You started the server with `--token` or `--token-file`, but the browser does not have the token. Open the URL printed at startup, which includes `?token=...`:
+
+```text
+mem dashboard listening on http://127.0.0.1:7777/?token=secret123
+```
+
+If you opened a bare `http://127.0.0.1:7777/`, add `?token=` once. The app keeps it for the session.
+
+<div class="next-steps">
+
+**Next steps:** [FAQ](faq.md) → [Contributing](contributing.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/faq.md
+
+# FAQ
+
+## Is my data private?
+
+Yes. Memories are plain markdown files in a folder you choose. Search, embedding and reranking all run locally. `mem` does not send your notes anywhere.
+
+The only network access is during `mem init`, which downloads the pinned `llama-server` build and the embedding model (and the reranker if you ask for it). After that, `mem` works offline.
+
+## Does it work offline?
+
+Yes, after setup. To install without network access, download the assets on another machine and use:
+
+```bash
+mem init --offline-dir /path/to/folder
+```
+
+The folder must contain the pinned archive (or an unpacked `llama-server`) and the model files. `mem` still verifies their hashes.
+
+## How big can the store get?
+
+A single memory is capped at 1 MiB, and that is far more than a useful note needs. In benchmarks, the search pipeline handled **200,000 chunks** at about 150 ms p95, so a large store is practical on a laptop. Disk usage is the markdown files plus the derived index; the index is roughly the size of the text plus one small vector per chunk.
+
+Practical guidance: keep notes short and one-topic. Ten focused notes search better than one long document.
+
+## Can several agents use it at once?
+
+Yes. Every agent runs its own `mem mcp` process against the same data directory. Writes are synchronous, versions prevent silent overwrites, and the index notices changes made by other processes. If two writers hit the same note at the same moment, one gets a conflict and merges, exactly as a human editor would.
+
+## How is this different from `AGENTS.md` or `CLAUDE.md`?
+
+`AGENTS.md` and `CLAUDE.md` are files an agent reads when it works in a repository. They are great for project instructions, but they are per-repo and loaded wholesale.
+
+`mem` is a searchable store that spans sessions, projects and agents:
+
+- the default file (`global/readme.md`) is the global equivalent of those files, delivered as MCP `instructions`;
+- contexts separate projects without copying files into every repository;
+- search lets an agent pull only the relevant note instead of reading everything;
+- versions, tags and temp contexts cover edits and handoffs, which a plain file cannot.
+
+Most people use both: repo files for build commands and layout, `mem` for decisions, preferences and history that should follow the agent everywhere.
+
+## Which operating systems are supported?
+
+Prebuilt binaries exist for Windows, macOS and Linux, on x64 and arm64. They are static Go binaries (`CGO_ENABLED=0`), so Linux builds do not depend on glibc or musl.
+
+## Which agents work with it?
+
+Any MCP client that can launch a stdio server. Claude Code has a one-line command; clients that use `mcpServers` JSON use the same command or block. The skill installer knows `claude-code`, `command-code`, the universal `.agents` format, `antigravity`, `opencode`, `cursor`, `gemini-cli` and `github-copilot`.
+
+## Can an agent create a context?
+
+No, by design. Contexts are a user decision, made from the CLI. Agents can read and write memories inside the contexts you created. If an agent needs a scratch space, create a temp context and tell it the slug.
+
+## Do I need the reranker?
+
+No. Reranking is off by default. The tiny reranker we tested did not improve results enough to justify the extra model, memory and latency. Enable it with `mem init --with-rerank` and `mem config rerank true` if you want to experiment.
+
+## What language does search understand?
+
+The bundled embedding model is English-focused (`bge-small-en-v1.5`). Keyword search works in any language that the tokenizer indexes, but semantic matching for non-English text will be weaker.
+
+## What happens if I delete the data directory?
+
+You lose the memories. The markdown files are not stored anywhere else. Back up the data directory; see [Back up or move your data](recipes.md#5-back-up-or-move-your-data).
+
+## Can I edit the markdown by hand?
+
+Yes. The files are the source of truth. After editing, run `mem sync` so the index matches. If you delete a file by hand, `mem sync` removes it from the index; `mem status` tells you when the index is out of sync.
+
+## Is it a note-taking app for me?
+
+Not really. The dashboard is for inspecting and correcting memories, not for long-form writing. The product is built around what an agent needs to recall: short, specific, searchable notes.
+
+## What license is it under?
+
+MIT. See the [repository](https://github.com/07prajwal2000/memory).
+
+<div class="next-steps">
+
+**Next steps:** [Contributing](contributing.md) → [Changelog](changelog.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/contributing.md
+
+# Contributing
+
+`mem` is a Go program with an embedded React dashboard, a CLI, an MCP server and a search engine. Here is how to build it and where things live.
+
+## Requirements
+
+- Go 1.23 or newer.
+- Node.js 18 or newer, for the dashboard and the packaging scripts.
+
+Windows is the primary development platform. Everything also builds for Linux and macOS.
+
+## Build and run
+
+```bash
+# dashboard assets (needed for the real UI; a fallback page keeps plain builds working)
+cd web
+npm ci
+npm run build:real
+cd ..
+
+go build -o mem ./cmd/mem
+./mem version
+```
+
+`go build ./cmd/mem` works without the dashboard step, but the embedded UI will be the static fallback page.
+
+## Tests
+
+Run everything the CI runs:
+
+```bash
+go build ./...
+go vet ./...
+go test ./... -count=1
+```
+
+Tests must not touch your real `~/.mem` or real config. The `internal/testenv` package points the home, config and cache directories at a temporary tree for every test package that uses it. If you add a package that reads or writes user paths, call `testenv.Main(m)` in `TestMain`.
+
+## Cross-builds
+
+The project ships static binaries with `CGO_ENABLED=0` for six targets:
+
+```bash
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build ./cmd/mem
+CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build ./cmd/mem
+CGO_ENABLED=0 GOOS=linux   GOARCH=amd64 go build ./cmd/mem
+CGO_ENABLED=0 GOOS=linux   GOARCH=arm64 go build ./cmd/mem
+CGO_ENABLED=0 GOOS=darwin  GOARCH=amd64 go build ./cmd/mem
+CGO_ENABLED=0 GOOS=darwin  GOARCH=arm64 go build ./cmd/mem
+```
+
+No cgo, no dynamic runtime dependencies. Keep it that way.
+
+## Repository layout
+
+| Path | What it is |
+|---|---|
+| `cmd/mem` | The binary's `main`: sets the version and calls the CLI |
+| `internal/cli` | Every command, flag parsing, exit codes, JSON output |
+| `internal/config` | `config.toml` loading, defaults, validation |
+| `internal/store` | Markdown files plus metadata SQLite; the source of truth |
+| `internal/search` | Chunking, FTS5, vectors, fuzzy expansion, fusion |
+| `internal/llm` | `llama-server` sidecar: start, embed, rerank, idle stop |
+| `internal/engine` | Ties store and search together for CLI, MCP and server |
+| `internal/mcp` | MCP server over stdio (hand-written JSON-RPC) |
+| `internal/server` | Dashboard HTTP server, REST API, security middleware |
+| `internal/setup` | `mem init`: asset table, downloads, verification |
+| `internal/testenv` | Test isolation for home/config/cache paths |
+| `web/` | React dashboard, built into `web/dist` and embedded with `go:embed` |
+| `skills/mem` | The agent skill text, embedded and printed by `mem skill` |
+| `packaging/` | npm packaging, cross-builds, release scripts |
+| `spike/` | Early experiments and measurements, kept for reference |
+| `docs/` | This documentation site |
+
+The design rule is: markdown files on disk are authoritative; SQLite is a derived index that can be rebuilt.
+
+## Dashboard development
+
+```bash
+cd web
+npm ci
+npm run build:real   # production bundle into web/dist (what the binary embeds)
+npm test             # frontend tests
+```
+
+There is also a mock mode (`npm run build:mock`) that writes to `dist-mock` and keeps the mock service worker, so experiments never overwrite the embedded assets. Rebuild `go build ./cmd/mem` after changing `web/dist`.
+
+## Changing the docs
+
+This site is Docsify: plain markdown in `docs/`, no build step. Preview it with any static server:
+
+```bash
+npx --yes docsify-cli serve docs
+# or
+python -m http.server 3000 --directory docs
+```
+
+Then open the printed URL.
+
+## Documentation for AI tools
+
+Two generated files let AI tools read the docs: `llms.txt` follows the [llmstxt.org](https://llmstxt.org) convention with a summary, key facts and links to the Markdown pages, and `llms-full.txt` holds every page in one file. They are built from the pages listed in `_sidebar.md` plus the hand-written intro in `llms-intro.md`, so do not edit them by hand. Regenerate after editing any page:
+
+```bash
+node docs/scripts/build-llms.mjs
+```
+
+`node docs/scripts/build-llms.mjs --check` fails when the committed files are out of date, and `node docs/scripts/check-links.mjs` also verifies that every link in `llms.txt` resolves to a real page and that the code fences in `llms-full.txt` are balanced.
+
+## Packaging and release
+
+Packaging lives in `packaging/`. The everyday commands are:
+
+```bash
+node packaging/scripts/build.mjs     # cross-compile and assemble packages
+node packaging/scripts/verify.mjs    # structural and mapping checks
+node packaging/scripts/pack.mjs      # tarballs and file audit
+node packaging/scripts/version.mjs   # show or bump the version
+```
+
+Without `--publish-ready`, builds are marked `"private": true`, so a mistake cannot publish to npm. The release workflow is tag-driven; see [packaging/README.md](https://github.com/07prajwal2000/memory/blob/main/packaging/README.md) for the full flow, package names and the current publishing status.
+
+## Style
+
+The codebase prefers the Go standard library, small packages, table-driven tests and no speculative abstractions. Match the surrounding code. If a change affects a command, a flag or an MCP tool, update the help text, the tests and these docs together.
+
+<div class="next-steps">
+
+**Next steps:** [Changelog](changelog.md)
+
+</div>
+
+---
+
+Source: https://07prajwal2000.github.io/memory/changelog.md
+
+# Changelog
+
+Notable changes. This project follows semantic versioning.
+
+## 0.1.0
+
+The first release.
+
+### Added
+
+- `mem` CLI: `init`, `context create|ls|rm|expiry`, `ls`, `get`, `upsert`, `delete`, `search`, `sync`, `status`, `config`, `server`, `mcp`, `skill`, `version`, `help`.
+- Markdown memories on disk with a derived SQLite index; contexts, tags, versions and optimistic concurrency (`--if-version`).
+- Temp contexts with expiry (7 days by default) and a reserved, permanent `global` context.
+- Hybrid search: BM25 keywords plus local `bge-small-en-v1.5` embeddings, merged with reciprocal rank fusion.
+- Fuzzy search on by default: prefix expansion, typo tolerance and stemming, with per-query and config switches.
+- MCP server over stdio with four tools: `search`, `get`, `upsert`, `delete`.
+- Agent skill with installers for Claude Code, Command Code, Cursor, Gemini CLI and others, or the universal `.agents` layout.
+- Local dashboard with markdown editor, search spotlight, status page and version-conflict handling.
+- `mem init` with resumable, hash-verified downloads; offline installs with `--offline-dir`; `--force` repair.
+- Safe-by-default dashboard: loopback binding, Host and Origin checks, optional bearer token, CSP.
+
+### Known issues
+
+- The npm packages are not published yet. Build from source until they are.
+- The help table still labels `skill` as "not available yet"; the command works.
+
+<div class="next-steps">
+
+**Next steps:** back to [What is mem?](README.md)
+
+</div>

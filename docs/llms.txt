@@ -1,0 +1,38 @@
+# mem
+
+> `mem` is local long-term memory for AI coding agents: notes stored as plain markdown on your own disk, searchable by keyword and by meaning. It is for developers who keep re-explaining project context to agents. It gives you four interfaces over one store — a command-line tool (`mem`), an MCP server over stdio, a local browser dashboard, and an agent skill that teaches an agent when to use it. Everything runs on your machine and works offline after `mem init`.
+
+The store is made of **memories** (one markdown note each) organized into **contexts** (folders, one per project or topic). The reserved `global` context always exists, never expires, and is searched by default. Every context has a default file `readme.md`; `global/readme.md` is delivered to MCP clients as their `instructions`. Contexts are created, expired, and removed only from the CLI — agents can read and write memories, but cannot create contexts.
+
+The commands `mem`, `memory`, and `agent-memory` are aliases. Data lives under `~/.mem` (`data/`, `models/`, `bin/`), and the markdown files are the source of truth while the SQLite indexes are derived and rebuildable with `mem sync`. Search is hybrid — BM25 keywords plus `bge-small-en-v1.5` vectors merged by reciprocal rank fusion — with fuzzy matching (prefix expansion, typo tolerance, stemming) on by default. The optional reranker is off by default.
+
+The npm packages are not published yet; build from source until they are. These pages are the Markdown sources served at https://07prajwal2000.github.io/memory/.
+
+## Getting started
+
+- [What is mem?](https://07prajwal2000.github.io/memory/README.md): `mem` gives you and your AI coding agents a shared long-term memory: notes stored as plain markdown files on your disk, searchable by keyword and by meaning.
+- [Quick start](https://07prajwal2000.github.io/memory/quickstart.md): From an empty machine to an agent that remembers, in five steps.
+
+## Learn
+
+- [Concepts](https://07prajwal2000.github.io/memory/concepts.md): Four ideas explain almost everything `mem` does: memories, contexts, the global context, and the default file.
+- [How search works](https://07prajwal2000.github.io/memory/search.md): `mem` combines keyword search and meaning-based search, then merges the results.
+- [The agent skill](https://07prajwal2000.github.io/memory/skill.md): The MCP server gives an agent four tools.
+
+## Reference
+
+- [Command line](https://07prajwal2000.github.io/memory/cli.md): Every command, with the flags the binary actually accepts.
+- [MCP server](https://07prajwal2000.github.io/memory/mcp.md): `mem mcp` is a Model Context Protocol server over stdin/stdout.
+- [Configuration](https://07prajwal2000.github.io/memory/configuration.md): One TOML file controls `mem`.
+- [Dashboard](https://07prajwal2000.github.io/memory/dashboard.md): `mem server` starts a local web app for browsing and editing your memories.
+
+## Help
+
+- [Troubleshooting](https://07prajwal2000.github.io/memory/troubleshooting.md): Real errors, what they mean, and the fix.
+
+## Optional
+
+- [Recipes](https://07prajwal2000.github.io/memory/recipes.md): Practical setups you can copy.
+- [FAQ](https://07prajwal2000.github.io/memory/faq.md): Common questions about privacy, offline use, scale, agents and licensing.
+- [Contributing](https://07prajwal2000.github.io/memory/contributing.md): `mem` is a Go program with an embedded React dashboard, a CLI, an MCP server and a search engine.
+- [Changelog](https://07prajwal2000.github.io/memory/changelog.md): Release notes and notable changes, newest first.

@@ -97,6 +97,16 @@ python -m http.server 3000 --directory docs
 
 Then open the printed URL.
 
+## Documentation for AI tools
+
+Two generated files let AI tools read the docs: `llms.txt` follows the [llmstxt.org](https://llmstxt.org) convention with a summary, key facts and links to the Markdown pages, and `llms-full.txt` holds every page in one file. They are built from the pages listed in `_sidebar.md` plus the hand-written intro in `llms-intro.md`, so do not edit them by hand. Regenerate after editing any page:
+
+```bash
+node docs/scripts/build-llms.mjs
+```
+
+`node docs/scripts/build-llms.mjs --check` fails when the committed files are out of date, and `node docs/scripts/check-links.mjs` also verifies that every link in `llms.txt` resolves to a real page and that the code fences in `llms-full.txt` are balanced.
+
 ## Packaging and release
 
 Packaging lives in `packaging/`. The everyday commands are:

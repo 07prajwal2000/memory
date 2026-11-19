@@ -195,6 +195,39 @@ func (c *testClient) closeInput() {
 	_ = c.clientOut.Close()
 }
 
+func (c *testClient) callRaw(line string) (string, Response, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	data := []byte(strings.TrimSpace(line) + "\n")
+	if _, err := c.clientOut.Write(data); err != nil {
+		return "", Response{}, err
+	}
+
+	if !c.clientIn.Scan() {
+		if err := c.clientIn.Err(); err != nil {
+			return "", Response{}, err
+		}
+		return "", Response{}, io.EOF
+	}
+
+	rawResp := c.clientIn.Text()
+	var resp Response
+	if err := json.Unmarshal([]byte(rawResp), &resp); err != nil {
+		return rawResp, Response{}, fmt.Errorf("decode response %q: %w", rawResp, err)
+	}
+	return rawResp, resp, nil
+}
+
+func (c *testClient) notifyRaw(line string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	data := []byte(strings.TrimSpace(line) + "\n")
+	_, err := c.clientOut.Write(data)
+	return err
+}
+
 func TestProtocol_Initialize_Versions_And_Timing(t *testing.T) {
 	eng := newTestEngine(t, nil)
 
@@ -1359,5 +1392,180 @@ func TestTools_RoundTrip(t *testing.T) {
 	}
 	if !strings.Contains(searchRes.Content[0].Text, "architecture/microservices.md") {
 		t.Errorf("roundtrip search did not find memory: %s", searchRes.Content[0].Text)
+	}
+}
+
+func TestClaudeCode_MetaAndUnknownParams(t *testing.T) {
+	eng := newTestEngine(t, nil)
+	client := newTestClient(t, eng)
+	defer client.closeInput()
+
+	// 1. Initialize with extra fields (capabilities.roots, elicitation, clientInfo.title, _meta)
+	initReq := `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"roots":{"listChanged":true},"sampling":{}},"clientInfo":{"name":"Claude Code","version":"1.0.0","title":"Claude Code"},"elicitation":{},"_meta":{"progressToken":1}}}`
+	rawResp, resp, err := client.callRaw(initReq)
+	if err != nil {
+		t.Fatalf("initialize callRaw: %v", err)
+	}
+	if resp.Error != nil {
+		t.Fatalf("initialize returned error: code=%d message=%s", resp.Error.Code, resp.Error.Message)
+	}
+	if strings.Contains(rawResp, `"_meta"`) {
+		t.Errorf("initialize response must not contain _meta, got: %s", rawResp)
+	}
+	var initRes InitializeResult
+	rawRes, _ := json.Marshal(resp.Result)
+	if err := json.Unmarshal(rawRes, &initRes); err != nil {
+		t.Fatalf("decode initialize result: %v", err)
+	}
+	if initRes.ProtocolVersion != "2024-11-05" {
+		t.Errorf("expected negotiated version 2024-11-05, got %q", initRes.ProtocolVersion)
+	}
+
+	// 2. notifications/initialized with _meta
+	if err := client.notifyRaw(`{"jsonrpc":"2.0","method":"notifications/initialized","params":{"_meta":{}}}`); err != nil {
+		t.Fatalf("notifications/initialized: %v", err)
+	}
+
+	// 3. tools/list with cursor:null and _meta
+	toolsListReq := `{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{"cursor":null,"_meta":{}}}`
+	rawResp, resp, err = client.callRaw(toolsListReq)
+	if err != nil {
+		t.Fatalf("tools/list callRaw: %v", err)
+	}
+	if resp.Error != nil {
+		t.Fatalf("tools/list returned error: code=%d message=%s", resp.Error.Code, resp.Error.Message)
+	}
+	if strings.Contains(rawResp, `"_meta"`) {
+		t.Errorf("tools/list response must not contain _meta, got: %s", rawResp)
+	}
+	var listRes ToolsListResult
+	rawRes, _ = json.Marshal(resp.Result)
+	if err := json.Unmarshal(rawRes, &listRes); err != nil {
+		t.Fatalf("decode tools/list result: %v", err)
+	}
+	if len(listRes.Tools) != 4 {
+		t.Fatalf("expected 4 tools, got %d", len(listRes.Tools))
+	}
+
+	// 4. tools/call for "get" with empty arguments and _meta: {"progressToken": 7}
+	getReq := `{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get","arguments":{},"_meta":{"progressToken":7}}}`
+	rawResp, resp, err = client.callRaw(getReq)
+	if err != nil {
+		t.Fatalf("tools/call get callRaw: %v", err)
+	}
+	if resp.Error != nil {
+		t.Fatalf("tools/call get returned error: code=%d message=%s", resp.Error.Code, resp.Error.Message)
+	}
+	if strings.Contains(rawResp, `"_meta"`) {
+		t.Errorf("get response must not contain _meta, got: %s", rawResp)
+	}
+	var getRes CallToolResult
+	rawRes, _ = json.Marshal(resp.Result)
+	if err := json.Unmarshal(rawRes, &getRes); err != nil {
+		t.Fatalf("decode get result: %v", err)
+	}
+	if getRes.IsError {
+		t.Fatalf("get returned tool error: %s", getRes.Content[0].Text)
+	}
+
+	// 5. tools/call for "upsert" with _meta: {"progressToken": 9}
+	upsertReq := `{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"upsert","arguments":{"name":"claude-test.md","body":"test memory from Claude Code"},"_meta":{"progressToken":9}}}`
+	rawResp, resp, err = client.callRaw(upsertReq)
+	if err != nil {
+		t.Fatalf("tools/call upsert callRaw: %v", err)
+	}
+	if resp.Error != nil {
+		t.Fatalf("tools/call upsert returned error: code=%d message=%s", resp.Error.Code, resp.Error.Message)
+	}
+	if strings.Contains(rawResp, `"_meta"`) {
+		t.Errorf("upsert response must not contain _meta, got: %s", rawResp)
+	}
+	var upsertRes CallToolResult
+	rawRes, _ = json.Marshal(resp.Result)
+	if err := json.Unmarshal(rawRes, &upsertRes); err != nil {
+		t.Fatalf("decode upsert result: %v", err)
+	}
+	if upsertRes.IsError {
+		t.Fatalf("upsert returned tool error: %s", upsertRes.Content[0].Text)
+	}
+
+	// 6. tools/call for "search" with _meta: {"progressToken": 8}
+	searchReq := `{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"search","arguments":{"query":"Claude Code"},"_meta":{"progressToken":8}}}`
+	rawResp, resp, err = client.callRaw(searchReq)
+	if err != nil {
+		t.Fatalf("tools/call search callRaw: %v", err)
+	}
+	if resp.Error != nil {
+		t.Fatalf("tools/call search returned error: code=%d message=%s", resp.Error.Code, resp.Error.Message)
+	}
+	if strings.Contains(rawResp, `"_meta"`) {
+		t.Errorf("search response must not contain _meta, got: %s", rawResp)
+	}
+	var searchRes CallToolResult
+	rawRes, _ = json.Marshal(resp.Result)
+	if err := json.Unmarshal(rawRes, &searchRes); err != nil {
+		t.Fatalf("decode search result: %v", err)
+	}
+	if searchRes.IsError {
+		t.Fatalf("search returned tool error: %s", searchRes.Content[0].Text)
+	}
+
+	// 7. ping with _meta: {"progressToken": 10}
+	pingReq := `{"jsonrpc":"2.0","id":6,"method":"ping","params":{"_meta":{"progressToken":10}}}`
+	rawResp, resp, err = client.callRaw(pingReq)
+	if err != nil {
+		t.Fatalf("ping callRaw: %v", err)
+	}
+	if resp.Error != nil {
+		t.Fatalf("ping returned error: code=%d message=%s", resp.Error.Code, resp.Error.Message)
+	}
+	if strings.Contains(rawResp, `"_meta"`) {
+		t.Errorf("ping response must not contain _meta, got: %s", rawResp)
+	}
+
+	// 8. Strict validation on tool arguments: unknown tool arguments must STILL be rejected
+	unknownArgsTests := []struct {
+		name string
+		req  string
+	}{
+		{
+			name: "get with unknown argument",
+			req:  `{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"get","arguments":{"bogus":123},"_meta":{"progressToken":11}}}`,
+		},
+		{
+			name: "search with unknown argument",
+			req:  `{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"search","arguments":{"query":"test","unknown_param":"foo"},"_meta":{"progressToken":12}}}`,
+		},
+		{
+			name: "upsert with unknown argument",
+			req:  `{"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"upsert","arguments":{"name":"a.md","body":"b","extra":true},"_meta":{"progressToken":13}}}`,
+		},
+		{
+			name: "delete with unknown argument",
+			req:  `{"jsonrpc":"2.0","id":10,"method":"tools/call","params":{"name":"delete","arguments":{"id":"foo","bad_field":42},"_meta":{"progressToken":14}}}`,
+		},
+	}
+
+	for _, tc := range unknownArgsTests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, resp, err := client.callRaw(tc.req)
+			if err != nil {
+				t.Fatalf("callRaw failed: %v", err)
+			}
+			var res CallToolResult
+			raw, _ := json.Marshal(resp.Result)
+			_ = json.Unmarshal(raw, &res)
+			if !res.IsError {
+				t.Errorf("expected isError: true for %s, got: %+v", tc.name, res)
+			}
+			if len(res.Content) == 0 || !strings.Contains(res.Content[0].Text, "unknown field") {
+				t.Errorf("expected 'unknown field' error message for %s, got: %+v", tc.name, res.Content)
+			}
+		})
+	}
+
+	// 9. notifications/cancelled with _meta
+	if err := client.notifyRaw(`{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":999,"reason":"user cancelled","_meta":{"token":1}}}`); err != nil {
+		t.Fatalf("notifications/cancelled: %v", err)
 	}
 }

@@ -17,15 +17,15 @@ export interface TreeFolderNode {
 export type TreeNode = TreeFolderNode | TreeFileNode;
 
 export function buildMemoryTree(memories: MemorySummary[]): TreeNode[] {
-  const rootFolders = new Map<string, TreeFolderNode>();
-  const rootFiles: TreeFileNode[] = [];
+  const rootNodes: TreeNode[] = [];
+  const folderMap = new Map<string, TreeFolderNode>();
 
   for (const memory of memories) {
     const rawName = memory.name || `${memory.id}.md`;
     const parts = rawName.split('/');
 
     if (parts.length === 1) {
-      rootFiles.push({
+      rootNodes.push({
         type: 'file',
         name: parts[0],
         path: rawName,
@@ -34,14 +34,13 @@ export function buildMemoryTree(memories: MemorySummary[]): TreeNode[] {
       continue;
     }
 
-    const currentFolderMap = rootFolders;
     let currentPath = '';
-
     for (let i = 0; i < parts.length - 1; i++) {
       const folderName = parts[i];
+      const parentPath = currentPath;
       currentPath = currentPath ? `${currentPath}/${folderName}` : folderName;
 
-      let folder = currentFolderMap.get(folderName);
+      let folder = folderMap.get(currentPath);
       if (!folder) {
         folder = {
           type: 'folder',
@@ -49,10 +48,16 @@ export function buildMemoryTree(memories: MemorySummary[]): TreeNode[] {
           path: currentPath,
           children: [],
         };
-        currentFolderMap.set(folderName, folder);
+        folderMap.set(currentPath, folder);
+
+        if (parentPath) {
+          const parentFolder = folderMap.get(parentPath);
+          parentFolder?.children.push(folder);
+        } else {
+          rootNodes.push(folder);
+        }
       }
 
-      // Next level children
       if (i === parts.length - 2) {
         const fileName = parts[parts.length - 1];
         folder.children.push({
@@ -65,8 +70,12 @@ export function buildMemoryTree(memories: MemorySummary[]): TreeNode[] {
     }
   }
 
-  // Convert folder map to sorted array
   function sortNodes(nodes: TreeNode[]): TreeNode[] {
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        node.children = sortNodes(node.children);
+      }
+    }
     return nodes.sort((a, b) => {
       if (a.type !== b.type) {
         return a.type === 'folder' ? -1 : 1;
@@ -75,6 +84,32 @@ export function buildMemoryTree(memories: MemorySummary[]): TreeNode[] {
     });
   }
 
-  const result: TreeNode[] = [...Array.from(rootFolders.values()), ...rootFiles];
-  return sortNodes(result);
+  return sortNodes(rootNodes);
+}
+
+export function getAncestorFolderPaths(rawName: string): string[] {
+  const parts = rawName.split('/');
+  if (parts.length <= 1) return [];
+
+  const ancestors: string[] = [];
+  let current = '';
+  for (let i = 0; i < parts.length - 1; i++) {
+    current = current ? `${current}/${parts[i]}` : parts[i];
+    ancestors.push(current);
+  }
+  return ancestors;
+}
+
+export function getAllFolderPaths(nodes: TreeNode[]): string[] {
+  const paths: string[] = [];
+  function collect(list: TreeNode[]) {
+    for (const node of list) {
+      if (node.type === 'folder') {
+        paths.push(node.path);
+        collect(node.children);
+      }
+    }
+  }
+  collect(nodes);
+  return paths;
 }

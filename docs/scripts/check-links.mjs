@@ -99,7 +99,51 @@ for (const name of ["_sidebar.md", "_navbar.md", "README.md", "index.html", ".no
   if (!existsSync(join(docsDir, name))) failures.push(`docs/${name} is missing`);
 }
 
-console.log(`Checked ${links} links across ${files.length} markdown pages.`);
+// llms.txt links are absolute site URLs; each one must map back to a real page.
+const LLMS_BASE = "https://07prajwal2000.github.io/memory/";
+const llmsFile = join(docsDir, "llms.txt");
+let llmsLinks = 0;
+if (existsSync(llmsFile)) {
+  const text = readFileSync(llmsFile, "utf8");
+  const re = /\]\(([^)\s]+)\)/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const url = m[1];
+    if (!url.startsWith(LLMS_BASE)) continue;
+    const rel = decodeURIComponent(url.slice(LLMS_BASE.length));
+    const target = resolve(docsDir, rel);
+    if (!existsSync(target)) {
+      failures.push(`docs/llms.txt: "${url}" has no page at docs/${rel}`);
+      continue;
+    }
+    links++;
+    llmsLinks++;
+  }
+}
+
+// llms-full.txt is one long Markdown file; its code fences must stay balanced.
+const llmsFullFile = join(docsDir, "llms-full.txt");
+if (existsSync(llmsFullFile)) {
+  let open = null;
+  readFileSync(llmsFullFile, "utf8").split(/\r?\n/).forEach((line, index) => {
+    const fence = line.match(/^\s*(```+|~~~+)\s*[\w-]*\s*$/);
+    if (!fence) return;
+    if (!open) {
+      open = { marker: fence[1][0], length: fence[1].length, line: index + 1 };
+    } else if (fence[1][0] === open.marker && fence[1].length >= open.length) {
+      open = null;
+    }
+  });
+  if (open) {
+    failures.push(`docs/llms-full.txt: code fence opened at line ${open.line} is never closed`);
+  }
+}
+
+console.log(
+  `Checked ${links} links across ${files.length} markdown pages` +
+    (existsSync(llmsFile) ? ` (including ${llmsLinks} in llms.txt)` : "") +
+    "."
+);
 for (const w of warnings) console.warn(`warning: ${w}`);
 if (failures.length) {
   console.error(`\n${failures.length} broken link(s):`);

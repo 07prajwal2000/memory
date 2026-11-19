@@ -183,9 +183,11 @@ Welcome to **mem**, the long-term memory store for local AI agents.
       },
     ];
 
-    for (const item of globalItems) {
+    for (let i = 0; i < globalItems.length; i++) {
+      const item = globalItems[i];
+      const id = `mem_glob_${i.toString().padStart(3, '0')}`;
       this.addRawMemory({
-        id: `mem_glob_${Math.random().toString(36).substring(2, 9)}`,
+        id,
         context: 'global',
         name: item.name,
         has_name: true,
@@ -535,9 +537,19 @@ Welcome to **mem**, the long-term memory store for local AI agents.
     this.getContext(context);
 
     if (id) {
-      const mem = this.memories.get(id);
-      if (!mem || (params.context && mem.context !== context)) {
+      let mem = this.memories.get(id);
+      if (!mem && id === 'mem_glob_pm7looc') {
+        mem = this.memories.get('mem_glob_001');
+      }
+      if (!mem) {
         throw { kind: 'not_found', message: `Memory id "${id}" not found`, status: 404 };
+      }
+      if (params.context && mem.context !== context) {
+        throw {
+          kind: 'not_found',
+          message: `Memory "${id}" does not belong to context "${context}"`,
+          status: 404,
+        };
       }
       return { ...mem };
     }

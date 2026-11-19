@@ -19,7 +19,7 @@ A responsive, high-performance web dashboard for `mem` (the local long-term memo
 
 1. **Feature-Based Modular Structure**:
    - `src/features/contexts/`: Contexts list, auto-generated temp contexts, expiration badges & updating, safe slug-confirmed deletion.
-   - `src/features/memories/`: Memory list (server filter, sort, pagination, collapsible folder tree / flat toggle), full-featured memory editor (CodeMirror 6, Markdown preview, tags, metadata bar, size check, safe save with `if_version`, append modal, delete confirmation, conflict resolution dialog).
+   - `src/features/memories/`: Persistent two-pane workspace layout (`MemoryWorkspaceLayout`, `MemoryPanel`, `ResizablePane`, `ViewModeToggle`, `MemoryEmptyDetailView`), resizable drag handle with keyboard/mouse support, collapse/expand with Ctrl/Cmd+B, session-persisted folder expansion, redesigned compact single-row Tree/Flat toggle, mobile Files drawer, memory editor (CodeMirror 6, Markdown preview, tags, metadata bar, size check, safe save with `if_version`, append modal, delete confirmation, conflict resolution dialog).
    - `src/features/default-file/`: Pinned editor for `global/readme.md` with deletion protection.
    - `src/features/search/`: Spotlight modal (Ctrl+K / Cmd+K), full-page search results with scoped context filtering and degraded vector model notices.
    - `src/features/status/`: Server metrics, storage and vector index synchronization, llama-server sidecar model statuses.
@@ -102,16 +102,12 @@ web/
 │   ├── features/          # Feature-based domain modules
 │   │   ├── contexts/      # Context navigation, creation, expiry, deletion
 │   │   ├── default-file/  # Special-cased global/readme.md editor
-│   │   ├── memories/      # Memory list, folder tree, editor, append, conflict dialog
+│   │   ├── memories/      # Two-pane workspace, panel, resizable pane, tree/flat toggle, editor, conflict dialog
 │   │   ├── search/        # Ctrl+K spotlight & full-page search results
 │   │   └── status/        # System status, sidecars, vector index sync
 │   ├── lib/               # Shared utilities, validation, formatters
 │   ├── mocks/             # In-memory mock database & MSW request handlers
 │   └── test/              # Vitest test setup, polyfills, and render utilities
-├── CONTRACT-CHANGES.md    # Proposals and observations on .prompts/_api.md
-├── PROGRESS.md            # Milestones and PREVIEW-READY flag
-├── README.md              # Project documentation
-├── REPORT.md              # Comprehensive engineering report
 ├── package.json           # Pinned dependencies and scripts
 └── vite.config.ts         # Vite configuration with proxy and preview hosts
 ```

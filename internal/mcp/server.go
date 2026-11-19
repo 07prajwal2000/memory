@@ -251,19 +251,9 @@ func (s *session) handleRequest(ctx context.Context, req Request) {
 	case "initialize":
 		s.handleInitialize(ctx, req)
 	case "ping":
-		_ = s.w.writeResponse(Response{
-			JSONRPC: "2.0",
-			ID:      req.ID,
-			Result:  map[string]any{},
-		})
+		s.handlePing(ctx, req)
 	case "tools/list":
-		_ = s.w.writeResponse(Response{
-			JSONRPC: "2.0",
-			ID:      req.ID,
-			Result: ToolsListResult{
-				Tools: BuiltinTools(),
-			},
-		})
+		s.handleToolsList(ctx, req)
 	case "tools/call":
 		s.handleCallTool(ctx, req)
 	default:
@@ -316,9 +306,57 @@ func (s *session) handleInitialize(_ context.Context, req Request) {
 	})
 }
 
+func (s *session) handlePing(_ context.Context, req Request) {
+	var params PingParams
+	if len(req.Params) > 0 && string(req.Params) != "null" {
+		if err := json.Unmarshal(req.Params, &params); err != nil {
+			_ = s.w.writeResponse(Response{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &RPCError{
+					Code:    CodeInvalidParams,
+					Message: fmt.Sprintf("invalid ping params shape: %v", err),
+				},
+			})
+			return
+		}
+	}
+
+	_ = s.w.writeResponse(Response{
+		JSONRPC: "2.0",
+		ID:      req.ID,
+		Result:  map[string]any{},
+	})
+}
+
+func (s *session) handleToolsList(_ context.Context, req Request) {
+	var params ToolsListParams
+	if len(req.Params) > 0 && string(req.Params) != "null" {
+		if err := json.Unmarshal(req.Params, &params); err != nil {
+			_ = s.w.writeResponse(Response{
+				JSONRPC: "2.0",
+				ID:      req.ID,
+				Error: &RPCError{
+					Code:    CodeInvalidParams,
+					Message: fmt.Sprintf("invalid tools/list params shape: %v", err),
+				},
+			})
+			return
+		}
+	}
+
+	_ = s.w.writeResponse(Response{
+		JSONRPC: "2.0",
+		ID:      req.ID,
+		Result: ToolsListResult{
+			Tools: BuiltinTools(),
+		},
+	})
+}
+
 func (s *session) handleCallTool(ctx context.Context, req Request) {
 	var params CallToolParams
-	if len(req.Params) == 0 {
+	if len(req.Params) == 0 || string(req.Params) == "null" {
 		_ = s.w.writeResponse(Response{
 			JSONRPC: "2.0",
 			ID:      req.ID,
@@ -330,15 +368,25 @@ func (s *session) handleCallTool(ctx context.Context, req Request) {
 		return
 	}
 
-	dec := json.NewDecoder(bytes.NewReader(req.Params))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&params); err != nil {
+	if err := json.Unmarshal(req.Params, &params); err != nil {
 		_ = s.w.writeResponse(Response{
 			JSONRPC: "2.0",
 			ID:      req.ID,
 			Error: &RPCError{
 				Code:    CodeInvalidParams,
 				Message: fmt.Sprintf("invalid tools/call params shape: %v", err),
+			},
+		})
+		return
+	}
+
+	if params.Name == "" {
+		_ = s.w.writeResponse(Response{
+			JSONRPC: "2.0",
+			ID:      req.ID,
+			Error: &RPCError{
+				Code:    CodeInvalidParams,
+				Message: "missing tool name in tools/call params",
 			},
 		})
 		return

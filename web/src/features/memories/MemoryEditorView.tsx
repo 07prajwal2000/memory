@@ -22,9 +22,10 @@ import {
   IconArrowLeft,
   IconAlertTriangle,
   IconFilePlus,
+  IconFolder,
 } from '@tabler/icons-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMemoryDetail, useUpsertMemory, useDeleteMemory, fetchMemory } from '../../api';
+import { useMemoryDetail, useUpsertMemory, useDeleteMemory, fetchMemory, ApiError } from '../../api';
 import { validateBodySize, validateMemoryName, isDefaultFile } from '../../lib/validation';
 import { useKeyboardShortcut } from '../../hooks';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
@@ -33,14 +34,16 @@ import { MemoryMetadataBar } from './MemoryMetadataBar';
 import { ConflictDialog } from './ConflictDialog';
 import { AppendMemoryModal } from './AppendMemoryModal';
 import { ConfirmModal, IndexWarningBanner, ErrorState } from '../../components';
+import { useMemoryWorkspace } from './MemoryWorkspaceContext';
 
 export function MemoryEditorView() {
   const { slug = 'global', id } = useParams<{ slug?: string; id?: string }>();
   const navigate = useNavigate();
+  const workspace = useMemoryWorkspace();
   const isNew = !id;
   const isMobile = useMediaQuery('(max-width: 48em)');
 
-  const { data: memory, isLoading, isError, refetch } = useMemoryDetail(slug, id);
+  const { data: memory, isLoading, isError, error, refetch } = useMemoryDetail(slug, id);
   const upsertMutation = useUpsertMemory();
   const deleteMutation = useDeleteMemory();
 
@@ -92,6 +95,13 @@ export function MemoryEditorView() {
       JSON.stringify(tags) !== JSON.stringify(initialState.tags)
     );
   }, [name, body, tags, initialState]);
+
+  useEffect(() => {
+    workspace.setIsDirty(isDirty);
+    return () => {
+      workspace.setIsDirty(false);
+    };
+  }, [isDirty, workspace]);
 
   // Window unload guard
   useEffect(() => {
@@ -153,11 +163,9 @@ export function MemoryEditorView() {
           navigate(`/c/${slug}/m/${res.id}`, { replace: true });
         }
       } catch (err: unknown) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const error = err as any;
-        if (error.status === 409 || error.kind === 'conflict') {
+        if (err instanceof ApiError && (err.status === 409 || err.kind === 'conflict')) {
           let serverBody = '';
-          const currentVersion = error.details?.current_version;
+          const currentVersion = err.details?.current_version;
           try {
             if (id) {
               const latest = await fetchMemory({ context: slug, id });
@@ -175,7 +183,7 @@ export function MemoryEditorView() {
         } else {
           notifications.show({
             title: 'Save failed',
-            message: error.message || 'Could not save memory',
+            message: err instanceof Error ? err.message : 'Could not save memory',
             color: 'red',
           });
         }
@@ -209,15 +217,16 @@ export function MemoryEditorView() {
     } catch (err: unknown) {
       notifications.show({
         title: 'Delete failed',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        message: (err as any)?.message || 'Failed to delete memory',
+        message: err instanceof Error ? err.message : 'Failed to delete memory',
         color: 'red',
       });
     }
   };
 
   const handleBack = () => {
-    if (isDirty) {
+    if (workspace && workspace.requestNavigate) {
+      workspace.requestNavigate(`/c/${slug}`);
+    } else if (isDirty) {
       setDiscardOpened(true);
     } else {
       navigate(`/c/${slug}`);
@@ -239,12 +248,25 @@ export function MemoryEditorView() {
   }
 
   if (isError && !isNew) {
+    const isNotFound =
+      (error instanceof ApiError && error.status === 404) ||
+      (error instanceof Error &&
+        (error.message.toLowerCase().includes('not found') ||
+          error.message.toLowerCase().includes('does not belong')));
+
+    const errorMessage =
+      error instanceof ApiError
+        ? error.message
+        : error instanceof Error
+          ? error.message
+          : 'Could not load the requested memory document.';
+
     return (
       <Box p="md" maw={1400} mx="auto">
         <ErrorState
-          title="Memory not found"
-          message="Could not load the requested memory document."
-          onRetry={() => refetch()}
+          title={isNotFound ? 'Memory not found' : 'Failed to load memory'}
+          message={errorMessage}
+          onRetry={isNotFound ? undefined : () => refetch()}
           action={
             <Button
               variant="default"
@@ -285,6 +307,18 @@ export function MemoryEditorView() {
             >
               Back
             </Button>
+
+            {isMobile && (
+              <Button
+                variant="default"
+                size="sm"
+                style={{ minHeight: 44 }}
+                leftSection={<IconFolder size={16} />}
+                onClick={workspace.openFilesDrawer}
+              >
+                Files
+              </Button>
+            )}
 
             {!isNew && (
               <Button
