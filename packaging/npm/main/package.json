@@ -1,9 +1,11 @@
 {
-  "name": "@CHANGE-ME/mem",
+  "name": "@07prajwal2000/agent-memory",
   "version": "0.1.0",
   "description": "Local long-term memory store for AI agents",
   "bin": {
-    "mem": "./bin/mem.js"
+    "mem": "./bin/mem.js",
+    "memory": "./bin/mem.js",
+    "agent-memory": "./bin/mem.js"
   },
   "files": [
     "bin/",
@@ -16,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CHANGE-ME/mem"
+    "url": "https://github.com/07prajwal2000/memory"
   },
   "keywords": [
     "ai",

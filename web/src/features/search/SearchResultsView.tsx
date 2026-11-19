@@ -27,6 +27,26 @@ import { useDebounce } from '../../hooks';
 import { SearchResultCard } from './SearchResultCard';
 import { EmptyState, ErrorState } from '../../components';
 
+function getInitialFuzzy(): boolean {
+  try {
+    const val = localStorage.getItem('mem_search_fuzzy');
+    if (val !== null) {
+      return val === 'true';
+    }
+  } catch {
+    // ignore
+  }
+  return true;
+}
+
+function persistFuzzy(enabled: boolean) {
+  try {
+    localStorage.setItem('mem_search_fuzzy', String(enabled));
+  } catch {
+    // ignore
+  }
+}
+
 export function SearchResultsView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isMobile = useMediaQuery('(max-width: 48em)');
@@ -34,6 +54,7 @@ export function SearchResultsView() {
   const urlQ = searchParams.get('q') || '';
   const urlContext = searchParams.get('context') || '';
   const urlNoGlobal = searchParams.get('no_global') === 'true';
+  const urlFuzzy = searchParams.get('fuzzy');
 
   const [queryInput, setQueryInput] = useState(urlQ);
   const debouncedQuery = useDebounce(queryInput, 300);
@@ -42,6 +63,12 @@ export function SearchResultsView() {
     urlContext || null,
   );
   const [includeGlobal, setIncludeGlobal] = useState<boolean>(!urlNoGlobal);
+  const [fuzzy, setFuzzy] = useState<boolean>(() => {
+    if (urlFuzzy !== null) {
+      return urlFuzzy === 'true' || urlFuzzy === '1';
+    }
+    return getInitialFuzzy();
+  });
 
   const { data: contexts } = useContexts();
 
@@ -50,7 +77,10 @@ export function SearchResultsView() {
     setQueryInput(urlQ);
     setSelectedContext(urlContext || null);
     setIncludeGlobal(!urlNoGlobal);
-  }, [urlQ, urlContext, urlNoGlobal]);
+    if (urlFuzzy !== null) {
+      setFuzzy(urlFuzzy === 'true' || urlFuzzy === '1');
+    }
+  }, [urlQ, urlContext, urlNoGlobal, urlFuzzy]);
 
   // Update URL params when query changes
   useEffect(() => {
@@ -64,17 +94,25 @@ export function SearchResultsView() {
     if (!includeGlobal && selectedContext) {
       params.set('no_global', 'true');
     }
+    if (!fuzzy) {
+      params.set('fuzzy', 'false');
+    }
 
     if (params.toString() !== searchParams.toString()) {
       setSearchParams(params, { replace: true });
     }
-  }, [debouncedQuery, selectedContext, includeGlobal, setSearchParams, searchParams]);
+  }, [debouncedQuery, selectedContext, includeGlobal, fuzzy, setSearchParams, searchParams]);
 
   const handleContextChange = (val: string | null) => {
     setSelectedContext(val);
     if (!val) {
       setIncludeGlobal(true);
     }
+  };
+
+  const handleFuzzyChange = (val: boolean) => {
+    setFuzzy(val);
+    persistFuzzy(val);
   };
 
   const isGlobalSwitchDisabled = !selectedContext;
@@ -85,6 +123,7 @@ export function SearchResultsView() {
       q: searchQuery,
       context: selectedContext || undefined,
       no_global: !includeGlobal && Boolean(selectedContext),
+      fuzzy,
     },
     Boolean(searchQuery),
   );
@@ -157,6 +196,20 @@ export function SearchResultsView() {
                       checked={includeGlobal}
                       disabled={isGlobalSwitchDisabled}
                       onChange={(e) => setIncludeGlobal(e.currentTarget.checked)}
+                      size="md"
+                    />
+                  </Box>
+                </Tooltip>
+
+                <Tooltip
+                  label="Enable prefix matching, typo tolerance, morphology, and title matching"
+                  withArrow
+                >
+                  <Box style={{ minHeight: 36, display: 'flex', alignItems: 'center' }}>
+                    <Switch
+                      label="Fuzzy"
+                      checked={fuzzy}
+                      onChange={(e) => handleFuzzyChange(e.currentTarget.checked)}
                       size="md"
                     />
                   </Box>

@@ -851,11 +851,17 @@ func TestSchemaMigration_V2toV3(t *testing.T) {
 	}
 	db.Close()
 
-	// Open with OpenIndex (without WithRebuild) -> must perform in-place migration to v3
+	// Open with OpenIndex (without WithRebuild) -> must fail with ErrNeedsReindex
 	embedder := &fakeEmbedder{}
-	ix, err := OpenIndex(dbPath, embedder, nil, WithResidentVectors(true), WithResidentVectorsSync(true))
+	_, err = OpenIndex(dbPath, embedder, nil, WithResidentVectors(true), WithResidentVectorsSync(true))
+	if err == nil || !errors.Is(err, ErrNeedsReindex) {
+		t.Fatalf("expected OpenIndex on old v2 db to fail with ErrNeedsReindex, got %v", err)
+	}
+
+	// Open with WithRebuild -> must rebuild the index file
+	ix, err := OpenIndex(dbPath, embedder, nil, WithRebuild(), WithResidentVectors(true), WithResidentVectorsSync(true))
 	if err != nil {
-		t.Fatalf("OpenIndex on v2 db failed: %v", err)
+		t.Fatalf("OpenIndex with WithRebuild on old db failed: %v", err)
 	}
 	defer ix.Close()
 

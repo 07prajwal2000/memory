@@ -1,13 +1,17 @@
 {
   "tools": [
     {
-      "description": "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context (unless no_global is true, which requires context). Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\").",
+      "description": "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context (unless no_global is true, which requires context). Fuzzy matching is on by default, set fuzzy:false for exact-word precision. Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\").",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
           "context": {
             "description": "Optional context slug to search in addition to 'global'.",
             "type": "string"
+          },
+          "fuzzy": {
+            "description": "Enable fuzzy matching (default true). Set to false for exact-word precision.",
+            "type": "boolean"
           },
           "limit": {
             "description": "Maximum number of hits to return (1-50, default 8).",

@@ -29,8 +29,9 @@ if (!fs.existsSync(configPath)) {
   process.exit(1);
 }
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-if (!config.name || !config.bin || !config.version || !config.platforms) {
-  fail("package-config.json is missing required fields (name, bin, version, platforms)");
+const bins = Array.isArray(config.bins) ? config.bins : (config.bin ? [config.bin] : []);
+if (!config.name || bins.length === 0 || !config.version || !config.platforms) {
+  fail("package-config.json is missing required fields (name, bins, version, platforms)");
 } else {
   pass("package-config.json has all required fields");
 }
@@ -85,10 +86,18 @@ if (!fs.existsSync(mainPkgJsonPath)) {
     pass("Main package has zero install scripts");
   }
 
-  if (!mainPkg.bin || !mainPkg.bin[config.bin]) {
-    fail(`Main package bin missing entry for "${config.bin}"`);
-  } else {
-    pass(`Main package bin points to ${mainPkg.bin[config.bin]}`);
+  let allBinsValid = true;
+  for (const b of bins) {
+    if (!mainPkg.bin || !mainPkg.bin[b]) {
+      fail(`Main package bin missing entry for "${b}"`);
+      allBinsValid = false;
+    } else if (mainPkg.bin[b] !== "./bin/mem.js") {
+      fail(`Main package bin "${b}" points to ${mainPkg.bin[b]}, expected "./bin/mem.js"`);
+      allBinsValid = false;
+    }
+  }
+  if (allBinsValid) {
+    pass(`Main package bin maps all ${bins.length} commands (${bins.join(", ")}) to ./bin/mem.js`);
   }
 
   // Check optionalDependencies
@@ -111,6 +120,7 @@ if (!fs.existsSync(mainPkgJsonPath)) {
 }
 
 // 3. Platform packages verification
+const primaryBin = bins[0] || "mem";
 for (const target of config.platforms) {
   const platformArch = `${target.platform}-${target.arch}`;
   const pkgName = computePackageName(config.scope, config.name, platformArch);
@@ -145,7 +155,7 @@ for (const target of config.platforms) {
     fail(`Platform package ${pkgName} must not contain scripts`);
   }
 
-  const binaryFilename = target.exe ? `${config.bin}.exe` : config.bin;
+  const binaryFilename = target.exe ? `${primaryBin}.exe` : primaryBin;
   const binaryPath = path.join(pkgDir, "bin", binaryFilename);
   if (!fs.existsSync(binaryPath)) {
     fail(`Binary missing for ${platformArch}: ${binaryPath}`);
@@ -219,7 +229,7 @@ if (hostTarget) {
     config.name,
     `${hostTarget.platform}-${hostTarget.arch}`
   );
-  const hostBinName = hostTarget.exe ? `${config.bin}.exe` : config.bin;
+  const hostBinName = hostTarget.exe ? `${primaryBin}.exe` : primaryBin;
   const hostBinPath = path.join(packagesDir, hostDirName, "bin", hostBinName);
 
   try {
@@ -238,7 +248,7 @@ if (hostTarget) {
 
   // 6. MEM_BINARY_PATH shim test
   console.log("\n[verify] Testing MEM_BINARY_PATH override with shim...");
-  const shimPath = path.join(mainPkgDir, "bin", `${config.bin}.js`);
+  const shimPath = path.join(mainPkgDir, "bin", "mem.js");
 
   try {
     const shimOut = execFileSync(process.execPath, [shimPath, "version"], {

@@ -38,9 +38,10 @@ type Config struct {
 	ModelsDir             string `toml:"models_dir"`
 	Port                  int    `toml:"port"`
 	DefaultTempExpiryDays int    `toml:"default_temp_expiry_days"`
-	Rerank                bool   `toml:"rerank"`
-	RerankModel           string `toml:"rerank_model"`
-	IdleTimeoutSeconds    int    `toml:"idle_timeout_seconds"`
+	Rerank                bool     `toml:"rerank"`
+	RerankModel           string   `toml:"rerank_model"`
+	SearchFuzzy           *bool    `toml:"search_fuzzy"`
+	IdleTimeoutSeconds    int      `toml:"idle_timeout_seconds"`
 	SidecarPath           string   `toml:"sidecar_path"`
 	EmbedModel            string   `toml:"embed_model"`
 	AllowedHosts          []string `toml:"allowed_hosts"`
@@ -53,6 +54,14 @@ func (c Config) BinDir() string {
 		return ""
 	}
 	return filepath.Join(filepath.Dir(c.ModelsDir), "bin")
+}
+
+// Fuzzy returns whether fuzzy search is enabled (default true).
+func (c Config) Fuzzy() bool {
+	if c.SearchFuzzy == nil {
+		return true
+	}
+	return *c.SearchFuzzy
 }
 
 // Path returns the config file path: $MEM_CONFIG or os.UserConfigDir()/mem/config.toml.
@@ -74,6 +83,7 @@ func Defaults() (Config, error) {
 		return Config{}, fmt.Errorf("locate home dir: %w", err)
 	}
 	base := filepath.Join(home, "."+AppName)
+	fuzzy := true
 	return Config{
 		DataDir:               filepath.Join(base, "data"),
 		ModelsDir:             filepath.Join(base, "models"),
@@ -82,6 +92,7 @@ func Defaults() (Config, error) {
 		IdleTimeoutSeconds:    DefaultIdleTimeoutSeconds,
 		EmbedModel:            DefaultEmbedModel,
 		RerankModel:           DefaultRerankModel,
+		SearchFuzzy:           &fuzzy,
 	}, nil
 }
 
@@ -202,6 +213,7 @@ func (c Config) String() string {
 		" embed_model=" + c.EmbedModel +
 		" rerank=" + strconv.FormatBool(c.Rerank) +
 		" rerank_model=" + c.RerankModel +
+		" search_fuzzy=" + strconv.FormatBool(c.Fuzzy()) +
 		" sidecar_path=" + c.SidecarPath
 	if len(c.AllowedHosts) > 0 {
 		s += " allowed_hosts=" + strings.Join(c.AllowedHosts, ",")
@@ -214,7 +226,7 @@ func Keys() []string {
 	return []string{
 		"data_dir", "models_dir", "port", "default_temp_expiry_days",
 		"idle_timeout_seconds", "embed_model", "rerank", "rerank_model",
-		"sidecar_path", "allowed_hosts",
+		"sidecar_path", "allowed_hosts", "search_fuzzy",
 	}
 }
 
@@ -267,6 +279,12 @@ func (c *Config) Set(key, value string) error {
 		c.Rerank = b
 	case "rerank_model":
 		c.RerankModel = value
+	case "search_fuzzy":
+		b, err := strconv.ParseBool(value)
+		if err != nil {
+			return fmt.Errorf("search_fuzzy must be true or false, got %q", value)
+		}
+		c.SearchFuzzy = &b
 	case "sidecar_path":
 		c.SidecarPath = value
 	case "allowed_hosts":
@@ -303,6 +321,8 @@ func (c Config) Get(key string) (string, error) {
 		return strconv.FormatBool(c.Rerank), nil
 	case "rerank_model":
 		return c.RerankModel, nil
+	case "search_fuzzy":
+		return strconv.FormatBool(c.Fuzzy()), nil
 	case "sidecar_path":
 		return c.SidecarPath, nil
 	case "allowed_hosts":

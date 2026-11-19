@@ -1,7 +1,7 @@
 {
-  "name": "@CHANGE-ME/mem-PLATFORM-ARCH",
+  "name": "@07prajwal2000/agent-memory-PLATFORM-ARCH",
   "version": "0.1.0",
-  "description": "Prebuilt binary package for mem on PLATFORM-ARCH",
+  "description": "Prebuilt binary package for agent-memory on PLATFORM-ARCH",
   "os": [
     "PLATFORM"
   ],
@@ -16,6 +16,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CHANGE-ME/mem"
+    "url": "https://github.com/07prajwal2000/memory"
   }
 }

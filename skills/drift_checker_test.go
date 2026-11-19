@@ -194,7 +194,7 @@ func checkMCPToolsAndArgs(text string) []error {
 
 	// 4. Verify all expected core arguments exist in the MCP schemas
 	expectedArgs := map[string][]string{
-		"search": {"query", "context", "no_global", "limit"},
+		"search": {"query", "context", "no_global", "limit", "fuzzy"},
 		"get":    {"name", "id", "context"},
 		"upsert": {"name", "id", "context", "body", "tags", "append", "if_version"},
 		"delete": {"id"},

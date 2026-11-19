@@ -461,6 +461,20 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var fuzzy *bool
+	if fStr := r.URL.Query().Get("fuzzy"); fStr != "" {
+		if fStr == "1" || fStr == "true" {
+			v := true
+			fuzzy = &v
+		} else if fStr == "0" || fStr == "false" {
+			v := false
+			fuzzy = &v
+		} else {
+			writeApiError(w, http.StatusBadRequest, "invalid", fmt.Sprintf("invalid fuzzy %q: must be 0 or 1", fStr), nil)
+			return
+		}
+	}
+
 	limit := 8
 	if lStr := r.URL.Query().Get("limit"); lStr != "" {
 		l, err := strconv.Atoi(lStr)
@@ -491,6 +505,7 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 		NoGlobal: noGlobal,
 		Limit:    limit,
 		PerDoc:   perDoc,
+		Fuzzy:    fuzzy,
 	})
 	if err != nil {
 		if errors.Is(err, engine.ErrEmptyQuery) {
@@ -512,6 +527,14 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	hits := res.Hits
 	if hits == nil {
 		hits = []search.Hit{}
+	}
+	for i := range hits {
+		if hits[i].MatchedTerms == nil {
+			hits[i].MatchedTerms = []string{}
+		}
+		if hits[i].Sources == nil {
+			hits[i].Sources = []string{}
+		}
 	}
 	degraded := res.Degraded
 	if degraded == nil {

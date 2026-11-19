@@ -3,20 +3,114 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
 
-permissions:
-  contents: write
-  id-token: write
+permissions: {}
 
 jobs:
+  guard:
+    name: Validate Release Guard
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      is_prerelease: ${{ steps.check.outputs.is_prerelease }}
+      should_release: ${{ steps.check.outputs.should_release }}
+    steps:
+      - name: Checkout repository (full history)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v5.2.0
+        with:
+          go-version: '1.24'
+          check-latest: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.1.0
+        with:
+          node-version: '20'
+
+      - name: Run Guard Verification
+        id: check
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CONFIG_VERSION=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("packaging/package-config.json","utf8")).version)')
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Workflow triggered via workflow_dispatch: running build & test only (no release, no publish)."
+            echo "version=${CONFIG_VERSION}" >> "$GITHUB_OUTPUT"
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          TAG_NAME="${GITHUB_REF_NAME}"
+          echo "Triggered by tag: ${TAG_NAME}"
+
+          if [[ ! "${TAG_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
+            echo "Error: Tag ${TAG_NAME} does not match semver pattern v[0-9]+.[0-9]+.[0-9]+*" >&2
+            exit 1
+          fi
+
+          VERSION="${TAG_NAME#v}"
+          echo "Derived VERSION: ${VERSION}"
+
+          # 1. Compare tag version with packaging/package-config.json
+          if [ "${VERSION}" != "${CONFIG_VERSION}" ]; then
+            echo "Error: Tag version (${VERSION}) differs from packaging/package-config.json version (${CONFIG_VERSION})" >&2
+            exit 1
+          fi
+          echo "Version match verified: ${VERSION} == ${CONFIG_VERSION}"
+
+          # 2. Verify Go binary version injection matches
+          GO_VERSION_OUT=$(go run -ldflags "-s -w -X memory/internal/cli.Version=${VERSION}" ./cmd/mem version)
+          echo "Go binary version output: ${GO_VERSION_OUT}"
+          if [[ "${GO_VERSION_OUT}" != *" ${VERSION} "* && "${GO_VERSION_OUT}" != *" ${VERSION}"* ]]; then
+            echo "Error: Go binary version output does not match expected version ${VERSION}" >&2
+            exit 1
+          fi
+
+          # 3. Verify tag is reachable from main
+          git fetch origin main:refs/remotes/origin/main || true
+          TAG_COMMIT=$(git rev-parse HEAD)
+          echo "Tag commit: ${TAG_COMMIT}"
+
+          if ! git merge-base --is-ancestor "${TAG_COMMIT}" origin/main; then
+            echo "Error: Tag commit ${TAG_COMMIT} is NOT reachable from branch 'main'!" >&2
+            exit 1
+          fi
+          echo "Commit reachability verified: ${TAG_COMMIT} is reachable from main"
+
+          # 4. Prerelease detection (hyphen in VERSION)
+          if [[ "${VERSION}" == *"-"* ]]; then
+            echo "Prerelease detected (version contains hyphen): true"
+            IS_PRERELEASE="true"
+          else
+            echo "Prerelease detected: false"
+            IS_PRERELEASE="false"
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=${IS_PRERELEASE}" >> "$GITHUB_OUTPUT"
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
+
   test-and-build:
     name: Build & Test (${{ matrix.os }})
+    needs: guard
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -81,7 +175,7 @@ jobs:
             *) ARCH="unknown";;
           esac
 
-          MAIN_TGZ=$(find "$GITHUB_WORKSPACE/packaging/dist/tarballs" -maxdepth 1 -name "*-mem-[0-9]*.tgz" | head -n 1)
+          MAIN_TGZ=$(find "$GITHUB_WORKSPACE/packaging/dist/tarballs" -maxdepth 1 -name "*-agent-memory-[0-9]*.tgz" | head -n 1)
           PLATFORM_TGZ=$(find "$GITHUB_WORKSPACE/packaging/dist/tarballs" -maxdepth 1 -name "*${PLATFORM}-${ARCH}*.tgz" | head -n 1)
 
           echo "Installing $MAIN_TGZ and $PLATFORM_TGZ..."
@@ -90,15 +184,17 @@ jobs:
           export MEM_CONFIG="$SMOKE_DIR/mem-test-config.json"
 
           npx mem version
+          npx memory version
+          npx agent-memory version
           npx mem help
           npx mem context ls
 
           # Stdio MCP handshake transparency verification
-          echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke-test","version":"1"}}}' | npx mem mcp > mcp_out.txt
+          echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke-test","version":"1"}}}' | npx memory mcp > mcp_out.txt
           cat mcp_out.txt
           grep -q '"result"' mcp_out.txt
 
-      - name: Upload tarball artifacts (Ubuntu only to deduplicate)
+      - name: Upload tarball artifacts (Ubuntu only)
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
@@ -106,10 +202,21 @@ jobs:
           path: packaging/dist/tarballs/*.tgz
           if-no-files-found: error
 
-  publish:
-    name: Publish to npm and GitHub Releases
-    needs: test-and-build
+      - name: Upload compiled packages for release assets (Ubuntu only)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: compiled-packages
+          path: packaging/dist/packages
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub Release
+    needs: [guard, test-and-build]
+    if: needs.guard.outputs.should_release == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -118,7 +225,6 @@ jobs:
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.1.0
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Download tarball artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
@@ -126,45 +232,137 @@ jobs:
           name: npm-tarballs
           path: packaging/dist/tarballs
 
-      - name: Build raw binaries for release assets
-        run: |
-          go version
-          node packaging/scripts/build.mjs --publish-ready
+      - name: Download compiled packages
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: compiled-packages
+          path: packaging/dist/packages
 
-      - name: Publish platform packages first, then main package
+      - name: Assemble Release Assets (Tarballs + Raw Binaries + SHA256SUMS)
+        shell: bash
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VERSION: ${{ needs.guard.outputs.version }}
         run: |
-          cd packaging/dist/tarballs
-          # Publish platform packages first
-          for tgz in *linux*.tgz *darwin*.tgz *win32*.tgz; do
-            if [ -f "$tgz" ]; then
-              echo "Publishing platform package $tgz..."
-              npm publish "$tgz" --provenance --access public
-            fi
-          done
-
-          # Publish main package last
-          for tgz in *-mem-[0-9]*.tgz; do
-            if [ -f "$tgz" ]; then
-              echo "Publishing main package $tgz..."
-              npm publish "$tgz" --provenance --access public
-            fi
-          done
-
-      - name: Create Checksums and Release Assets
-        run: |
+          set -euo pipefail
           mkdir -p release-assets
+
+          # 1. Copy all 7 tarballs
           cp packaging/dist/tarballs/*.tgz release-assets/
-          # Collect raw binaries
-          find packaging/dist/packages -type f -path "*/bin/*" -exec cp {} release-assets/ \;
+
+          # 2. Copy and rename raw binaries for the 6 targets: mem_<version>_<os>_<arch>[.exe]
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+            const config = JSON.parse(fs.readFileSync("packaging/package-config.json", "utf8"));
+            const version = process.env.VERSION;
+            const releaseDir = path.resolve("release-assets");
+
+            const packagesDir = path.resolve("packaging/dist/packages");
+            for (const target of config.platforms) {
+              const cleanScope = config.scope ? config.scope.replace(/^@/, "").replace(/[^a-zA-Z0-9_-]/g, "-") + "-" : "";
+              const dirName = cleanScope + config.name + "-" + target.platform + "-" + target.arch;
+              const ext = target.exe ? ".exe" : "";
+              const srcBin = path.join(packagesDir, dirName, "bin", "mem" + ext);
+              const destName = `mem_${version}_${target.os}_${target.arch}${ext}`;
+              const destBin = path.join(releaseDir, destName);
+              if (!fs.existsSync(srcBin)) {
+                console.error(`Binary not found: ${srcBin}`);
+                process.exit(1);
+              }
+              fs.copyFileSync(srcBin, destBin);
+              if (!target.exe) {
+                fs.chmodSync(destBin, 0o755);
+              }
+              console.log(`Prepared asset: ${destName}`);
+            }
+          '
+
+          # 3. Generate SHA256SUMS
           cd release-assets
           sha256sum * > SHA256SUMS
           cat SHA256SUMS
 
-      - name: Create GitHub Release
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
         with:
-          files: |
-            release-assets/*
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          prerelease: ${{ needs.guard.outputs.is_prerelease == 'true' }}
           generate_release_notes: true
+          files: release-assets/*
+          fail_on_unmatched_files: true
+
+  publish:
+    name: Publish to npm (Trusted Publishing / OIDC)
+    needs: [guard, release]
+    if: needs.guard.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js 24 for Trusted Publishing
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.1.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download npm tarballs
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: npm-tarballs
+          path: packaging/dist/tarballs
+
+      - name: Publish to npm via OIDC
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ vars.PUBLISH_NPM }}" != "true" ]; then
+            echo "Notice: Repository variable PUBLISH_NPM is not 'true' (current value: '${{ vars.PUBLISH_NPM }}')."
+            echo "Skipping automated npm publish. Tarballs remain available as release assets."
+            exit 0
+          fi
+
+          echo "PUBLISH_NPM is 'true'. Starting Trusted Publishing (OIDC)..."
+          npm --version
+          node --version
+
+          cd packaging/dist/tarballs
+
+          # 1. Publish platform packages first
+          for tgz in *linux*.tgz *darwin*.tgz *win32*.tgz; do
+            if [ -f "$tgz" ]; then
+              PKG_NAME=$(node -e 'const { execSync } = require("child_process"); const data = JSON.parse(execSync("npm pack --dry-run --json " + process.argv[1]).toString()); console.log(Array.isArray(data) ? data[0].name : data.name);' "$tgz")
+              PKG_VER=$(node -e 'const { execSync } = require("child_process"); const data = JSON.parse(execSync("npm pack --dry-run --json " + process.argv[1]).toString()); console.log(Array.isArray(data) ? data[0].version : data.version);' "$tgz")
+
+              echo "Checking registry for ${PKG_NAME}@${PKG_VER}..."
+              if npm view "${PKG_NAME}@${PKG_VER}" version >/dev/null 2>&1; then
+                echo "Notice: ${PKG_NAME}@${PKG_VER} is already published; skipping."
+              else
+                echo "Publishing platform package ${PKG_NAME}@${PKG_VER} from ${tgz}..."
+                npm publish "$tgz" --access public
+              fi
+            fi
+          done
+
+          # 2. Publish main wrapper package last
+          for tgz in *-agent-memory-[0-9]*.tgz; do
+            if [ -f "$tgz" ]; then
+              PKG_NAME=$(node -e 'const { execSync } = require("child_process"); const data = JSON.parse(execSync("npm pack --dry-run --json " + process.argv[1]).toString()); console.log(Array.isArray(data) ? data[0].name : data.name);' "$tgz")
+              PKG_VER=$(node -e 'const { execSync } = require("child_process"); const data = JSON.parse(execSync("npm pack --dry-run --json " + process.argv[1]).toString()); console.log(Array.isArray(data) ? data[0].version : data.version);' "$tgz")
+
+              echo "Checking registry for ${PKG_NAME}@${PKG_VER}..."
+              if npm view "${PKG_NAME}@${PKG_VER}" version >/dev/null 2>&1; then
+                echo "Notice: ${PKG_NAME}@${PKG_VER} is already published; skipping."
+              else
+                echo "Publishing primary package ${PKG_NAME}@${PKG_VER} from ${tgz}..."
+                npm publish "$tgz" --access public
+              fi
+            fi
+          done
+
+          echo "All packages processed."

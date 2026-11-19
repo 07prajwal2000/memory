@@ -44,6 +44,7 @@ func TestLoadDefaultsWhenMissing(t *testing.T) {
 
 func TestSaveAndLoadRoundTrip(t *testing.T) {
 	path := withConfigFile(t)
+	fuzzy := false
 	want := Config{
 		DataDir:               filepath.Join(t.TempDir(), "data"),
 		ModelsDir:             filepath.Join(t.TempDir(), "models"),
@@ -53,6 +54,7 @@ func TestSaveAndLoadRoundTrip(t *testing.T) {
 		EmbedModel:            "custom-embed.gguf",
 		Rerank:                true,
 		RerankModel:           "custom-rerank.gguf",
+		SearchFuzzy:           &fuzzy,
 		SidecarPath:           "/opt/llama/llama-server",
 		AllowedHosts:          []string{"tunnel.ngrok.io", "api.example.com"},
 	}
@@ -75,10 +77,39 @@ func TestSaveAndLoadRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	for _, key := range []string{"data_dir", "models_dir", "port", "default_temp_expiry_days", "idle_timeout_seconds", "embed_model", "rerank", "rerank_model", "sidecar_path", "allowed_hosts"} {
+	for _, key := range []string{"data_dir", "models_dir", "port", "default_temp_expiry_days", "idle_timeout_seconds", "embed_model", "rerank", "rerank_model", "search_fuzzy", "sidecar_path", "allowed_hosts"} {
 		if !strings.Contains(string(raw), key) {
 			t.Fatalf("config file missing %q:\n%s", key, raw)
 		}
+	}
+}
+
+func TestSearchFuzzySetGet(t *testing.T) {
+	var cfg Config
+	if !cfg.Fuzzy() {
+		t.Fatalf("uninitialized config.Fuzzy() should default to true")
+	}
+
+	if err := cfg.Set("search_fuzzy", "false"); err != nil {
+		t.Fatalf("Set search_fuzzy false: %v", err)
+	}
+	if cfg.Fuzzy() {
+		t.Fatalf("expected Fuzzy() = false after Set")
+	}
+	val, err := cfg.Get("search_fuzzy")
+	if err != nil || val != "false" {
+		t.Fatalf("Get search_fuzzy = %q, %v, want false", val, err)
+	}
+
+	if err := cfg.Set("search_fuzzy", "true"); err != nil {
+		t.Fatalf("Set search_fuzzy true: %v", err)
+	}
+	if !cfg.Fuzzy() {
+		t.Fatalf("expected Fuzzy() = true after Set")
+	}
+
+	if err := cfg.Set("search_fuzzy", "not-a-bool"); err == nil {
+		t.Fatal("expected error setting invalid search_fuzzy")
 	}
 }
 

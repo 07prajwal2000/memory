@@ -18,17 +18,11 @@ if (!fs.existsSync(configPath)) {
 
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const publishReady = process.argv.includes("--publish-ready");
-
-const isPlaceholder =
-  (config.scope && config.scope.includes("CHANGE-ME")) ||
-  (config.repository && config.repository.includes("CHANGE-ME")) ||
-  (config.author && config.author.includes("CHANGE-ME"));
-
-const isPrivate = !publishReady || isPlaceholder;
+const isPrivate = !publishReady;
 
 if (isPrivate) {
   console.log(
-    `[build] Note: Building with "private": true (publish-ready=${publishReady}, placeholder=${isPlaceholder})`
+    `[build] Note: Building with "private": true (publish-ready=${publishReady})`
   );
 }
 
@@ -71,6 +65,7 @@ const sizeReports = [];
 console.log(`[build] Starting build for version ${config.version}...`);
 
 const optionalDependencies = {};
+const primaryBin = Array.isArray(config.bins) ? config.bins[0] : (config.bin || "mem");
 
 // 1. Build and assemble each platform package
 for (const target of config.platforms) {
@@ -84,7 +79,7 @@ for (const target of config.platforms) {
 
   optionalDependencies[pkgName] = config.version;
 
-  const binaryFilename = target.exe ? `${config.bin}.exe` : config.bin;
+  const binaryFilename = target.exe ? `${primaryBin}.exe` : primaryBin;
   const binaryDest = path.join(binDir, binaryFilename);
 
   console.log(
@@ -176,12 +171,12 @@ Standalone binary asset for ${config.name} on ${platformArch}.
   }
 }
 
-// 2. Assemble the main package
+// 2. Assemble the primary package
 console.log(`[build] Assembling primary package: ${mainPackageName}...`);
 fs.mkdirSync(path.join(mainPkgDir, "bin"), { recursive: true });
 
 const shimSrc = path.join(packagingDir, "npm", "main", "bin", "mem.js");
-const shimDest = path.join(mainPkgDir, "bin", `${config.bin}.js`);
+const shimDest = path.join(mainPkgDir, "bin", "mem.js");
 
 fs.copyFileSync(shimSrc, shimDest);
 try {
@@ -195,13 +190,17 @@ for (const key of Object.keys(optionalDependencies).sort()) {
   sortedOptionalDeps[key] = optionalDependencies[key];
 }
 
+const bins = Array.isArray(config.bins) ? config.bins : [config.bin || "mem"];
+const binMap = {};
+for (const b of bins) {
+  binMap[b] = "./bin/mem.js";
+}
+
 const mainPkgJson = {
   name: mainPackageName,
   version: config.version,
   description: config.description,
-  bin: {
-    [config.bin]: `./bin/${config.bin}.js`,
-  },
+  bin: binMap,
   files: ["bin/", "README.md", "LICENSE"],
   engines: config.engines,
   license: config.license,

@@ -138,10 +138,10 @@ func (ix *Index) Search(ctx context.Context, q Query) (Result, error) {
 	wg.Add(legsCount)
 
 	const ftsSQL = `
-		SELECT rowid, bm25(chunks_fts)
+		SELECT rowid, bm25(chunks_fts, 0.0, 1.0, 1.0, 0.1)
 		FROM chunks_fts
 		WHERE chunks_fts MATCH ?
-		ORDER BY bm25(chunks_fts)
+		ORDER BY bm25(chunks_fts, 0.0, 1.0, 1.0, 0.1)
 		LIMIT 50
 	`
 

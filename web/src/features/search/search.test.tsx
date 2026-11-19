@@ -1,11 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import { renderWithProviders } from '../../test/test-utils';
 import { SearchResultsView } from './SearchResultsView';
 import { mockDb } from '../../mocks/db';
 
 describe('Search Feature', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
   it('renders search results matching query in global scope', async () => {
     renderWithProviders(
       <Routes>
@@ -17,7 +21,7 @@ describe('Search Feature', () => {
     expect(screen.getByText('Hybrid Search')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText(/agents\/prompting-guide\.md/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /agents\/prompting-guide\.md/i })).toBeInTheDocument();
     });
 
     expect(screen.getByText('bm25')).toBeInTheDocument();
@@ -32,7 +36,7 @@ describe('Search Feature', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getAllByText(/storage\/sqlite-vec\.md/i).length).toBeGreaterThan(0);
+      expect(screen.getByRole('button', { name: /storage\/sqlite-vec\.md/i })).toBeInTheDocument();
     });
 
     expect(screen.getByText('bm25')).toBeInTheDocument();
@@ -69,5 +73,75 @@ describe('Search Feature', () => {
     const globalSwitch = screen.getByLabelText(/include global context/i);
     expect(globalSwitch).toBeChecked();
     expect(globalSwitch).toBeDisabled();
+  });
+
+  it('finds document with a partial word (prefix match)', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path="/search" element={<SearchResultsView />} />
+      </Routes>,
+      { initialEntries: ['/search?q=promp'] },
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /agents\/prompting-guide\.md/i })).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText('fuzzy').length).toBeGreaterThan(0);
+  });
+
+  it('finds document with a typo (typo tolerance)', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path="/search" element={<SearchResultsView />} />
+      </Routes>,
+      { initialEntries: ['/search?q=tokn'] },
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /guidelines\/security\.md/i })).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText('fuzzy').length).toBeGreaterThan(0);
+  });
+
+  it('switching fuzzy off removes fuzzy-only hits', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <Routes>
+        <Route path="/search" element={<SearchResultsView />} />
+      </Routes>,
+      { initialEntries: ['/search?q=tokn'] },
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /guidelines\/security\.md/i })).toBeInTheDocument();
+    });
+
+    const fuzzySwitch = screen.getByLabelText(/^fuzzy$/i);
+    expect(fuzzySwitch).toBeChecked();
+
+    await user.click(fuzzySwitch);
+
+    await waitFor(() => {
+      expect(screen.getByText(/no results for "tokn"/i)).toBeInTheDocument();
+    });
+  });
+
+  it('renders highlights on matched terms', async () => {
+    renderWithProviders(
+      <Routes>
+        <Route path="/search" element={<SearchResultsView />} />
+      </Routes>,
+      { initialEntries: ['/search?q=tokn'] },
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /guidelines\/security\.md/i })).toBeInTheDocument();
+    });
+
+    // Check that <mark> elements are rendered for the matched terms
+    const marks = document.querySelectorAll('mark');
+    expect(marks.length).toBeGreaterThan(0);
   });
 });

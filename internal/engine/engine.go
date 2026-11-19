@@ -313,12 +313,18 @@ func Open(cfg config.Config, opts ...Option) (*Engine, error) {
 		opt(&o)
 	}
 
+	fuzzyDefault := o.fuzzyDefault
+	if fuzzyDefault == nil {
+		b := cfg.Fuzzy()
+		fuzzyDefault = &b
+	}
+
 	e := &Engine{
 		logger:        o.logger,
 		indexTimeout:  o.indexTimeout,
 		syncBatchSize: o.syncBatchSize,
 		progress:      o.progress,
-		fuzzyDefault:  o.fuzzyDefault,
+		fuzzyDefault:  fuzzyDefault,
 	}
 
 	if err := e.buildClients(cfg, o); err != nil {
@@ -340,8 +346,8 @@ func Open(cfg config.Config, opts ...Option) (*Engine, error) {
 	searchOpts := []search.Option{
 		search.WithResidentVectors(o.residentVectors),
 	}
-	if o.fuzzyDefault != nil {
-		searchOpts = append(searchOpts, search.WithFuzzy(*o.fuzzyDefault))
+	if fuzzyDefault != nil {
+		searchOpts = append(searchOpts, search.WithFuzzy(*fuzzyDefault))
 	}
 	ix, err := search.OpenIndex(filepath.Join(cfg.DataDir, SearchDBFile), e.embedder, e.reranker, searchOpts...)
 	if errors.Is(err, search.ErrNeedsReindex) {

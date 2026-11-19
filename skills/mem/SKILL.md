@@ -29,7 +29,7 @@ If neither is available, tell the user that `mem` is not installed or connected 
 3. Open the promising hits with `get` (by `id`) and read the whole note. A snippet is a pointer, not the fact.
 
 Search tips:
-- Write the query the way you would ask a colleague ("how do we deploy the staging API") and add exact identifiers when you know them (error codes, flags, function names, ticket ids). Exact identifiers are matched literally.
+- Write the query the way you would ask a colleague ("how do we deploy the staging API") and add exact identifiers when you know them (error codes, flags, function names, ticket ids). Exact identifiers are matched literally. Fuzzy/partial/typo matching is on by default; use `fuzzy:false` / `--no-fuzzy` when you need exact-word precision or results are noisy.
 - Start narrow (`context`), then widen (drop it, or raise `limit`). `no_global` excludes the global context and requires a `context`.
 - A note at the top of the results such as "keyword-only results" means the embedding model is unavailable. Results are still valid, just less semantic: rephrase with the actual words the note would contain.
 - Zero hits is information: say that nothing was found rather than guessing.
@@ -90,7 +90,7 @@ All commands accept `--json` for machine-readable output and `--context C` where
 mem get                                   # default file + contexts (orient)
 mem get <name-or-id> [--context C]        # read one memory
 mem ls [--context C] [--limit N]          # list memories (default context: global)
-mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N]
+mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N] [--no-fuzzy]
 mem upsert [--context C] [--name N] [--id ID] [--tag T]... [--append] [--if-version V] [--by WHO] [body | -]
 mem delete <id>
 mem context create [slug] [--temp] [--expiry DAYS]

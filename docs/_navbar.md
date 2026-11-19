@@ -1,0 +1,5 @@
+- [Home](/)
+- [Quick start](quickstart.md)
+- [CLI](cli.md)
+- [MCP](mcp.md)
+- [GitHub](https://github.com/07prajwal2000/memory)

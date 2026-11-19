@@ -16,15 +16,57 @@ type Chunk struct {
 }
 
 func (c Chunk) Embed() string {
-	var prefix string
-	if c.DocName != "" && c.Heading != "" {
-		prefix = c.DocName + " > " + c.Heading + "\n\n"
-	} else if c.DocName != "" {
-		prefix = c.DocName + "\n\n"
-	} else if c.Heading != "" {
-		prefix = c.Heading + "\n\n"
+	header := BuildChunkHeader(c.DocName, c.Heading)
+	if header != "" {
+		return header + "\n\n" + c.Text
 	}
-	return prefix + c.Text
+	return c.Text
+}
+
+// BuildChunkHeader constructs the contextual header for a chunk:
+// "<memory name without .md> > <heading path>".
+// Keeps '/' in docName; for unnamed memories uses the heading path; returns "" if both are empty.
+func BuildChunkHeader(docName, heading string) string {
+	name := strings.TrimSpace(docName)
+	if name != "" {
+		name = strings.TrimSuffix(name, ".md")
+	}
+
+	cleanH := cleanHeadingPath(heading)
+
+	if name != "" && cleanH != "" {
+		if name == cleanH || strings.HasPrefix(cleanH, name+" > ") {
+			return cleanH
+		}
+		return name + " > " + cleanH
+	}
+	if name != "" {
+		return name
+	}
+	if cleanH != "" {
+		return cleanH
+	}
+	return ""
+}
+
+func cleanHeadingPath(heading string) string {
+	heading = strings.TrimSpace(heading)
+	if heading == "" {
+		return ""
+	}
+	parts := strings.Split(heading, " > ")
+	cleanedParts := make([]string, 0, len(parts))
+	for _, p := range parts {
+		trimmed := strings.TrimSpace(p)
+		// Strip leading '#' characters and spaces from markdown headings
+		stripped := strings.TrimSpace(strings.TrimLeft(trimmed, "# \t"))
+		if stripped != "" {
+			cleanedParts = append(cleanedParts, stripped)
+		} else if trimmed != "" {
+			cleanedParts = append(cleanedParts, trimmed)
+		}
+	}
+	return strings.Join(cleanedParts, " > ")
 }
 
 type ChunkOpts struct {

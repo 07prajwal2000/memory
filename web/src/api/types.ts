@@ -26,7 +26,7 @@ export type Memory = MemorySummary & {
   body: string;
 };
 
-export type HitSource = 'bm25' | 'vec' | 'rerank';
+export type HitSource = 'bm25' | 'vec' | 'rerank' | 'fuzzy' | 'name';
 
 export type Hit = {
   doc_id: string;
@@ -37,6 +37,7 @@ export type Hit = {
   chunk: number;
   score: number;
   sources: HitSource[];
+  matched_terms: string[];
 };
 
 export type ApiErrorKind =
@@ -138,6 +139,7 @@ export type SearchParams = {
   q: string;
   context?: string;
   no_global?: boolean;
+  fuzzy?: boolean;
   limit?: number;
   per_doc?: number;
 };

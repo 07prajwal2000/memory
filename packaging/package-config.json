@@ -1,12 +1,16 @@
 {
-  "scope": "@CHANGE-ME",
-  "name": "mem",
-  "bin": "mem",
+  "scope": "@07prajwal2000",
+  "name": "agent-memory",
+  "bins": [
+    "mem",
+    "memory",
+    "agent-memory"
+  ],
   "version": "0.1.0",
   "description": "Local long-term memory store for AI agents",
-  "repository": "https://github.com/CHANGE-ME/mem",
+  "repository": "https://github.com/07prajwal2000/memory",
   "license": "MIT",
-  "author": "CHANGE-ME",
+  "author": "07prajwal2000",
   "engines": {
     "node": ">=18"
   },

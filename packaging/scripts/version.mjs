@@ -63,10 +63,14 @@ if (args[0] === "--bump") {
     process.exit(1);
   }
 } else {
-  const candidate = args[0].replace(/^v/, "");
+  let candidate = args[0];
+  if (candidate === "--set" && args[1]) {
+    candidate = args[1];
+  }
+  candidate = candidate.replace(/^v/, "");
   if (!isValidSemver(candidate)) {
     console.error(
-      `[version] Error: "${args[0]}" is not a valid semver version string (e.g. 1.2.3).`
+      `[version] Error: "${candidate}" is not a valid semver version string (e.g. 1.2.3 or 1.2.3-alpha.1).`
     );
     process.exit(1);
   }
@@ -76,4 +80,20 @@ if (args[0] === "--bump") {
 const oldVersion = config.version;
 config.version = newVersion;
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
+
+// Also keep template package.json files aligned if present
+const mainPkgJsonPath = path.join(packagingDir, "npm", "main", "package.json");
+if (fs.existsSync(mainPkgJsonPath)) {
+  const mainPkg = JSON.parse(fs.readFileSync(mainPkgJsonPath, "utf8"));
+  mainPkg.version = newVersion;
+  fs.writeFileSync(mainPkgJsonPath, JSON.stringify(mainPkg, null, 2) + "\n");
+}
+
+const platformPkgJsonPath = path.join(packagingDir, "npm", "platform", "package.json");
+if (fs.existsSync(platformPkgJsonPath)) {
+  const platPkg = JSON.parse(fs.readFileSync(platformPkgJsonPath, "utf8"));
+  platPkg.version = newVersion;
+  fs.writeFileSync(platformPkgJsonPath, JSON.stringify(platPkg, null, 2) + "\n");
+}
+
 console.log(`[version] Updated version: ${oldVersion} -> ${newVersion}`);

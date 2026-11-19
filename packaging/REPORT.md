@@ -24,11 +24,10 @@ packaging/
     build.mjs                    # Cross-compiles 6 targets (CGO_ENABLED=0) into packaging/dist/packages/
     pack.mjs                     # Audits files and runs npm pack into packaging/dist/tarballs/
     verify.mjs                   # Structural tests, version alignment, and mapping verification
-    version.mjs                  # Version inspection and bumping utility (semver)
-  .github/workflows/
-    release.yml                  # GitHub Actions release pipeline template
+    version.mjs                  # Version inspection, exact setting, and bumping utility
+    release-check.mjs            # Pre-release validation (tag vs config, clean tree, reachability)
 .github/workflows/
-  release.yml                    # Root GitHub Actions workflow for automated releases
+  release.yml                    # Root GitHub Actions workflow for automated tag-driven releases
 README.md                        # Root project README
 LICENSE                          # Root project MIT license
 ```
@@ -428,5 +427,128 @@ ExitCode: 1
 
 1. **Package Scope & Name**: Choose whether to publish under an npm organization scope (e.g. `@my-org/mem`) or an unscoped package (`mem`). Update `scope` in `packaging/package-config.json`.
 2. **Repository URL**: Update `repository` in `packaging/package-config.json` to the canonical GitHub URL.
-3. **npm Access Token**: Add an `NPM_TOKEN` secret to the GitHub repository settings with publish rights for the selected scope.
-4. **Publish Execution**: Pass `--publish-ready` to `build.mjs` during production release.
+3. **npm Publishing Configuration**: Old `NPM_TOKEN` secret path is intentionally not supported. Configure npm Trusted Publishing (OIDC) for each of the 7 packages on npmjs.com, and add the repository variable `PUBLISH_NPM=true` in GitHub Actions settings.
+4. **Publish Execution**: Initial release (v0.1.0) must be published manually with 2FA OTP to establish packages on npm registry before OIDC can be linked; subsequent releases are automated via git tags.
+
+---
+
+## Naming Update (Scope `@07prajwal2000`, Multi-Bin Aliases)
+
+### 1. Decisions Applied
+- **Scope & Package Name**: Configured primary package name as `@07prajwal2000/agent-memory` and 6 platform packages as `@07prajwal2000/agent-memory-<platform>-<arch>` (win32-x64, win32-arm64, linux-x64, linux-arm64, darwin-x64, darwin-arm64). Version remains `0.1.0`.
+- **Three Command Aliases**: Mapped all three command names in `package.json` `bin` of the main package to the same transparent Node.js wrapper shim (`./bin/mem.js`):
+  ```json
+  "bin": {
+    "mem": "./bin/mem.js",
+    "memory": "./bin/mem.js",
+    "agent-memory": "./bin/mem.js"
+  }
+  ```
+  The shim invokes the native Go executable (`mem` / `mem.exe`) regardless of which alias was called. Arguments are forwarded transparently.
+- **Metadata Alignment**: Updated `packaging/package-config.json` to `scope: "@07prajwal2000"`, `name: "agent-memory"`, `bins: ["mem", "memory", "agent-memory"]`, `repository: "https://github.com/07prajwal2000/memory"`, `author: "07prajwal2000"`, `license: "MIT"`.
+- **Safety Safeguard**: Removed all `@CHANGE-ME` placeholders while keeping the publication safety guard: builds without the `--publish-ready` flag automatically inject `"private": true` into all package manifests, blocking accidental `npm publish`.
+- **Workflows & Docs**: Updated `.github/workflows/release.yml`, root `README.md`, `packaging/README.md`, and package templates. Deleted duplicate `packaging/.github/workflows/release.yml`.
+
+### 2. npm Registry Availability Lookups
+Queries against `https://registry.npmjs.org` returned 404 (Not Found / free) for all 7 package names:
+- `npm view @07prajwal2000/agent-memory`: `404 Not Found` (free)
+- `npm view @07prajwal2000/agent-memory-linux-x64`: `404 Not Found` (free)
+- `npm view @07prajwal2000/agent-memory-linux-arm64`: `404 Not Found` (free)
+- `npm view @07prajwal2000/agent-memory-darwin-x64`: `404 Not Found` (free)
+- `npm view @07prajwal2000/agent-memory-darwin-arm64`: `404 Not Found` (free)
+- `npm view @07prajwal2000/agent-memory-win32-x64`: `404 Not Found` (free)
+- `npm view @07prajwal2000/agent-memory-win32-arm64`: `404 Not Found` (free)
+
+> **Notice on Scope Ownership:** Ownership of the `@07prajwal2000` npm scope was **NOT** verified in registry publish terms (the repository owner must confirm their npm username or organization matches `07prajwal2000`, or update `scope` in `packaging/package-config.json`).
+
+### 3. Verification Transcript (Clean Isolated Directory)
+Executed build, verification, and pack sequence:
+- `node packaging/scripts/build.mjs`: cross-compiled 6 platform targets and assembled primary package.
+- `node packaging/scripts/verify.mjs`: all structural, version, and platform mapping tests passed.
+- `node packaging/scripts/pack.mjs`: created 7 tarballs in `packaging/dist/tarballs/`.
+
+In a clean isolated directory, installed the main package alongside the host platform package:
+```bash
+npm init -y
+npm install --no-optional packaging/dist/tarballs/07prajwal2000-agent-memory-0.1.0.tgz packaging/dist/tarballs/07prajwal2000-agent-memory-win32-x64-0.1.0.tgz
+```
+
+**Binary shims present in `node_modules/.bin`**:
+- `agent-memory`, `agent-memory.cmd`, `agent-memory.ps1`
+- `mem`, `mem.cmd`, `mem.ps1`
+- `memory`, `memory.cmd`, `memory.ps1`
+
+**Execution across all three aliases and npx**:
+- `mem version` -> `mem 0.1.0 (go windows/amd64, go1.27.0)`
+- `memory version` -> `mem 0.1.0 (go windows/amd64, go1.27.0)`
+- `agent-memory version` -> `mem 0.1.0 (go windows/amd64, go1.27.0)`
+- `npx @07prajwal2000/agent-memory version` -> `mem 0.1.0 (go windows/amd64, go1.27.0)`
+
+**MCP Stdio handshake via `memory` alias**:
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1"}}}' | .\node_modules\.bin\memory.cmd mcp
+```
+Response:
+```json
+{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"mem","version":"0.1.0"},"instructions":"Persistent memory shared across your sessions, stored locally.\n..."}}
+```
+All commands, aliases, shims, and MCP protocols functioned identically and without leaking program names.
+
+---
+
+## Tag-Driven Release Pipeline & Trusted Publishing (OIDC) Update
+
+### 1. Workflow Architecture (`.github/workflows/release.yml`)
+The GitHub Actions release workflow at `.github/workflows/release.yml` is the sole canonical workflow (the duplicate `packaging/.github/workflows/release.yml` was deleted).
+
+- **Triggers**:
+  - Push of tags matching pattern: `v[0-9]+.[0-9]+.[0-9]+*`.
+  - Manual `workflow_dispatch`: executes build, test, and package verification across all matrix operating systems, but exits without releasing or publishing.
+- **Job 1: `guard`** (`runs-on: ubuntu-latest`, `permissions: contents: read`):
+  - Derives `VERSION` from the tag name (strips leading `v`).
+  - Verifies that `VERSION` strictly matches `packaging/package-config.json`'s version.
+  - Verifies Go binary injection by running `go run -ldflags "-s -w -X memory/internal/cli.Version=${VERSION}" ./cmd/mem version` and checking that the output matches `${VERSION}`.
+  - Verifies tag commit reachability from `origin/main` via `git merge-base --is-ancestor`. Fails if tag was pushed on an unmerged or detached branch.
+  - Detects prereleases: if `VERSION` contains a hyphen `-`, outputs `is_prerelease=true`.
+  - Output flags: `version`, `is_prerelease`, `should_release` (`false` on `workflow_dispatch`).
+- **Job 2: `test-and-build`** (`runs-on: ${{ matrix.os }}` across `ubuntu-latest`, `macos-latest`, `windows-latest`):
+  - Runs Go tests and web frontend builds.
+  - Compiles all 6 platform binaries with `build.mjs --publish-ready`.
+  - Verifies manifests and mappings with `verify.mjs`.
+  - Audits and packs all 7 npm tarballs with `pack.mjs`.
+  - Performs offline smoke test installation from generated tarballs.
+  - Uploads tarballs and compiled packages as workflow artifacts (Ubuntu runner).
+- **Job 3: `release`** (`needs: [guard, test-and-build]`, `permissions: contents: write` only):
+  - Runs only if `needs.guard.outputs.should_release == 'true'`.
+  - Assembles all 7 `.tgz` npm tarballs and raw standalone executables for all 6 targets named:
+    `mem_<version>_<os>_<arch>[.exe]` (e.g. `mem_0.1.0_linux_x64`, `mem_0.1.0_linux_arm64`, `mem_0.1.0_darwin_x64`, `mem_0.1.0_darwin_arm64`, `mem_0.1.0_win32_x64.exe`, `mem_0.1.0_win32_arm64.exe`).
+  - Generates `SHA256SUMS` manifest for all 13 binary assets.
+  - Creates or updates the GitHub Release via `softprops/action-gh-release` with `generate_release_notes: true` (idempotent on re-run).
+- **Job 4: `publish`** (`needs: [guard, release]`, `permissions: id-token: write, contents: read` only):
+  - Configured for **npm Trusted Publishing (OIDC)** without legacy `NPM_TOKEN` secrets.
+  - Runs on `node-version: 24` (guaranteeing `npm >= 11.5.1`).
+  - Gated by repository variable: executes only if `vars.PUBLISH_NPM == 'true'`. When not `'true'`, logs an informational notice and exits successfully (`exit 0`).
+  - Inspects registry for each package using `npm view <package>@<version> version` and skips versions already published.
+  - Publishes platform packages first, then primary wrapper package last via plain `npm publish <tgz> --access public`.
+
+### 2. YAML Validation Evidence
+Validated `.github/workflows/release.yml` syntax and structure using standard YAML parser (`pyyaml`):
+```
+Parser result: YAML Valid!
+Jobs defined: ['guard', 'test-and-build', 'release', 'publish']
+Permissions:
+  - top-level: {}
+  - guard: { contents: read }
+  - test-and-build: { contents: read }
+  - release: { contents: write }
+  - publish: { id-token: write, contents: read }
+Action pins: All third-party actions pinned to immutable 40-character commit SHAs.
+```
+
+### 3. Local Utilities Added & Verified
+- **`packaging/scripts/release-check.mjs`**:
+  Validates semver consistency in `package-config.json`, verifies working tree cleanliness via `git status --porcelain`, ensures the tag does not already exist, verifies HEAD reachability from `main`, and prints the exact git commands to commit, tag, and push.
+- **`packaging/scripts/version.mjs`**:
+  Updated to support reading current version, setting an exact version across `package-config.json` (e.g. `node packaging/scripts/version.mjs 0.2.0`), or semver bumping (`--bump patch|minor|major`). Aligns package templates simultaneously.
+
+

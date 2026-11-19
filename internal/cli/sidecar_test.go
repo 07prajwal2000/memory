@@ -51,6 +51,18 @@ func fakeExecutable(t *testing.T, path string, archOS string) {
 	if err := os.WriteFile(path, buf, 0o755); err != nil {
 		t.Fatal(err)
 	}
+	var lib string
+	switch runtime.GOOS {
+	case "windows":
+		lib = "llama.dll"
+	case "darwin":
+		lib = "libllama.dylib"
+	default:
+		lib = "libllama.so"
+	}
+	if err := os.WriteFile(filepath.Join(filepath.Dir(path), lib), []byte("lib"), 0o644); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func sidecarName() string {
@@ -88,7 +100,7 @@ func TestStatusDetectsStubSidecar(t *testing.T) {
 		t.Fatalf("status reported the stub as ok: %v", st["sidecar_ok"])
 	}
 	problem, _ := st["sidecar_problem"].(string)
-	if !strings.Contains(problem, "only 8 bytes") {
+	if !strings.Contains(problem, "not a recognised executable") {
 		t.Fatalf("problem = %q", problem)
 	}
 	if st["needs_reinstall"] != true {

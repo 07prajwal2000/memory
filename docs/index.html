@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mem — local long-term memory for AI agents</title>
+  <meta name="description" content="mem keeps notes as plain markdown on your disk and makes them searchable by meaning and keyword, for you and your AI agents." />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/themes/vue.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/dist/style.min.css" title="docsify-darklight-theme" type="text/css" />
+
+  <style>
+    :root {
+      --base-font-size: 16px;
+      --theme-color: #4f46e5;
+    }
+
+    .markdown-section { max-width: 780px; }
+    .markdown-section code { font-size: 0.86em; }
+    .markdown-section pre > code { font-size: 0.84em; line-height: 1.5; }
+    .markdown-section h1 { font-size: 1.9rem; }
+    .markdown-section h2 { font-size: 1.4rem; margin-top: 2rem; }
+    .markdown-section table { font-size: 0.92em; }
+    .app-nav { margin-right: 1.5rem; }
+    .next-steps { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--borderColor); }
+
+    /* Docsify's vue theme hardcodes a green accent. Use the theme variable
+       that the dark/light plugin maintains instead. */
+    .markdown-section a:not(.anchor) { color: var(--accent); }
+    .app-nav a.active,
+    .app-nav a:hover,
+    .sidebar a.active,
+    .sidebar a:hover,
+    .sidebar ul li a:hover { color: var(--accent) !important; }
+    .app-nav a.active { border-bottom-color: var(--accent) !important; }
+    .github-corner svg path:first-child { fill: var(--accent) !important; }
+
+    /* Cover / hero. The theme plugin writes its own !important rule and an
+       inline --coverBackground, so read that variable and out-specify it. */
+    html body section.cover.show {
+      background: var(--coverBackground) !important;
+      border-bottom: 1px solid var(--borderColor) !important;
+    }
+    html body section.cover.show .mask { display: none !important; }
+    html body section.cover.show .cover-main {
+      max-width: 760px;
+      color: var(--textColor) !important;
+      opacity: 1 !important;
+    }
+    html body section.cover.show .cover-main h1 {
+      color: var(--textColor) !important;
+      opacity: 1 !important;
+      font-size: clamp(3rem, 8vw, 4.8rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      margin-bottom: 0.5rem;
+    }
+    html body section.cover.show .cover-main h1 a,
+    html body section.cover.show .cover-main h1 a span {
+      color: var(--textColor) !important;
+      -webkit-text-fill-color: var(--textColor) !important;
+      opacity: 1 !important;
+    }
+    html body section.cover.show .cover-main blockquote {
+      border: 0 !important;
+      margin: 0 auto 1.75rem;
+      padding: 0;
+      max-width: 720px;
+    }
+    html body section.cover.show .cover-main blockquote p {
+      color: var(--blockQuoteColor) !important;
+      font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+      line-height: 1.55;
+      font-weight: 400;
+      opacity: 1 !important;
+    }
+    html body section.cover.show .cover-main ul {
+      margin: 0 auto 2rem;
+      padding: 0;
+      max-width: 560px;
+      color: var(--textColor) !important;
+      opacity: 0.9 !important;
+    }
+    html body section.cover.show .cover-main ul li {
+      margin: 0.35rem 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    html body section.cover.show .cover-main > p:last-child {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      align-items: center;
+    }
+    html body section.cover.show .cover-main > p:last-child a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+      margin: 0;
+      padding: 0.7rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--borderColor) !important;
+      background: var(--background) !important;
+      color: var(--textColor) !important;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      opacity: 1 !important;
+      transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    html body section.cover.show .cover-main > p:last-child a:hover {
+      border-color: var(--accent) !important;
+      transform: translateY(-1px);
+    }
+    html body section.cover.show .cover-main > p:last-child a:first-child {
+      background: #4f46e5 !important;
+      border-color: #4f46e5 !important;
+      color: #ffffff !important;
+    }
+    html body section.cover.show .cover-main > p:last-child a:first-child:hover {
+      background: #4338ca !important;
+      border-color: #4338ca !important;
+    }
+
+    /* GitHub-style callouts (`> [!NOTE]`) in Docsify 4. */
+    .markdown-section blockquote.callout {
+      border-left: 4px solid var(--accent) !important;
+      background: rgba(79, 70, 229, 0.07);
+      border-radius: 0 8px 8px 0;
+      padding: 0.85rem 1rem;
+      color: var(--textColor);
+    }
+    .markdown-section blockquote.callout p { margin: 0; }
+    .markdown-section blockquote.callout::before {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+      color: var(--accent);
+      content: "Note";
+    }
+    .markdown-section blockquote.callout-warning {
+      border-left-color: #d97706 !important;
+      background: rgba(217, 119, 6, 0.08);
+    }
+    .markdown-section blockquote.callout-warning::before {
+      color: #b45309;
+      content: "Warning";
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Loading documentation…</div>
+
+  <script>
+    window.$docsify = {
+      name: 'mem',
+      repo: 'https://github.com/07prajwal2000/memory',
+      loadSidebar: true,
+      loadNavbar: true,
+      coverpage: true,
+      subMaxLevel: 2,
+      auto2top: true,
+      homepage: 'README.md',
+      search: {
+        placeholder: 'Search the docs',
+        noData: 'No results found.',
+        paths: 'auto',
+        depth: 3
+      },
+      copyCode: {
+        buttonText: 'Copy',
+        errorText: 'Could not copy',
+        successText: 'Copied'
+      },
+      pagination: {
+        previousText: 'Previous',
+        nextText: 'Next',
+        crossChapter: true
+      },
+      darklightTheme: {
+        defaultTheme: 'light',
+        bodyFontSize: '16px',
+        siteFont: 'Source Sans Pro, Helvetica Neue, Arial, sans-serif',
+        codeFontFamily: 'Roboto Mono, Monaco, courier, monospace',
+        light: {
+          accent: '#4338ca',
+          background: '#ffffff',
+          textColor: '#0f172a',
+          codeTextColor: '#0f172a',
+          codeBackgroundColor: '#f8fafc',
+          borderColor: '#e2e8f0',
+          blockQuoteColor: '#475569',
+          highlightColor: '#4f46e5',
+          sidebarSublink: '#475569',
+          codeTypeColor: '#0f172a',
+          coverBackground: 'radial-gradient(900px 520px at 50% -8%, #e0e7ff 0%, rgba(224,231,255,0) 62%), linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)'
+        },
+        dark: {
+          accent: '#a5b4fc',
+          background: '#0b1220',
+          textColor: '#e2e8f0',
+          codeTextColor: '#e2e8f0',
+          codeBackgroundColor: '#111c30',
+          borderColor: '#1e293b',
+          blockQuoteColor: '#94a3b8',
+          highlightColor: '#a5b4fc',
+          sidebarSublink: '#94a3b8',
+          codeTypeColor: '#e2e8f0',
+          coverBackground: 'radial-gradient(900px 520px at 50% -8%, rgba(99,102,241,0.22) 0%, rgba(15,23,42,0) 62%), linear-gradient(180deg, #0b1220 0%, #0f172a 100%)'
+        }
+      }
+    };
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@3.0.2/dist/docsify-copy-code.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2.10.1/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/dist/index.min.js"></script>
+  <script>
+    // Turn `> [!NOTE]` and `> [!WARNING]` blockquotes into styled callouts.
+    (function () {
+      function callouts(hook) {
+        hook.doneEach(function () {
+          document.querySelectorAll('.markdown-section blockquote').forEach(function (quote) {
+            var p = quote.querySelector('p');
+            if (!p) return;
+            var match = p.textContent.match(/^\s*\[!(NOTE|WARNING|TIP|IMPORTANT)\]\s*/i);
+            if (!match) return;
+            var kind = match[1].toLowerCase();
+            quote.classList.add('callout');
+            quote.classList.add('callout-' + kind);
+            var walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
+            var node;
+            while ((node = walker.nextNode())) {
+              if (/\[!(NOTE|WARNING|TIP|IMPORTANT)\]/i.test(node.nodeValue)) {
+                node.nodeValue = node.nodeValue.replace(/^\s*\[!(NOTE|WARNING|TIP|IMPORTANT)\]\s*/i, '');
+                break;
+              }
+            }
+          });
+        });
+      }
+      window.$docsify = window.$docsify || {};
+      window.$docsify.plugins = (window.$docsify.plugins || []).concat(callouts);
+    })();
+  </script>
+</body>
+</html>

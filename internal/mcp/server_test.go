@@ -753,6 +753,52 @@ func TestTools_Search(t *testing.T) {
 			t.Errorf("expected isError: true for limit > 50")
 		}
 	})
+
+	t.Run("fuzzy_argument_and_marking", func(t *testing.T) {
+		embed.setFail(true)
+		defer embed.setFail(false)
+
+		// Fuzzy ON (default): typo "tokn" finds "jwt-auth.md"
+		respFuzzy, err := client.call("tools/call", map[string]any{
+			"name": "search",
+			"arguments": map[string]any{
+				"query": "tokn",
+			},
+		})
+		if err != nil {
+			t.Fatalf("call search fuzzy on: %v", err)
+		}
+		rawFuzzy, _ := json.Marshal(respFuzzy.Result)
+		var resFuzzy CallToolResult
+		_ = json.Unmarshal(rawFuzzy, &resFuzzy)
+		if resFuzzy.IsError {
+			t.Fatalf("search with typo returned error: %s", resFuzzy.Content[0].Text)
+		}
+		if !strings.Contains(resFuzzy.Content[0].Text, "jwt-auth.md") {
+			t.Errorf("expected typo 'tokn' to find jwt-auth.md with fuzzy on; got: %s", resFuzzy.Content[0].Text)
+		}
+		if !strings.Contains(resFuzzy.Content[0].Text, "[fuzzy]") {
+			t.Errorf("expected [fuzzy] mark in hit output; got: %s", resFuzzy.Content[0].Text)
+		}
+
+		// Fuzzy OFF: "tokn" should not find "jwt-auth.md"
+		respExact, err := client.call("tools/call", map[string]any{
+			"name": "search",
+			"arguments": map[string]any{
+				"query": "tokn",
+				"fuzzy": false,
+			},
+		})
+		if err != nil {
+			t.Fatalf("call search fuzzy off: %v", err)
+		}
+		rawExact, _ := json.Marshal(respExact.Result)
+		var resExact CallToolResult
+		_ = json.Unmarshal(rawExact, &resExact)
+		if strings.Contains(resExact.Content[0].Text, "jwt-auth.md") {
+			t.Errorf("expected typo 'tokn' with fuzzy:false NOT to find jwt-auth.md; got: %s", resExact.Content[0].Text)
+		}
+	})
 }
 
 func TestTools_Get(t *testing.T) {

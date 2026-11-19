@@ -21,6 +21,18 @@ export interface SearchSpotlightProps {
   onClose: () => void;
 }
 
+function getSpotlightFuzzy(): boolean {
+  try {
+    const val = localStorage.getItem('mem_search_fuzzy');
+    if (val !== null) {
+      return val === 'true';
+    }
+  } catch {
+    // ignore
+  }
+  return true;
+}
+
 export function SearchSpotlight({ opened, onClose }: SearchSpotlightProps) {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 250);
@@ -28,8 +40,9 @@ export function SearchSpotlight({ opened, onClose }: SearchSpotlightProps) {
   const isMobile = useMediaQuery('(max-width: 48em)');
 
   const trimmed = debouncedQuery.trim();
+  const fuzzy = getSpotlightFuzzy();
   const { data: searchResults, isLoading } = useSearch(
-    { q: trimmed, limit: 6 },
+    { q: trimmed, limit: 6, fuzzy },
     Boolean(trimmed),
   );
 

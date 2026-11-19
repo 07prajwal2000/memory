@@ -34,10 +34,8 @@ func newOfflineFixture(t *testing.T, goos, goarch string) *offlineFixture {
 		t.Fatalf("AssetFor: %v", err)
 	}
 
-	// A minimal archive in the right format holding llama-server plus a lib. The
-	// fake binary carries a real executable header and a plausible size, because
-	// init now rejects anything that looks like a stub.
-	fakeServer := fakeExecutable(t, minSidecarSize+512)
+	// A minimal archive in the right format holding llama-server plus a lib.
+	fakeServer := fakeExecutable(t, 9728)
 	var archiveBytes []byte
 	if asset.Format == "zip" {
 		archiveBytes = makeZip(t, map[string][]byte{

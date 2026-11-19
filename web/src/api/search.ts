@@ -13,6 +13,7 @@ export async function searchMemories(
       q: params.q,
       context: params.context,
       no_global: params.no_global ? 'true' : undefined,
+      fuzzy: params.fuzzy !== undefined ? (params.fuzzy ? '1' : '0') : undefined,
       limit: params.limit,
       per_doc: params.per_doc,
     },

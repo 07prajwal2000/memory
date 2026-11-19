@@ -17,13 +17,21 @@ func (a *app) context() context.Context {
 
 // searchRequest maps CLI flags onto an engine request.
 func searchRequest(f *searchFlags, query string) engine.SearchRequest {
-	return engine.SearchRequest{
+	req := engine.SearchRequest{
 		Query:    query,
 		Context:  f.context,
 		NoGlobal: f.noGlobal,
 		Limit:    f.limit,
 		PerDoc:   f.perDoc,
 	}
+	if f.noFuzzySet {
+		b := false
+		req.Fuzzy = &b
+	} else if f.fuzzySet {
+		b := true
+		req.Fuzzy = &b
+	}
+	return req
 }
 
 // indexInSync reports whether every store memory is in the index at the same

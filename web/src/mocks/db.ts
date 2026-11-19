@@ -697,6 +697,7 @@ Welcome to **mem**, the long-term memory store for local AI agents.
     q: string;
     context?: string;
     no_global?: boolean;
+    fuzzy?: boolean;
     limit?: number;
     per_doc?: number;
   }): { hits: Hit[]; degraded: string[]; took_ms: number } {
@@ -725,37 +726,119 @@ Welcome to **mem**, the long-term memory store for local AI agents.
 
     const hits: Hit[] = [];
     const queryLower = q.toLowerCase();
+    const fuzzyEnabled = params.fuzzy !== false;
 
     for (const mem of this.memories.values()) {
       if (!allowedContexts.has(mem.context)) continue;
 
       const bodyLower = mem.body.toLowerCase();
       const nameLower = mem.name.toLowerCase();
+      const nameParts = mem.name
+        .toLowerCase()
+        .split(/[/._-]/)
+        .filter(Boolean);
+      const tagsLower = mem.tags.map((t) => t.toLowerCase());
+
+      const rawWords = (mem.body + ' ' + mem.name + ' ' + mem.tags.join(' '))
+        .toLowerCase()
+        .match(/[a-z0-9]+/g) || [];
+      const wordSet = new Set<string>();
+      for (const w of rawWords) {
+        wordSet.add(w);
+        if (w.endsWith('s') && w.length > 3) {
+          wordSet.add(w.slice(0, -1));
+        }
+      }
+      const words = Array.from(wordSet);
 
       let matched = false;
+      let isExact = false;
+      let isFuzzy = false;
+      let isName = false;
       let score = 0.5;
-      const sources: Hit['sources'] = ['bm25'];
+      const sources: Hit['sources'] = [];
+      const matchedTerms: string[] = [];
 
-      if (nameLower.includes(queryLower)) {
-        matched = true;
-        score += 0.35;
-        sources.push('vec');
-      }
+      // 1. Exact matching
+      const queryWords = queryLower.match(/[a-z0-9]+/g) || [queryLower];
+      const isMultiWord = queryWords.length > 1;
 
-      if (bodyLower.includes(queryLower)) {
-        matched = true;
-        score += 0.25;
-      }
-
-      for (const t of mem.tags) {
-        if (t.toLowerCase().includes(queryLower)) {
+      if (isMultiWord) {
+        if (bodyLower.includes(queryLower) || nameLower.includes(queryLower)) {
           matched = true;
-          score += 0.2;
+          isExact = true;
+          score += 0.35;
+          sources.push('bm25', 'vec');
+          matchedTerms.push(queryLower);
+        }
+      } else {
+        if (nameParts.includes(queryLower)) {
+          matched = true;
+          isExact = true;
+          score += 0.4;
+          sources.push('bm25', 'vec');
+          matchedTerms.push(queryLower);
+        } else if (words.includes(queryLower)) {
+          matched = true;
+          isExact = true;
+          score += 0.3;
+          sources.push('bm25');
+          matchedTerms.push(queryLower);
+        } else if (tagsLower.includes(queryLower)) {
+          matched = true;
+          isExact = true;
+          score += 0.25;
+          sources.push('bm25');
+          matchedTerms.push(queryLower);
         }
       }
 
+      // 2. Fuzzy matching if enabled and not an exact match
+      if (fuzzyEnabled && !isExact) {
+        // A. Name leg check (prefix match on name segments)
+        for (const part of nameParts) {
+          if (part && part.length >= 2 && part.startsWith(queryLower)) {
+            matched = true;
+            isName = true;
+            if (!sources.includes('name')) sources.push('name');
+            if (!matchedTerms.includes(part)) matchedTerms.push(part);
+            score = Math.max(score, 0.28);
+          }
+        }
+
+        // B. Typo and prefix matching against document vocabulary
+        for (const w of words) {
+          if (w.length < 3) continue;
+
+          // Prefix matching (min 2 chars)
+          if (queryLower.length >= 2 && w.startsWith(queryLower) && w !== queryLower) {
+            matched = true;
+            isFuzzy = true;
+            if (!sources.includes('fuzzy')) sources.push('fuzzy');
+            if (!matchedTerms.includes(w)) matchedTerms.push(w);
+            score = Math.max(score, 0.25);
+          } else if (queryLower.length >= 4 && w.length >= 4) {
+            // Typo tolerance: Damerau-Levenshtein distance <= 1 (or <= 2 for len >= 8)
+            const maxDist = queryLower.length >= 8 && w.length >= 8 ? 2 : 1;
+            const dist = levenshtein(queryLower, w);
+            if (dist <= maxDist) {
+              matched = true;
+              isFuzzy = true;
+              if (!sources.includes('fuzzy')) sources.push('fuzzy');
+              if (!matchedTerms.includes(w)) matchedTerms.push(w);
+              score = Math.max(score, 0.22);
+            }
+          }
+        }
+      }
+
+      // If fuzzy is disabled and it only matched via fuzzy/name, skip it
+      if (!fuzzyEnabled && (isFuzzy || isName) && !isExact) {
+        matched = false;
+      }
+
       if (matched) {
-        // Extract a heading or preview snippet
+        // Extract heading
         const lines = mem.body.split('\n');
         let heading = 'Overview';
         for (const line of lines) {
@@ -765,12 +848,25 @@ Welcome to **mem**, the long-term memory store for local AI agents.
           }
         }
 
-        // Find match position for snippet
-        const matchIdx = bodyLower.indexOf(queryLower);
+        // Find match position for snippet (using any matched term or query)
+        let matchIdx = -1;
+        let matchLen = queryLower.length;
+        for (const term of matchedTerms) {
+          const idx = bodyLower.indexOf(term.toLowerCase());
+          if (idx !== -1) {
+            matchIdx = idx;
+            matchLen = term.length;
+            break;
+          }
+        }
+        if (matchIdx === -1) {
+          matchIdx = bodyLower.indexOf(queryLower);
+        }
+
         let snippet = '';
         if (matchIdx !== -1) {
           const start = Math.max(0, matchIdx - 40);
-          const end = Math.min(mem.body.length, matchIdx + queryLower.length + 60);
+          const end = Math.min(mem.body.length, matchIdx + matchLen + 60);
           snippet = (start > 0 ? '...' : '') + mem.body.substring(start, end).trim() + '...';
         } else {
           snippet = mem.body.substring(0, 100).trim() + '...';
@@ -785,6 +881,7 @@ Welcome to **mem**, the long-term memory store for local AI agents.
           chunk: 1,
           score: Math.min(parseFloat(score.toFixed(3)), 0.99),
           sources,
+          matched_terms: matchedTerms.slice(0, 8),
         });
       }
     }
@@ -823,3 +920,30 @@ Welcome to **mem**, the long-term memory store for local AI agents.
 }
 
 export const mockDb = new MockDatabase();
+
+function levenshtein(s1: string, s2: string): number {
+  const m = s1.length;
+  const n = s2.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost,
+      );
+      if (
+        i > 1 &&
+        j > 1 &&
+        s1[i - 1] === s2[j - 2] &&
+        s1[i - 2] === s2[j - 1]
+      ) {
+        dp[i][j] = Math.min(dp[i][j], dp[i - 2][j - 2] + 1);
+      }
+    }
+  }
+  return dp[m][n];
+}

@@ -56,14 +56,14 @@ function resolveBinary() {
     process.exit(1);
   }
 
-  const fullPkgName = mainPkg.name || "mem";
-  const binName = Object.keys(mainPkg.bin || {})[0] || "mem";
+  const fullPkgName = mainPkg.name || "@07prajwal2000/agent-memory";
+  const binName = "mem";
 
   let platformPkgName = "";
   if (fullPkgName.startsWith("@")) {
     const parts = fullPkgName.split("/");
     const scope = parts[0];
-    const baseName = parts[1] || "mem";
+    const baseName = parts[1] || "agent-memory";
     platformPkgName = `${scope}/${baseName}-${platformArch}`;
   } else {
     platformPkgName = `${fullPkgName}-${platformArch}`;

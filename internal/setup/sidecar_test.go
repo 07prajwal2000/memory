@@ -11,12 +11,11 @@ import (
 )
 
 // fakeExecutable builds a byte slice with a real executable header for the
-// current platform and a size above minSidecarSize, so tests can exercise
-// "valid enough binary, wrong hash" separately from "stub binary".
+// current platform.
 func fakeExecutable(t *testing.T, size int) []byte {
 	t.Helper()
-	if size < minSidecarSize {
-		size = minSidecarSize + 64
+	if size < 256 {
+		size = 256
 	}
 	buf := make([]byte, size)
 	// Fill the body, leaving the header window at both ends intact: on Windows
@@ -69,6 +68,17 @@ func fakeExecutable(t *testing.T, size int) []byte {
 	return buf
 }
 
+func fakeLibName(goos string) string {
+	switch goos {
+	case "windows":
+		return "llama.dll"
+	case "darwin":
+		return "libllama.dylib"
+	default:
+		return "libllama.so"
+	}
+}
+
 func shaOfBytes(b []byte) string {
 	sum := sha256.Sum256(b)
 	return hex.EncodeToString(sum[:])
@@ -86,8 +96,8 @@ func TestInspectBinaryRejectsTheRealWorldFailure(t *testing.T) {
 	if err == nil {
 		t.Fatal("an 8-byte stub must be rejected")
 	}
-	if !strings.Contains(err.Error(), "only 8 bytes") {
-		t.Errorf("error should name the size, got: %v", err)
+	if !strings.Contains(err.Error(), "not a recognised executable") {
+		t.Errorf("error should name the executable failure, got: %v", err)
 	}
 	var bp BinaryProblem
 	if !asBinaryProblem(err, &bp) || !bp.NeedsReinstall {
@@ -102,18 +112,26 @@ func TestInspectBinaryRejectsTheRealWorldFailure(t *testing.T) {
 		t.Error("empty path accepted")
 	}
 
-	// A real-looking binary is accepted.
+	// Without companion libraries, even a valid binary is rejected.
 	good := filepath.Join(dir, "llama-server-good")
-	if err := os.WriteFile(good, fakeExecutable(t, minSidecarSize+1024), 0o755); err != nil {
+	if err := os.WriteFile(good, fakeExecutable(t, 9728), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := InspectBinary(good); err == nil {
+		t.Fatal("expected binary without companion libraries to be rejected")
+	}
+
+	// With companion library, it is accepted.
+	if err := os.WriteFile(filepath.Join(dir, fakeLibName(runtime.GOOS)), []byte("lib"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if err := InspectBinary(good); err != nil {
-		t.Fatalf("a plausible executable was rejected: %v", err)
+		t.Fatalf("a plausible executable with companion library was rejected: %v", err)
 	}
 
-	// A file that is big enough but has no recognisable header is rejected.
+	// A file with no recognisable header is rejected.
 	junk := filepath.Join(dir, "junk.bin")
-	junkBuf := make([]byte, minSidecarSize+16)
+	junkBuf := make([]byte, 2048)
 	for i := range junkBuf {
 		junkBuf[i] = 0x41
 	}
@@ -127,7 +145,7 @@ func TestInspectBinaryRejectsTheRealWorldFailure(t *testing.T) {
 
 func TestInspectBinaryRejectsWrongArchitecture(t *testing.T) {
 	dir := t.TempDir()
-	buf := fakeExecutable(t, minSidecarSize+128)
+	buf := fakeExecutable(t, 2048)
 
 	// Rewrite the machine field to the architecture this test is not running on.
 	switch runtime.GOOS {
@@ -182,12 +200,12 @@ func TestMarkerHashMismatchTriggersReinstall(t *testing.T) {
 
 	// Replace the binary with something that still looks like an executable but
 	// has different content: a corrupted install.
-	tampered := fakeExecutable(t, minSidecarSize+2048)
+	tampered := fakeExecutable(t, 9728)
 	if err := os.WriteFile(binPath, tampered, 0o755); err != nil {
 		t.Fatal(err)
 	}
 	amended := m
-	amended.SHA256 = shaOfBytes(fakeExecutable(t, minSidecarSize+4096)) // deliberately wrong
+	amended.SHA256 = shaOfBytes(fakeExecutable(t, 4096)) // deliberately wrong
 	if err := WriteMarker(binPath, amended); err != nil {
 		t.Fatal(err)
 	}
@@ -234,16 +252,96 @@ func TestMarkerStubBinaryIsDetectedAsInvalid(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Even with a self-consistent marker, the size/header check rejects it.
+	// Even with a self-consistent marker, the header check rejects it.
 	st := CheckSidecar(binPath)
 	if st.OK {
 		t.Fatalf("an 8-byte stub was reported healthy: %+v", st)
 	}
-	if !strings.Contains(st.Problem, "only 8 bytes") {
-		t.Errorf("problem should name the size: %q", st.Problem)
+	if !strings.Contains(st.Problem, "not a recognised executable") {
+		t.Errorf("problem should indicate unrecognised executable: %q", st.Problem)
 	}
 	if !st.NeedsReinstall {
 		t.Error("a stub must require a reinstall")
+	}
+}
+
+func TestRealSizeLauncherPassesAndStubFails(t *testing.T) {
+	dir := t.TempDir()
+
+	// 1. An 8-byte fake binary ("fake exe") fails.
+	fakePath := filepath.Join(dir, "stub-launcher")
+	if err := os.WriteFile(fakePath, []byte("fake exe"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := InspectBinary(fakePath); err == nil {
+		t.Fatal("an 8-byte fake executable must be rejected")
+	}
+	if st := CheckSidecar(fakePath); st.OK || !st.NeedsReinstall {
+		t.Fatalf("CheckSidecar on 8-byte fake must fail with needs_reinstall: %+v", st)
+	}
+
+	// 2. Real-size 9,728-byte binary (valid PE/ELF/Mach-O header for this platform).
+	realDir := filepath.Join(dir, "bin")
+	if err := os.MkdirAll(realDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	realBin := filepath.Join(realDir, llamaServerName(runtime.GOOS))
+	realBytes := fakeExecutable(t, 9728)
+	if len(realBytes) != 9728 {
+		t.Fatalf("expected exactly 9728 bytes, got %d", len(realBytes))
+	}
+	if err := os.WriteFile(realBin, realBytes, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	// Without companion library, InspectBinary and CheckSidecar must reject it.
+	if err := InspectBinary(realBin); err == nil {
+		t.Fatal("9,728-byte binary without companion libraries must fail InspectBinary")
+	}
+	if st := CheckSidecar(realBin); st.OK {
+		t.Fatal("9,728-byte binary without companion libraries must fail CheckSidecar")
+	}
+
+	// Add companion library next to it.
+	libPath := filepath.Join(realDir, fakeLibName(runtime.GOOS))
+	if err := os.WriteFile(libPath, []byte("companion library bytes"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	// With companion library, InspectBinary must pass.
+	if err := InspectBinary(realBin); err != nil {
+		t.Fatalf("9,728-byte binary with companion library must pass InspectBinary: %v", err)
+	}
+
+	// CheckSidecar with no marker (hand-installed) must report OK.
+	stNoMarker := CheckSidecar(realBin)
+	if !stNoMarker.OK {
+		t.Fatalf("CheckSidecar on hand-installed 9,728-byte binary must report OK: %+v", stNoMarker)
+	}
+
+	// CheckSidecar with matching marker SHA256 must report OK and MarkerOK.
+	validMarker := Marker{
+		Asset:  "llama-release.zip",
+		Size:   int64(len(realBytes)),
+		SHA256: shaOfBytes(realBytes),
+	}
+	if err := WriteMarker(realBin, validMarker); err != nil {
+		t.Fatal(err)
+	}
+	stWithMarker := CheckSidecar(realBin)
+	if !stWithMarker.OK || !stWithMarker.MarkerOK {
+		t.Fatalf("CheckSidecar with matching marker must report OK and MarkerOK: %+v", stWithMarker)
+	}
+
+	// CheckSidecar with mismatched marker SHA256 must report broken and require reinstall.
+	tamperedMarker := validMarker
+	tamperedMarker.SHA256 = strings.Repeat("a", 64)
+	if err := WriteMarker(realBin, tamperedMarker); err != nil {
+		t.Fatal(err)
+	}
+	stTampered := CheckSidecar(realBin)
+	if stTampered.OK || !stTampered.NeedsReinstall {
+		t.Fatalf("CheckSidecar with mismatched marker must fail and require reinstall: %+v", stTampered)
 	}
 }
 

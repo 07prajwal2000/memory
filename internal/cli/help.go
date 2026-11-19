@@ -58,9 +58,11 @@ Writing to an unknown context fails; create it with ` + "`mem context create`" +
 	"context": `Contexts are created, removed and expired only from the CLI. ` + "`global`" + `
 always exists and can be neither removed nor expired.`,
 	"search": `Searches global plus --context unless --no-global is set. Without a
-context, --no-global searches nothing.`,
+context, --no-global searches nothing. Fuzzy and partial-word matching is on
+by default; use --no-fuzzy for exact-word precision, or --fuzzy to force on.`,
 	"init": `Interactive setup. --yes takes the defaults and any flags you pass.
 --no-download skips the network; --offline-dir copies from a local folder.`,
 	"mcp": `Serves the Model Context Protocol on stdin/stdout for agents such as
-Claude Code. stdout carries protocol messages only; logs go to stderr.`,
+Claude Code. stdout carries protocol messages only; logs go to stderr. Use
+--no-fuzzy to disable fuzzy search by default for agents.`,
 }

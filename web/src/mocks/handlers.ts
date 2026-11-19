@@ -250,6 +250,9 @@ export const handlers = [
       const q = url.searchParams.get('q') || '';
       const context = url.searchParams.get('context') || undefined;
       const no_global = url.searchParams.get('no_global') === 'true';
+      const fuzzy = url.searchParams.has('fuzzy')
+        ? url.searchParams.get('fuzzy') === '1' || url.searchParams.get('fuzzy') === 'true'
+        : undefined;
       const limit = url.searchParams.has('limit') ? Number(url.searchParams.get('limit')) : undefined;
       const per_doc = url.searchParams.has('per_doc')
         ? Number(url.searchParams.get('per_doc'))
@@ -259,6 +262,7 @@ export const handlers = [
         q,
         context,
         no_global,
+        fuzzy,
         limit,
         per_doc,
       };

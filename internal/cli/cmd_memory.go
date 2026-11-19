@@ -356,18 +356,22 @@ func runDelete(a *app, pos []string) (int, error) {
 func searchCommand() command {
 	return command{
 		name:  "search",
-		usage: "mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N]",
+		usage: "mem search <query...> [--context C] [--no-global] [--limit N] [--per-doc N] [--fuzzy] [--no-fuzzy]",
 		parse: parseSearch,
 		run:   runSearch,
 	}
 }
 
 type searchFlags struct {
-	context  string
-	noGlobal bool
-	limit    int
-	perDoc   int
-	pos      []string
+	context    string
+	noGlobal   bool
+	limit      int
+	perDoc     int
+	fuzzy      bool
+	noFuzzy    bool
+	fuzzySet   bool
+	noFuzzySet bool
+	pos        []string
 }
 
 func parseSearch(fs *flag.FlagSet, a *app, args []string) ([]string, error) {
@@ -376,17 +380,33 @@ func parseSearch(fs *flag.FlagSet, a *app, args []string) ([]string, error) {
 	fs.BoolVar(&f.noGlobal, "no-global", false, "exclude the global context")
 	fs.IntVar(&f.limit, "limit", 8, "maximum hits")
 	fs.IntVar(&f.perDoc, "per-doc", 1, "maximum hits per memory")
+	fs.BoolVar(&f.fuzzy, "fuzzy", false, "enable fuzzy and partial-word matching")
+	fs.BoolVar(&f.noFuzzy, "no-fuzzy", false, "disable fuzzy and partial-word matching")
 	pos, err := collectArgs(fs, args)
 	if err != nil {
 		return nil, err
 	}
+	f.fuzzySet = flagWasSet(fs, "fuzzy")
+	f.noFuzzySet = flagWasSet(fs, "no-fuzzy")
 	f.pos = pos
 	a.state = f
 	return nil, nil
 }
 
+func isFuzzyOnly(sources []string) bool {
+	for _, s := range sources {
+		if s == "bm25" || s == "vec" || s == "rerank" {
+			return false
+		}
+	}
+	return true
+}
+
 func runSearch(a *app, _ []string) (int, error) {
 	f := a.state.(*searchFlags)
+	if f.fuzzySet && f.noFuzzySet {
+		return ExitUsage, usagef("cannot use both --fuzzy and --no-fuzzy")
+	}
 	query := strings.TrimSpace(strings.Join(f.pos, " "))
 	if query == "" {
 		return ExitUsage, usagef("usage: mem search <query...>")
@@ -412,15 +432,24 @@ func runSearch(a *app, _ []string) (int, error) {
 	if a.globals.json {
 		hits := make([]map[string]any, 0, len(res.Hits))
 		for _, h := range res.Hits {
+			matchedTerms := h.MatchedTerms
+			if matchedTerms == nil {
+				matchedTerms = []string{}
+			}
+			sources := h.Sources
+			if sources == nil {
+				sources = []string{}
+			}
 			hits = append(hits, map[string]any{
-				"id":      h.DocID,
-				"context": h.Context,
-				"name":    h.Name,
-				"heading": h.Heading,
-				"snippet": h.Snippet,
-				"chunk":   h.Chunk,
-				"score":   h.Score,
-				"sources": h.Sources,
+				"id":            h.DocID,
+				"context":       h.Context,
+				"name":          h.Name,
+				"heading":       h.Heading,
+				"snippet":       h.Snippet,
+				"chunk":         h.Chunk,
+				"score":         h.Score,
+				"sources":       sources,
+				"matched_terms": matchedTerms,
 			})
 		}
 		return ExitOK, a.emit(map[string]any{
@@ -433,8 +462,15 @@ func runSearch(a *app, _ []string) (int, error) {
 		a.say("no matches\n")
 	} else {
 		for i, h := range res.Hits {
-			a.say("%d. %s (%s/%s) score=%s [%s]\n", i+1, h.Name, h.Context, h.DocID,
+			marker := ""
+			if isFuzzyOnly(h.Sources) {
+				marker = "~ "
+			}
+			a.say("%s%d. %s (%s/%s) score=%s [%s]\n", marker, i+1, h.Name, h.Context, h.DocID,
 				strconv.FormatFloat(h.Score, 'f', 4, 64), strings.Join(h.Sources, ","))
+			if len(h.MatchedTerms) > 0 {
+				a.say("   matched: %s\n", strings.Join(h.MatchedTerms, ", "))
+			}
 			if h.Snippet != "" {
 				a.say("   %s\n", indentContinuation(h.Snippet))
 			}

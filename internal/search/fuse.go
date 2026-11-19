@@ -215,13 +215,27 @@ func ConfidenceRRFWithFuzzy(
 		}
 	}
 
+	boostFuzzyName := false
+	if len(fuzzyRanks) > 0 || len(nameRanks) > 0 {
+		// When exact BM25 produced no hits (typo/prefix query) or the query is short (<= 2 words),
+		// fuzzy and name matches represent the true intention and must rank above vector-only hits
+		// that matched no query terms.
+		if len(bm25Ranks) == 0 || len(strings.Fields(query)) <= 2 {
+			boostFuzzyName = true
+		}
+	}
+
 	for id, fRank := range fuzzyRanks {
 		h, exists := merged[id]
 		if !exists {
 			h = &candidateHit{chunkID: id}
 			merged[id] = h
 		}
-		h.score += fuzzyWeight / (15.0 + float64(fRank))
+		if boostFuzzyName {
+			h.score += 0.15 / float64(fRank)
+		} else {
+			h.score += fuzzyWeight / (15.0 + float64(fRank))
+		}
 		h.sources = append(h.sources, "fuzzy")
 	}
 
@@ -231,8 +245,27 @@ func ConfidenceRRFWithFuzzy(
 			h = &candidateHit{chunkID: id}
 			merged[id] = h
 		}
-		h.score += nameWeight / (15.0 + float64(nRank))
+		if boostFuzzyName {
+			h.score += 0.20 / float64(nRank)
+		} else {
+			h.score += nameWeight / (15.0 + float64(nRank))
+		}
 		h.sources = append(h.sources, "name")
+	}
+
+	if boostFuzzyName {
+		for _, h := range merged {
+			isVecOnly := true
+			for _, s := range h.sources {
+				if s != "vec" {
+					isVecOnly = false
+					break
+				}
+			}
+			if isVecOnly {
+				h.score *= 0.2
+			}
+		}
 	}
 
 	return merged

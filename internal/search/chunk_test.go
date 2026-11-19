@@ -157,7 +157,7 @@ text 2b`,
 			checkContent: func(t *testing.T, chunks []Chunk) {
 				c := chunks[0]
 				embedText := c.Embed()
-				if !strings.HasPrefix(embedText, "auth/jwt.md > # Authentication\n\n") {
+				if !strings.HasPrefix(embedText, "auth/jwt > Authentication\n\n") {
 					t.Errorf("unexpected Embed() output: %q", embedText)
 				}
 				if !strings.Contains(embedText, "JWT tokens should be signed with RS256.") {

@@ -24,7 +24,7 @@ const (
 )
 
 const (
-	searchDescription = "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context (unless no_global is true, which requires context). Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\")."
+	searchDescription = "Search memories using hybrid search (BM25 keyword + vector similarity). Searches the 'global' context plus the specified context (unless no_global is true, which requires context). Fuzzy matching is on by default, set fuzzy:false for exact-word precision. Use to discover relevant prior knowledge, architectural decisions, user preferences, or solutions across sessions. Do NOT use search when you already have a memory's id or name (use 'get' instead). Contexts group memories; contexts cannot be created or deleted by agents (the user creates them via the CLI). Example: search(query=\"JWT auth middleware setup\", context=\"backend\")."
 
 	getDescription = "Retrieve memories or context information. Call with NO arguments to orient yourself: returns the user's global instructions file (readme.md) and all active contexts (permanent/expiring) with memory counts. Call with only 'context' to list that context's memories (name, id, version, size). Call with 'id' or 'name'+'context' (defaults to 'global') to retrieve the full markdown note with metadata headers (id, version, tags). Use 'version' for subsequent safe upserts. Do not pass both 'id' and 'name'. Example: get(context=\"backend\", name=\"auth/jwt\")."
 
@@ -63,6 +63,10 @@ func BuiltinTools() []Tool {
 						Description: "Maximum number of hits to return (1-50, default 8).",
 						Minimum:     intPtr(1),
 						Maximum:     intPtr(50),
+					},
+					"fuzzy": {
+						Type:        "boolean",
+						Description: "Enable fuzzy matching (default true). Set to false for exact-word precision.",
 					},
 				},
 				Required:             []string{"query"},
@@ -180,6 +184,7 @@ type searchArgs struct {
 	Context  string `json:"context,omitempty"`
 	NoGlobal bool   `json:"no_global,omitempty"`
 	Limit    *int   `json:"limit,omitempty"`
+	Fuzzy    *bool  `json:"fuzzy,omitempty"`
 }
 
 func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallToolResult {
@@ -214,6 +219,7 @@ func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallTo
 		NoGlobal: args.NoGlobal,
 		Limit:    limit,
 		PerDoc:   1,
+		Fuzzy:    args.Fuzzy,
 	})
 	if err != nil {
 		if errors.Is(err, store.ErrNotFound) {
@@ -223,15 +229,16 @@ func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallTo
 	}
 
 	type HitJSON struct {
-		ID      string   `json:"id"`
-		DocID   string   `json:"doc_id"`
-		Context string   `json:"context"`
-		Name    string   `json:"name"`
-		Heading string   `json:"heading"`
-		Snippet string   `json:"snippet"`
-		Chunk   int      `json:"chunk"`
-		Score   float64  `json:"score"`
-		Sources []string `json:"sources"`
+		ID           string   `json:"id"`
+		DocID        string   `json:"doc_id"`
+		Context      string   `json:"context"`
+		Name         string   `json:"name"`
+		Heading      string   `json:"heading"`
+		Snippet      string   `json:"snippet"`
+		Chunk        int      `json:"chunk"`
+		Score        float64  `json:"score"`
+		Sources      []string `json:"sources"`
+		MatchedTerms []string `json:"matched_terms"`
 	}
 
 	hitsJSON := make([]HitJSON, 0, len(res.Hits))
@@ -254,19 +261,42 @@ func (s *session) executeSearch(ctx context.Context, raw json.RawMessage) CallTo
 			if len(snippet) > maxSnippet {
 				snippet = snippet[:maxSnippet] + "…"
 			}
+			matchedTerms := h.MatchedTerms
+			if matchedTerms == nil {
+				matchedTerms = []string{}
+			}
+			sources := h.Sources
+			if sources == nil {
+				sources = []string{}
+			}
 			hitsJSON = append(hitsJSON, HitJSON{
-				ID:      h.DocID,
-				DocID:   h.DocID,
-				Context: h.Context,
-				Name:    h.Name,
-				Heading: h.Heading,
-				Snippet: snippet,
-				Chunk:   h.Chunk,
-				Score:   h.Score,
-				Sources: h.Sources,
+				ID:           h.DocID,
+				DocID:        h.DocID,
+				Context:      h.Context,
+				Name:         h.Name,
+				Heading:      h.Heading,
+				Snippet:      snippet,
+				Chunk:        h.Chunk,
+				Score:        h.Score,
+				Sources:      sources,
+				MatchedTerms: matchedTerms,
 			})
 
-			sb.WriteString(fmt.Sprintf("%d. %s/%s (id: %s, chunk %d, score %.3f)\n", i+1, h.Context, h.Name, h.DocID, h.Chunk, h.Score))
+			tag := ""
+			var marks []string
+			for _, src := range h.Sources {
+				if src == "fuzzy" || src == "name" {
+					marks = append(marks, src)
+				}
+			}
+			if len(marks) > 0 {
+				tag = fmt.Sprintf(" [%s]", strings.Join(marks, ", "))
+			}
+
+			sb.WriteString(fmt.Sprintf("%d. %s/%s (id: %s, chunk %d, score %.3f)%s\n", i+1, h.Context, h.Name, h.DocID, h.Chunk, h.Score, tag))
+			if len(h.MatchedTerms) > 0 {
+				sb.WriteString(fmt.Sprintf("matched: %s\n", strings.Join(h.MatchedTerms, ", ")))
+			}
 			if h.Heading != "" {
 				sb.WriteString(h.Heading)
 				sb.WriteString("\n")

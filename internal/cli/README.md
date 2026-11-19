@@ -84,12 +84,14 @@ running). The write itself succeeded either way; `mem sync` repairs the index.
 ```json
 {"hits":[{"id":"v3yb2aenoosh","context":"work","name":"auth/token.md",
           "heading":"Token refresh","snippet":"...","chunk":0,
-          "score":0.0312,"sources":["vec","bm25"]}],
+          "score":0.0312,"sources":["vec","bm25"],"matched_terms":["token","refresh"]}],
  "degraded":["embedder unavailable: ..."],
  "took_ms":18.4}
 ```
 `degraded` is absent when both search legs worked. `sources` entries are `bm25`,
-`vec` and `rerank`.
+`vec`, `rerank`, `fuzzy`, and `name`. Flags include `--no-fuzzy` to disable fuzzy
+matching, or `--fuzzy` to force it on. Human output marks fuzzy-only hits with `~`
+and shows matched terms.
 
 ### `mem sync`
 ```json

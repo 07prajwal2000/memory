@@ -1,4 +1,4 @@
-import { Paper, Group, Text, Badge, Stack, Box, UnstyledButton } from '@mantine/core';
+import { Paper, Group, Text, Badge, Stack, Box, UnstyledButton, Highlight } from '@mantine/core';
 import { IconFileText } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Hit, HitSource } from '../../api';
@@ -11,6 +11,8 @@ const sourceColors: Record<HitSource, string> = {
   bm25: 'blue',
   vec: 'grape',
   rerank: 'teal',
+  fuzzy: 'orange',
+  name: 'violet',
 };
 
 export function SearchResultCard({ hit }: SearchResultCardProps) {
@@ -19,6 +21,8 @@ export function SearchResultCard({ hit }: SearchResultCardProps) {
   const handleClick = () => {
     navigate(`/c/${hit.context}/m/${hit.doc_id}`);
   };
+
+  const matchedTerms = hit.matched_terms || [];
 
   return (
     <UnstyledButton
@@ -42,14 +46,15 @@ export function SearchResultCard({ hit }: SearchResultCardProps) {
           <Group justify="space-between" align="flex-start" wrap="wrap">
             <Group gap={8} wrap="nowrap" style={{ minWidth: 0 }}>
               <IconFileText size={18} stroke={1.5} color="var(--mantine-color-accent-6)" />
-              <Text
+              <Highlight
+                highlight={matchedTerms}
                 size="sm"
                 fw={600}
                 style={{ fontFamily: 'ui-monospace, monospace' }}
                 truncate
               >
                 {hit.name || `${hit.doc_id}.md`}
-              </Text>
+              </Highlight>
               <Badge size="xs" variant="outline" color="gray">
                 {hit.context}
               </Badge>
@@ -86,7 +91,8 @@ export function SearchResultCard({ hit }: SearchResultCardProps) {
               borderRadius: '2px',
             }}
           >
-            <Text
+            <Highlight
+              highlight={matchedTerms}
               size="xs"
               c="dimmed"
               style={{
@@ -95,7 +101,7 @@ export function SearchResultCard({ hit }: SearchResultCardProps) {
               }}
             >
               {hit.snippet}
-            </Text>
+            </Highlight>
           </Box>
         </Stack>
       </Paper>

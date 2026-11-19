@@ -15,11 +15,6 @@ import (
 // markerFileName records what `mem init` installed, next to the binary.
 const markerFileName = ".mem-release"
 
-// minSidecarSize is the smallest plausible llama-server. The real CPU builds are
-// roughly 10-25 MB; anything under this is a stub, a truncated file or a
-// placeholder written by a broken test or an interrupted copy.
-const minSidecarSize = 1 << 20 // 1 MiB
-
 // Marker describes an installed sidecar. It is written after a successful
 // extraction and re-validated on every init and in `mem status`, so a corrupted
 // or replaced binary is reinstalled instead of being trusted forever.
@@ -42,8 +37,8 @@ func (p BinaryProblem) Error() string {
 }
 
 // InspectBinary performs the cheap, offline checks used before trusting a
-// llama-server binary: it must exist, be at least minSidecarSize bytes, and start
-// with an executable header for this OS and the current CPU architecture.
+// llama-server binary: it must exist, start with an executable header for this
+// OS and the current CPU architecture, and have companion libraries next to it.
 //
 // It deliberately does not execute the binary.
 func InspectBinary(path string) error {
@@ -60,12 +55,8 @@ func InspectBinary(path string) error {
 	if info.IsDir() {
 		return BinaryProblem{Path: path, Reason: "is a directory", NeedsReinstall: true}
 	}
-	if info.Size() < minSidecarSize {
-		return BinaryProblem{
-			Path:           path,
-			Reason:         fmt.Sprintf("is only %d bytes; a real llama-server is several megabytes (corrupt, incomplete or a placeholder)", info.Size()),
-			NeedsReinstall: true,
-		}
+	if info.Size() == 0 {
+		return BinaryProblem{Path: path, Reason: "file is empty", NeedsReinstall: true}
 	}
 	arch, osName, err := executableTarget(path)
 	if err != nil {
@@ -81,7 +72,42 @@ func InspectBinary(path string) error {
 			NeedsReinstall: true,
 		}
 	}
+	if !HasCompanionLibraries(path) {
+		return BinaryProblem{
+			Path:           path,
+			Reason:         "no ggml or llama shared libraries found next to binary",
+			NeedsReinstall: true,
+		}
+	}
 	return nil
+}
+
+// HasCompanionLibraries reports whether at least one ggml or llama shared
+// library exists in the directory containing the binary.
+func HasCompanionLibraries(binPath string) bool {
+	dir := filepath.Dir(binPath)
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return false
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		if isCompanionLibrary(entry.Name()) {
+			return true
+		}
+	}
+	return false
+}
+
+func isCompanionLibrary(name string) bool {
+	stem, ok := libraryStem(strings.ToLower(name))
+	if !ok {
+		return false
+	}
+	stem = strings.TrimPrefix(stem, "lib")
+	return strings.HasPrefix(stem, "ggml") || strings.HasPrefix(stem, "llama")
 }
 
 // archMatches accepts the aliases an executable may use for a GOARCH.

@@ -159,6 +159,27 @@ func WithUpsertConcurrency(n int) Option {
 	}
 }
 
+// WithContextualEmbed toggles contextual chunk text in embeddings and FTS (default true).
+func WithContextualEmbed(enabled bool) Option {
+	return func(ix *Index) {
+		ix.disableContextualEmbed = !enabled
+	}
+}
+
+// WithTier0FTS toggles indexing Tier-0 extractive metadata in FTS (default true).
+func WithTier0FTS(enabled bool) Option {
+	return func(ix *Index) {
+		ix.disableTier0FTS = !enabled
+	}
+}
+
+// WithAppendKeywordsToEmbed configures whether keywords are appended to embedded text (default false).
+func WithAppendKeywordsToEmbed(enabled bool) Option {
+	return func(ix *Index) {
+		ix.appendKeywordsToEmbed = enabled
+	}
+}
+
 // WithFuzzy configures whether fuzzy matching (prefix, typo, name leg) is enabled by default.
 func WithFuzzy(enabled bool) Option {
 	return func(ix *Index) {
@@ -203,6 +224,12 @@ type Index struct {
 	fuzzyDefault        bool
 	vocabCache          *VocabCache
 	docNames            *DocNameStore
+	disableContextualEmbed bool
+	disableTier0FTS        bool
+	appendKeywordsToEmbed bool
+	dfSnapshot          map[string]int
+	dfTotalDocs         int
+	dfMu                sync.RWMutex
 }
 
 func OpenIndex(path string, e llm.Embedder, r llm.Reranker, opts ...Option) (*Index, error) {
@@ -501,6 +528,7 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 		docID        string
 		context      string
 		chunk        Chunk
+		embedText    string
 		textHash     string
 		embedding    []byte
 		bitEmbedding []byte
@@ -509,6 +537,7 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 	type docToProcess struct {
 		doc             Doc
 		hash            string
+		enr             Tier0Enrichment
 		chunks          []Chunk
 		prep            []preparedChunk
 		oldChunkCount   int
@@ -517,6 +546,8 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 	}
 
 	var toProcess []docToProcess
+
+	df, numDocs := ix.getDFSnapshot(ctx)
 
 	// Step 1: Check existing versions/hashes and filter unchanged docs
 	for _, d := range docs {
@@ -534,19 +565,33 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 		if err == nil && existingVersion == d.Version && existingHash == docHash && pendingCount == 0 {
 			continue // Unchanged doc with no pending vectors
 		}
+
+		enr, _ := ix.getOrComputeEnrichment(ctx, d.ID, d.Name, d.Body, docHash, df, numDocs)
+
 		chunks := Chunker(d.Name, d.Body, ix.chunkOpts)
 		dtp := docToProcess{
 			doc:    d,
 			hash:   docHash,
+			enr:    enr,
 			chunks: chunks,
 			prep:   make([]preparedChunk, len(chunks)),
 		}
 		for i, c := range chunks {
+			var embedText string
+			if ix.disableContextualEmbed {
+				embedText = c.Text
+			} else {
+				embedText = c.Embed()
+			}
+			if ix.appendKeywordsToEmbed && len(enr.Keywords) > 0 {
+				embedText += "\n\nKeywords: " + strings.Join(enr.Keywords, ", ")
+			}
 			dtp.prep[i] = preparedChunk{
-				docID:    d.ID,
-				context:  d.Context,
-				chunk:    c,
-				textHash: Sha256Hex(c.Text),
+				docID:     d.ID,
+				context:   d.Context,
+				chunk:     c,
+				embedText: embedText,
+				textHash:  Sha256Hex(embedText),
 			}
 		}
 		toProcess = append(toProcess, dtp)
@@ -583,7 +628,7 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 				needEmbed = append(needEmbed, embedTask{
 					docIdx:   dIdx,
 					chunkIdx: cIdx,
-					text:     pc.chunk.Embed(),
+					text:     pc.embedText,
 				})
 			}
 		}
@@ -688,8 +733,8 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 			return err
 		}
 		stmtFts, err := tx.PrepareContext(ctx, `
-			INSERT INTO chunks_fts(rowid, scope, heading, text)
-			VALUES (?, ?, ?, ?)
+			INSERT INTO chunks_fts(rowid, scope, heading, text, enrichment)
+			VALUES (?, ?, ?, ?, ?)
 		`)
 		if err != nil {
 			stmtChunk.Close()
@@ -742,6 +787,7 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 			}
 
 			scopeTok := ScopeToken(dtp.doc.Context)
+
 			for i := range dtp.prep {
 				pc := &dtp.prep[i]
 				vecPending := 0
@@ -781,7 +827,17 @@ func (ix *Index) UpsertMany(ctx context.Context, docs []Doc) error {
 						return fmt.Errorf("insert bit: %w", err)
 					}
 				}
-				if _, err := stmtFts.ExecContext(ctx, chunkID, scopeTok, pc.chunk.Heading, pc.chunk.Text); err != nil {
+				var header string
+				if ix.disableContextualEmbed {
+					header = pc.chunk.Heading
+				} else {
+					header = BuildChunkHeader(dtp.doc.Name, pc.chunk.Heading)
+				}
+				var enrichText string
+				if !ix.disableTier0FTS {
+					enrichText = strings.TrimSpace(dtp.enr.Title + "\n" + strings.Join(dtp.enr.Keywords, " ") + "\n" + dtp.enr.Lead)
+				}
+				if _, err := stmtFts.ExecContext(ctx, chunkID, scopeTok, header, pc.chunk.Text, enrichText); err != nil {
 					stmtChunk.Close()
 					stmtVec.Close()
 					stmtBit.Close()
@@ -916,6 +972,7 @@ func (ix *Index) Delete(ctx context.Context, docID string) error {
 	if _, err := tx.ExecContext(ctx, "DELETE FROM chunks WHERE doc_id = ?", docID); err != nil {
 		return fmt.Errorf("delete chunks: %w", err)
 	}
+	_, _ = tx.ExecContext(ctx, "DELETE FROM doc_enrichments WHERE doc_id = ?", docID)
 	if _, err := tx.ExecContext(ctx, "DELETE FROM docs WHERE id = ?", docID); err != nil {
 		return fmt.Errorf("delete doc: %w", err)
 	}
@@ -983,6 +1040,7 @@ func (ix *Index) DeleteContext(ctx context.Context, slug string) error {
 	if _, err := tx.ExecContext(ctx, "DELETE FROM chunks WHERE context = ?", slug); err != nil {
 		return fmt.Errorf("delete chunks for context %s: %w", slug, err)
 	}
+	_, _ = tx.ExecContext(ctx, "DELETE FROM doc_enrichments WHERE doc_id IN (SELECT id FROM docs WHERE context = ?)", slug)
 	if _, err := tx.ExecContext(ctx, "DELETE FROM docs WHERE context = ?", slug); err != nil {
 		return fmt.Errorf("delete docs for context %s: %w", slug, err)
 	}
@@ -1220,4 +1278,70 @@ func (ix *Index) State() (map[string]DocState, error) {
 		state[id] = ds
 	}
 	return state, nil
+}
+
+func (ix *Index) getDFSnapshot(ctx context.Context) (map[string]int, int) {
+	ix.dfMu.RLock()
+	if len(ix.dfSnapshot) > 0 && ix.dfTotalDocs > 0 {
+		df := ix.dfSnapshot
+		n := ix.dfTotalDocs
+		ix.dfMu.RUnlock()
+		return df, n
+	}
+	ix.dfMu.RUnlock()
+
+	ix.dfMu.Lock()
+	defer ix.dfMu.Unlock()
+	if len(ix.dfSnapshot) > 0 && ix.dfTotalDocs > 0 {
+		return ix.dfSnapshot, ix.dfTotalDocs
+	}
+
+	df := make(map[string]int)
+	var totalDocs int
+	_ = ix.db.QueryRowContext(ctx, "SELECT count(*) FROM docs").Scan(&totalDocs)
+
+	rows, err := ix.db.QueryContext(ctx, "SELECT term, doc FROM chunks_fts_vocab")
+	if err == nil {
+		for rows.Next() {
+			var term string
+			var doc int
+			if err := rows.Scan(&term, &doc); err == nil {
+				df[term] = doc
+			}
+		}
+		rows.Close()
+	}
+
+	if totalDocs <= 0 {
+		totalDocs = 1
+	}
+	ix.dfSnapshot = df
+	ix.dfTotalDocs = totalDocs
+	return df, totalDocs
+}
+
+func (ix *Index) getOrComputeEnrichment(ctx context.Context, docID, docName, docBody, docHash string, df map[string]int, numDocs int) (Tier0Enrichment, error) {
+	var enr Tier0Enrichment
+	var keywordsJoined string
+	err := ix.db.QueryRowContext(ctx, `
+		SELECT title, keywords, lead
+		FROM doc_enrichments
+		WHERE doc_id = ? AND hash = ?
+	`, docID, docHash).Scan(&enr.Title, &keywordsJoined, &enr.Lead)
+
+	if err == nil {
+		if keywordsJoined != "" {
+			enr.Keywords = strings.Split(keywordsJoined, "\t")
+		}
+		return enr, nil
+	}
+
+	enr = ExtractEnrichment(docName, docBody, df, numDocs)
+	keywordsJoined = strings.Join(enr.Keywords, "\t")
+
+	_, err = ix.db.ExecContext(ctx, `
+		INSERT OR REPLACE INTO doc_enrichments (doc_id, hash, title, keywords, lead)
+		VALUES (?, ?, ?, ?, ?)
+	`, docID, docHash, enr.Title, keywordsJoined, enr.Lead)
+	return enr, err
 }

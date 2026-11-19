@@ -17,7 +17,7 @@ var (
 )
 
 const (
-	CurrentSchemaVersion = 4
+	CurrentSchemaVersion = 5
 )
 
 var defaultStopwords = map[string]bool{
@@ -60,6 +60,7 @@ func Sha256Hex(s string) string {
 func initSchema(db *sql.DB, rebuild bool) error {
 	if rebuild {
 		dropTables := []string{
+			"DROP TABLE IF EXISTS doc_enrichments;",
 			"DROP TABLE IF EXISTS chunks_fts_vocab;",
 			"DROP TABLE IF EXISTS chunk_deletions;",
 			"DROP TABLE IF EXISTS chunks_fts;",
@@ -100,6 +101,21 @@ func initSchema(db *sql.DB, rebuild bool) error {
 		return fmt.Errorf("create docs table: %w", err)
 	}
 	_, _ = db.Exec("ALTER TABLE docs ADD COLUMN tags TEXT NOT NULL DEFAULT '[]';")
+
+	// 2b. doc_enrichments table (Tier-0 extractive metadata keyed by doc_id + hash)
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS doc_enrichments (
+		doc_id TEXT NOT NULL,
+		hash TEXT NOT NULL,
+		title TEXT NOT NULL,
+		keywords TEXT NOT NULL,
+		lead TEXT NOT NULL,
+		PRIMARY KEY (doc_id, hash)
+	);
+	CREATE INDEX IF NOT EXISTS idx_doc_enrichments_doc_id ON doc_enrichments(doc_id);
+	`)
+	if err != nil {
+		return fmt.Errorf("create doc_enrichments table: %w", err)
+	}
 
 	// 3. chunks table
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS chunks (
@@ -159,11 +175,12 @@ func initSchema(db *sql.DB, rebuild bool) error {
 		return fmt.Errorf("create chunks_vec_bit table: %w", err)
 	}
 
-	// 5. chunks_fts virtual table (using fts5 with scope, heading, text, tokenize='porter unicode61')
+	// 5. chunks_fts virtual table (using fts5 with scope, heading, text, enrichment, tokenize='porter unicode61')
 	_, err = db.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts USING fts5(
 		scope,
 		heading,
 		text,
+		enrichment,
 		tokenize='porter unicode61'
 	);`)
 	if err != nil {
@@ -224,24 +241,6 @@ func checkMeta(db *sql.DB, rebuild bool) error {
 	mDim, _ := strconv.Atoi(metaMap["dim"])
 	mQuant, _ := strconv.Atoi(metaMap["quant_version"])
 	mSchema, _ := strconv.Atoi(metaMap["schema_version"])
-
-	if mModel == ModelID && mDim == ModelDim && mQuant == QuantVersion && (mSchema == 2 || mSchema == 3) {
-		// In-place migration from schema version 2 or 3 to version 4
-		if mSchema == 2 {
-			_, _ = db.Exec("ALTER TABLE chunks ADD COLUMN vec_pending INTEGER NOT NULL DEFAULT 0;")
-			_, _ = db.Exec("CREATE INDEX IF NOT EXISTS idx_chunks_vec_pending ON chunks(vec_pending);")
-		}
-		_, _ = db.Exec("ALTER TABLE docs ADD COLUMN tags TEXT NOT NULL DEFAULT '[]';")
-		_, err := db.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts_vocab USING fts5vocab(chunks_fts, 'row');`)
-		if err != nil {
-			return fmt.Errorf("create chunks_fts_vocab table: %w", err)
-		}
-		_, err = db.Exec("UPDATE meta SET value = ? WHERE key = 'schema_version'", strconv.Itoa(CurrentSchemaVersion))
-		if err != nil {
-			return fmt.Errorf("upgrade schema to version %d: %w", CurrentSchemaVersion, err)
-		}
-		mSchema = CurrentSchemaVersion
-	}
 
 	if mModel != ModelID || mDim != ModelDim || mQuant != QuantVersion || mSchema != CurrentSchemaVersion {
 		if !rebuild {

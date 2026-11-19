@@ -1,0 +1,19 @@
+- Getting started
+  - [What is mem?](README.md)
+  - [Quick start](quickstart.md)
+- Learn
+  - [Concepts](concepts.md)
+  - [How search works](search.md)
+  - [The agent skill](skill.md)
+- Reference
+  - [Command line](cli.md)
+  - [MCP server](mcp.md)
+  - [Configuration](configuration.md)
+  - [Dashboard](dashboard.md)
+- Help
+  - [Recipes](recipes.md)
+  - [Troubleshooting](troubleshooting.md)
+  - [FAQ](faq.md)
+- Project
+  - [Contributing](contributing.md)
+  - [Changelog](changelog.md)

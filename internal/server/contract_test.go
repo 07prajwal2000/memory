@@ -203,7 +203,31 @@ func TestApiContract(t *testing.T) {
 		}
 		if len(hits) > 0 {
 			hit0 := hits[0].(map[string]any)
-			assertKeys(t, hit0, []string{"doc_id", "context", "name", "heading", "snippet", "chunk", "score", "sources"})
+			assertKeys(t, hit0, []string{"doc_id", "context", "name", "heading", "snippet", "chunk", "score", "sources", "matched_terms"})
+		}
+
+		// Valid fuzzy=1
+		recFuzzy1 := h.request("GET", "/api/search?q=Contract&fuzzy=1", nil, nil)
+		if recFuzzy1.Code != http.StatusOK {
+			t.Fatalf("fuzzy=1 status %d, want 200", recFuzzy1.Code)
+		}
+
+		// Valid fuzzy=0
+		recFuzzy0 := h.request("GET", "/api/search?q=Contract&fuzzy=0", nil, nil)
+		if recFuzzy0.Code != http.StatusOK {
+			t.Fatalf("fuzzy=0 status %d, want 200", recFuzzy0.Code)
+		}
+
+		// Invalid fuzzy value returns invalid (400)
+		recFuzzyInvalid := h.request("GET", "/api/search?q=Contract&fuzzy=invalid", nil, nil)
+		if recFuzzyInvalid.Code != http.StatusBadRequest {
+			t.Fatalf("fuzzy=invalid status %d, want 400", recFuzzyInvalid.Code)
+		}
+		errM := parseMap(t, recFuzzyInvalid.Body.Bytes())
+		assertKeys(t, errM, []string{"error"})
+		errMap := errM["error"].(map[string]any)
+		if errMap["kind"] != "invalid" {
+			t.Errorf("error.kind = %v, want invalid", errMap["kind"])
 		}
 	})
 
