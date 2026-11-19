@@ -12,6 +12,10 @@ import (
 func inProject(t *testing.T, marker string) string {
 	t.Helper()
 	root := t.TempDir()
+	// macOS reports the resolved /private/var form from Getwd, so compare that.
+	if resolved, err := filepath.EvalSymlinks(root); err == nil {
+		root = resolved
+	}
 	sub := filepath.Join(root, "pkg", "deep")
 	if err := os.MkdirAll(sub, 0o755); err != nil {
 		t.Fatal(err)
