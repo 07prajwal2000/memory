@@ -39,3 +39,11 @@ node_modules/
 .antigravity/
 .agy/
 .cmdc/
+
+# agent working reports and benchmark dumps (kept locally, not in the repo)
+REPORT*.md
+**/REPORT*.md
+web/PROGRESS.md
+web/CONTRACT-CHANGES.md
+internal/search/testdata_*.json
+spike/exp*_results.json

@@ -47,7 +47,6 @@ packaging/
     version.mjs               # Version inspection, exact setting, and bumping utility
     release-check.mjs         # Pre-release validation (tag vs config, clean tree, reachability)
   README.md                   # This documentation file
-  REPORT.md                   # Packaging evaluation and verification report
 .github/workflows/
   release.yml                 # Root GitHub Actions tag-driven release workflow
 ```
