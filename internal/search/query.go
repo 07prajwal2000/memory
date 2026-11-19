@@ -556,8 +556,8 @@ func (ix *Index) Search(ctx context.Context, q Query) (Result, error) {
 	hydrationPart1 := time.Since(tHydrationStart)
 
 	// Reranking top 30 (only if reranker was provided to OpenIndex)
-	tRerankStart := time.Now()
 	if ix.reranker != nil && !q.NoRerank && len(candidates) > 0 && strings.TrimSpace(q.Text) != "" {
+		tRerankStart := time.Now()
 		rerankLimit := 30
 		if len(candidates) < rerankLimit {
 			rerankLimit = len(candidates)
@@ -580,8 +580,8 @@ func (ix *Index) Search(ctx context.Context, q Query) (Result, error) {
 				return candidates[i].score > candidates[j].score
 			})
 		}
+		timings.Rerank = time.Since(tRerankStart)
 	}
-	timings.Rerank = time.Since(tRerankStart)
 
 	// Apply PerDoc collapse and Limit
 	tSnippetStart := time.Now()

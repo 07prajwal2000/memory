@@ -399,7 +399,7 @@ func TestProtocol_ToolsList_Golden(t *testing.T) {
 		t.Fatalf("read golden file %s: %v (run go test -update ./internal/mcp to create)", goldenPath, err)
 	}
 
-	goldenStr := strings.TrimSpace(string(goldenData))
+	goldenStr := strings.TrimSpace(strings.ReplaceAll(string(goldenData), "\r\n", "\n"))
 	gotStr := strings.TrimSpace(string(rawResult))
 
 	if goldenStr != gotStr {
