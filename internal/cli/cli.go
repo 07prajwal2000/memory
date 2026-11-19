@@ -32,7 +32,7 @@ const (
 
 // Version is the release version reported by `mem version` and the HTTP
 // User-Agent used by `mem init`.
-var Version = "0.1.0"
+var Version = "0.1.1"
 
 // IO carries the streams a command may use, so tests can drive commands in
 // process without touching the real terminal.
@@ -171,9 +171,17 @@ func (a *app) dispatch(args []string) (int, error) {
 	gfs := flag.NewFlagSet("mem", flag.ContinueOnError)
 	gfs.SetOutput(io.Discard)
 	a.addGlobalFlags(gfs)
+	var wantVersion bool
+	gfs.BoolVar(&wantVersion, "version", false, "print the version")
 	idx, err := consumeLeadingFlags(gfs, args)
 	if err != nil {
 		return ExitUsage, err
+	}
+	// `mem --version`, or a bare `mem -v` with no command, means `mem version`;
+	// -v in front of a command stays the verbose flag.
+	if wantVersion || (idx >= len(args) && a.globals.verbose) {
+		args = append(append([]string{}, args[:idx]...), "version")
+		idx = len(args) - 1
 	}
 	if idx >= len(args) {
 		a.printHelp("")

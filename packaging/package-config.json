@@ -6,7 +6,7 @@
     "memory",
     "agent-memory"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local long-term memory store for AI agents",
   "repository": "https://github.com/07prajwal2000/memory",
   "license": "MIT",

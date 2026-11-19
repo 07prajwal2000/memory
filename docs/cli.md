@@ -421,7 +421,10 @@ Without `--install`, prints the skill markdown. With `--install`, writes it to t
 ```bash
 mem version
 mem version --json
+mem --version
 ```
+
+`mem --version` and a bare `mem -v` do the same as `mem version`. With a command, `-v` is still the verbose flag.
 
 ```text
 mem 0.1.0 (go windows/amd64, go1.27.0)

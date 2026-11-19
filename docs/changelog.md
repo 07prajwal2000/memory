@@ -2,6 +2,16 @@
 
 Notable changes. This project follows semantic versioning.
 
+## 0.1.1
+
+### Added
+
+- `mem --version` and `mem -v` print the version, same as `mem version`.
+
+### Fixed
+
+- Test-suite fixes found by running CI on Linux, macOS and Windows (no behavior change for users).
+
 ## 0.1.0
 
 The first release.
@@ -21,7 +31,6 @@ The first release.
 
 ### Known issues
 
-- The npm packages are not published yet. Build from source until they are.
 - The help table still labels `skill` as "not available yet"; the command works.
 
 <div class="next-steps">

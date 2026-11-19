@@ -25,6 +25,12 @@ func TestVersionAndHelp(t *testing.T) {
 		t.Fatalf("version --json = %v (code %d)", v, code)
 	}
 
+	for _, flagArgs := range [][]string{{"--version"}, {"-v"}} {
+		if code, out, _ := h.run(flagArgs...); code != ExitOK || !strings.Contains(out, "mem "+Version) {
+			t.Fatalf("%v: exit = %d, out = %q", flagArgs, code, out)
+		}
+	}
+
 	code, out, _ = h.run("help")
 	if code != ExitOK || !strings.Contains(out, "mem <command> [flags]") {
 		t.Fatalf("help exit = %d, out = %q", code, out)
