@@ -33,7 +33,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.1.0
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Run Guard Verification
         id: check
@@ -124,7 +124,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.1.0
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Run Go tests
         run: go test -v ./...
@@ -224,7 +224,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.1.0
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Download tarball artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
