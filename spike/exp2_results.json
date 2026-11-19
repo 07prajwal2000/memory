@@ -1,0 +1,56 @@
+{
+  "models": [
+    {
+      "name": "BGE-Small-EN-v1.5 Q8_0",
+      "filename": "bge-small-en-v1.5-q8_0.gguf",
+      "cold_start_ms": 141.9084072113037,
+      "idle_rss_mb": 47.90625,
+      "load_rss_mb": 75.65625,
+      "dim": 384,
+      "l2_norm": 0.9999999725737064,
+      "batches": {
+        "batch_1_ms": 82.19313621520996,
+        "batch_1_tps": 12.16646603411817,
+        "batch_16_ms": 1110.182285308838,
+        "batch_16_tps": 14.41204765355179,
+        "batch_64_ms": 4467.640956242879,
+        "batch_64_tps": 14.325233524097165
+      }
+    },
+    {
+      "name": "BGE-Small-EN-v1.5 F16",
+      "filename": "bge-small-en-v1.5-f16.gguf",
+      "cold_start_ms": 536.5746021270752,
+      "idle_rss_mb": 66.67578125,
+      "load_rss_mb": 92.65234375,
+      "dim": 384,
+      "l2_norm": 0.9999999836023803,
+      "batches": {
+        "batch_1_ms": 65.9654935201009,
+        "batch_1_tps": 15.159440893067547,
+        "batch_16_ms": 1010.9667778015137,
+        "batch_16_tps": 15.82643500392189,
+        "batch_64_ms": 4158.056735992432,
+        "batch_64_tps": 15.39180537052597
+      }
+    },
+    {
+      "name": "Multilingual-E5-Small Q8_0",
+      "filename": "multilingual-e5-small-Q8_0.gguf",
+      "cold_start_ms": 696.5231895446777,
+      "idle_rss_mb": 91.8359375,
+      "load_rss_mb": 110.359375,
+      "dim": 384,
+      "l2_norm": 1.0000000046950956,
+      "batches": {
+        "batch_1_ms": 50.35750071207682,
+        "batch_1_tps": 19.858014910580707,
+        "batch_16_ms": 797.9598045349121,
+        "batch_16_tps": 20.051135294121163,
+        "batch_64_ms": 3177.995522816976,
+        "batch_64_tps": 20.13848022770982
+      }
+    }
+  ],
+  "overlap_at_10": 0.8079999999999999
+}

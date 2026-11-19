@@ -1,0 +1,21 @@
+{
+  "name": "@CHANGE-ME/mem-PLATFORM-ARCH",
+  "version": "0.1.0",
+  "description": "Prebuilt binary package for mem on PLATFORM-ARCH",
+  "os": [
+    "PLATFORM"
+  ],
+  "cpu": [
+    "ARCH"
+  ],
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CHANGE-ME/mem"
+  }
+}

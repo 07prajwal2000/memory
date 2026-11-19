@@ -1,0 +1,212 @@
+{
+  "metric_cosine_supported": true,
+  "percentiles": {
+    "max": 0.42661911249160767,
+    "p50": 0.026649056002497673,
+    "p90": 0.06944886595010757,
+    "p95": 0.08556661009788513,
+    "p99": 0.19447514414787292,
+    "p99.5": 0.28096842765808105,
+    "p99.9": 0.38719862699508667
+  },
+  "results": [
+    {
+      "name": "1. Naive round(v*127)",
+      "metric": "dot",
+      "overlap10": 39.4,
+      "recall50": 72.6
+    },
+    {
+      "name": "1. Naive round(v*127)",
+      "metric": "l2",
+      "overlap10": 57.6,
+      "recall50": 83.32
+    },
+    {
+      "name": "1. Naive round(v*127)",
+      "metric": "cosine",
+      "overlap10": 39.4,
+      "recall50": 72.6
+    },
+    {
+      "name": "2. Per-vector max-abs",
+      "metric": "dot",
+      "overlap10": 32.4,
+      "recall50": 65.28
+    },
+    {
+      "name": "2. Per-vector max-abs",
+      "metric": "l2",
+      "overlap10": 79.4,
+      "recall50": 90.96
+    },
+    {
+      "name": "2. Per-vector max-abs",
+      "metric": "cosine",
+      "overlap10": 32.4,
+      "recall50": 65.28
+    },
+    {
+      "name": "3a. Fixed scale 127/0.30 (423.3)",
+      "metric": "dot",
+      "overlap10": 62.8,
+      "recall50": 83.48
+    },
+    {
+      "name": "3a. Fixed scale 127/0.30 (423.3)",
+      "metric": "l2",
+      "overlap10": 80.8,
+      "recall50": 91.76
+    },
+    {
+      "name": "3a. Fixed scale 127/0.30 (423.3)",
+      "metric": "cosine",
+      "overlap10": 62.8,
+      "recall50": 83.48
+    },
+    {
+      "name": "3b. Fixed scale 127/0.25 (508.0)",
+      "metric": "dot",
+      "overlap10": 58,
+      "recall50": 83.96
+    },
+    {
+      "name": "3b. Fixed scale 127/0.25 (508.0)",
+      "metric": "l2",
+      "overlap10": 84.4,
+      "recall50": 93.56
+    },
+    {
+      "name": "3b. Fixed scale 127/0.25 (508.0)",
+      "metric": "cosine",
+      "overlap10": 58,
+      "recall50": 83.96
+    },
+    {
+      "name": "3c. Fixed scale 127/p99.9 (328.0)",
+      "metric": "dot",
+      "overlap10": 60.4,
+      "recall50": 83.12
+    },
+    {
+      "name": "3c. Fixed scale 127/p99.9 (328.0)",
+      "metric": "l2",
+      "overlap10": 79,
+      "recall50": 91
+    },
+    {
+      "name": "3c. Fixed scale 127/p99.9 (328.0)",
+      "metric": "cosine",
+      "overlap10": 60.4,
+      "recall50": 83.12
+    },
+    {
+      "name": "3d. Fixed scale 127/0.20 (635.0)",
+      "metric": "dot",
+      "overlap10": 64,
+      "recall50": 83.2
+    },
+    {
+      "name": "3d. Fixed scale 127/0.20 (635.0)",
+      "metric": "l2",
+      "overlap10": 87.8,
+      "recall50": 94.16
+    },
+    {
+      "name": "3d. Fixed scale 127/0.20 (635.0)",
+      "metric": "cosine",
+      "overlap10": 64,
+      "recall50": 83.2
+    },
+    {
+      "name": "3e. Fixed scale 127/0.18 (705.5)",
+      "metric": "dot",
+      "overlap10": 67,
+      "recall50": 84.56
+    },
+    {
+      "name": "3e. Fixed scale 127/0.18 (705.5)",
+      "metric": "l2",
+      "overlap10": 89.8,
+      "recall50": 94.52
+    },
+    {
+      "name": "3e. Fixed scale 127/0.18 (705.5)",
+      "metric": "cosine",
+      "overlap10": 67,
+      "recall50": 84.56
+    },
+    {
+      "name": "3f. Fixed scale 127/0.15 (846.7)",
+      "metric": "dot",
+      "overlap10": 63.6,
+      "recall50": 84.12
+    },
+    {
+      "name": "3f. Fixed scale 127/0.15 (846.7)",
+      "metric": "l2",
+      "overlap10": 91.4,
+      "recall50": 95.32
+    },
+    {
+      "name": "3f. Fixed scale 127/0.15 (846.7)",
+      "metric": "cosine",
+      "overlap10": 63.6,
+      "recall50": 84.12
+    },
+    {
+      "name": "3g. Fixed scale 127/0.12 (1058.3)",
+      "metric": "dot",
+      "overlap10": 63.8,
+      "recall50": 84.48
+    },
+    {
+      "name": "3g. Fixed scale 127/0.12 (1058.3)",
+      "metric": "l2",
+      "overlap10": 93.6,
+      "recall50": 95.76
+    },
+    {
+      "name": "3g. Fixed scale 127/0.12 (1058.3)",
+      "metric": "cosine",
+      "overlap10": 63.8,
+      "recall50": 84.48
+    },
+    {
+      "name": "3h. Fixed scale 127/0.10 (1270.0)",
+      "metric": "dot",
+      "overlap10": 67.6,
+      "recall50": 86.24
+    },
+    {
+      "name": "3h. Fixed scale 127/0.10 (1270.0)",
+      "metric": "l2",
+      "overlap10": 92.4,
+      "recall50": 96.08
+    },
+    {
+      "name": "3h. Fixed scale 127/0.10 (1270.0)",
+      "metric": "cosine",
+      "overlap10": 67.6,
+      "recall50": 86.24
+    },
+    {
+      "name": "3i. Fixed scale 127/0.08 (1587.5)",
+      "metric": "dot",
+      "overlap10": 69.8,
+      "recall50": 85.96
+    },
+    {
+      "name": "3i. Fixed scale 127/0.08 (1587.5)",
+      "metric": "l2",
+      "overlap10": 90.6,
+      "recall50": 95.52
+    },
+    {
+      "name": "3i. Fixed scale 127/0.08 (1587.5)",
+      "metric": "cosine",
+      "overlap10": 69.8,
+      "recall50": 85.96
+    }
+  ]
+}

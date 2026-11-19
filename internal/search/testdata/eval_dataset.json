@@ -1,0 +1,3206 @@
+{
+  "corpus": [
+    {
+      "id": "chunk-para-01",
+      "doc_id": "doc-para-01",
+      "context": "global",
+      "name": "engineering/concept-01.md",
+      "heading": "# Architecture",
+      "text": "Upon unexpected power outage, the storage engine replays the write-ahead journal at startup, validating page block integrity and rolling back incomplete transactions."
+    },
+    {
+      "id": "chunk-para-02",
+      "doc_id": "doc-para-02",
+      "context": "global",
+      "name": "engineering/concept-02.md",
+      "heading": "# Architecture",
+      "text": "Client sessions terminate when idle duration crosses ninety minutes, requiring users to authenticate anew using biometric verification or security keys."
+    },
+    {
+      "id": "chunk-para-03",
+      "doc_id": "doc-para-03",
+      "context": "global",
+      "name": "engineering/concept-03.md",
+      "heading": "# Architecture",
+      "text": "By maintaining pre-warmed connection pools with keepalive heartbeats, the client eliminates the high cost of TCP handshakes and TLS renegotiation."
+    },
+    {
+      "id": "chunk-para-04",
+      "doc_id": "doc-para-04",
+      "context": "global",
+      "name": "engineering/concept-04.md",
+      "heading": "# Architecture",
+      "text": "When memory pressure hits critical thresholds, the operating system invokes the out-of-memory killer to terminate the process consuming the largest resident working set."
+    },
+    {
+      "id": "chunk-para-05",
+      "doc_id": "doc-para-05",
+      "context": "global",
+      "name": "engineering/concept-05.md",
+      "heading": "# Architecture",
+      "text": "To shield primary database replicas from heavy analytical scans, read queries are redirected to horizontally scaled read-only replicas."
+    },
+    {
+      "id": "chunk-para-06",
+      "doc_id": "doc-para-06",
+      "context": "global",
+      "name": "engineering/concept-06.md",
+      "heading": "# Architecture",
+      "text": "Applying rate limiting tokens via sliding window algorithms protects the backend from sudden traffic surges and denial of service events."
+    },
+    {
+      "id": "chunk-para-07",
+      "doc_id": "doc-para-07",
+      "context": "global",
+      "name": "engineering/concept-07.md",
+      "heading": "# Architecture",
+      "text": "Deploying canary releases allows routing a tiny fraction of user requests to new binaries before initiating widespread fleet rollout."
+    },
+    {
+      "id": "chunk-para-08",
+      "doc_id": "doc-para-08",
+      "context": "global",
+      "name": "engineering/concept-08.md",
+      "heading": "# Architecture",
+      "text": "Cryptographic salt is mixed with passwords before running slow adaptive key derivation algorithms like Argon2id to resist rainbow table lookups."
+    },
+    {
+      "id": "chunk-para-09",
+      "doc_id": "doc-para-09",
+      "context": "global",
+      "name": "engineering/concept-09.md",
+      "heading": "# Architecture",
+      "text": "Garbage collection latency dropped significantly after migrating frequently allocated temporary buffers to static circular rings."
+    },
+    {
+      "id": "chunk-para-10",
+      "doc_id": "doc-para-10",
+      "context": "global",
+      "name": "engineering/concept-10.md",
+      "heading": "# Architecture",
+      "text": "Horizontal pod autoscalers dynamically scale replica counts based on observed CPU utilization and custom message queue depths."
+    },
+    {
+      "id": "chunk-para-11",
+      "doc_id": "doc-para-11",
+      "context": "global",
+      "name": "engineering/concept-11.md",
+      "heading": "# Architecture",
+      "text": "Circuit breakers trip to open state when consecutive network errors exceed limits, returning fast fallback responses instead of timing out."
+    },
+    {
+      "id": "chunk-para-12",
+      "doc_id": "doc-para-12",
+      "context": "global",
+      "name": "engineering/concept-12.md",
+      "heading": "# Architecture",
+      "text": "By compressing cold log archives using zstandard compression, long-term block storage expenditures decreased by seventy percent."
+    },
+    {
+      "id": "chunk-para-13",
+      "doc_id": "doc-para-13",
+      "context": "global",
+      "name": "engineering/concept-13.md",
+      "heading": "# Architecture",
+      "text": "Cross-origin resource sharing headers dictate which remote web domains are permitted to initiate asynchronous XMLHttpRequests against API routes."
+    },
+    {
+      "id": "chunk-para-14",
+      "doc_id": "doc-para-14",
+      "context": "global",
+      "name": "engineering/concept-14.md",
+      "heading": "# Architecture",
+      "text": "Database table partition pruning eliminates unneeded partition segments during query execution when partition boundaries are filtered."
+    },
+    {
+      "id": "chunk-para-15",
+      "doc_id": "doc-para-15",
+      "context": "global",
+      "name": "engineering/concept-15.md",
+      "heading": "# Architecture",
+      "text": "Immutable infrastructure patterns mandate replacing virtual machines rather than modifying configuration files on running instances."
+    },
+    {
+      "id": "chunk-para-16",
+      "doc_id": "doc-para-16",
+      "context": "global",
+      "name": "engineering/concept-16.md",
+      "heading": "# Architecture",
+      "text": "Distributing load evenly across multiple availability zones ensures system survival even if an entire regional data center loses power."
+    },
+    {
+      "id": "chunk-para-17",
+      "doc_id": "doc-para-17",
+      "context": "global",
+      "name": "engineering/concept-17.md",
+      "heading": "# Architecture",
+      "text": "Using distributed tracing spans helps engineers pinpoint exact microservice latency bottlenecks across complex RPC dependency graphs."
+    },
+    {
+      "id": "chunk-para-18",
+      "doc_id": "doc-para-18",
+      "context": "global",
+      "name": "engineering/concept-18.md",
+      "heading": "# Architecture",
+      "text": "Content delivery edge caches serve static assets directly from points of presence near end consumers, minimizing origin egress load."
+    },
+    {
+      "id": "chunk-para-19",
+      "doc_id": "doc-para-19",
+      "context": "global",
+      "name": "engineering/concept-19.md",
+      "heading": "# Architecture",
+      "text": "Microservice teams adopt consumer-driven contract testing to verify API compatibility prior to merge without spinning up full test clusters."
+    },
+    {
+      "id": "chunk-para-20",
+      "doc_id": "doc-para-20",
+      "context": "global",
+      "name": "engineering/concept-20.md",
+      "heading": "# Architecture",
+      "text": "Enforcing mutual TLS authentication verifies cryptographic certificates on both sides of every network connection within the service mesh."
+    },
+    {
+      "id": "chunk-exact-01",
+      "doc_id": "doc-exact-01",
+      "context": "global",
+      "name": "ops/spec-01.md",
+      "heading": "# Specifications",
+      "text": "The gateway responds with error ERR_AUTH_EXPIRED_4019 when an access token has surpassed its validity horizon. Fix by invoking the refresh token endpoint at /api/v2/oauth/refresh."
+    },
+    {
+      "id": "chunk-exact-02",
+      "doc_id": "doc-exact-02",
+      "context": "global",
+      "name": "ops/spec-02.md",
+      "heading": "# Specifications",
+      "text": "Internal database error ERR_DB_LOCK_DEADLOCK_8821 occurs during simultaneous row-level lock upgrades in nested transactions. Mitigation requires setting txlock=immediate."
+    },
+    {
+      "id": "chunk-exact-03",
+      "doc_id": "doc-exact-03",
+      "context": "global",
+      "name": "ops/spec-03.md",
+      "heading": "# Specifications",
+      "text": "Pass flag --enable-zerocopy-allocator during daemon startup to activate hugepage-backed slab memory arenas, decreasing context switch overhead."
+    },
+    {
+      "id": "chunk-exact-04",
+      "doc_id": "doc-exact-04",
+      "context": "global",
+      "name": "ops/spec-04.md",
+      "heading": "# Specifications",
+      "text": "Configure parameter --max-wal-segment-mb to control the size threshold before passive WAL checkpoints are scheduled by the background janitor."
+    },
+    {
+      "id": "chunk-exact-05",
+      "doc_id": "doc-exact-05",
+      "context": "global",
+      "name": "ops/spec-05.md",
+      "heading": "# Specifications",
+      "text": "The primary listener and cluster filters are defined in /etc/envoy/envoy.yaml under the static_resources configuration stanza."
+    },
+    {
+      "id": "chunk-exact-06",
+      "doc_id": "doc-exact-06",
+      "context": "global",
+      "name": "ops/spec-06.md",
+      "heading": "# Specifications",
+      "text": "Network intrusion detection alerts and packet anomalies are streamed continuously to /var/log/suricata/eve.json in NDJSON format."
+    },
+    {
+      "id": "chunk-exact-07",
+      "doc_id": "doc-exact-07",
+      "context": "global",
+      "name": "ops/spec-07.md",
+      "heading": "# Specifications",
+      "text": "Master billing transaction root UUID-9f8e7d6c-5b4a-3210 handles credit card authorization for European corporate subscriptions."
+    },
+    {
+      "id": "chunk-exact-08",
+      "doc_id": "doc-exact-08",
+      "context": "global",
+      "name": "ops/spec-08.md",
+      "heading": "# Specifications",
+      "text": "Customer account migration batch UUID-a1b2c3d4-e5f6-7890 completed 45,000 profile records with zero validation errors."
+    },
+    {
+      "id": "chunk-exact-09",
+      "doc_id": "doc-exact-09",
+      "context": "global",
+      "name": "ops/spec-09.md",
+      "heading": "# Specifications",
+      "text": "Prometheus metrics exporter listens on PORT_PROMETHEUS_METRICS_9091 under URI path /metrics with TLS client authentication enabled."
+    },
+    {
+      "id": "chunk-exact-10",
+      "doc_id": "doc-exact-10",
+      "context": "global",
+      "name": "ops/spec-10.md",
+      "heading": "# Specifications",
+      "text": "Internal mesh inter-process gRPC calls are routed to PORT_GRPC_INTERNAL_50051 using HTTP/2 protocol buffers."
+    },
+    {
+      "id": "chunk-exact-11",
+      "doc_id": "doc-exact-11",
+      "context": "global",
+      "name": "ops/spec-11.md",
+      "heading": "# Specifications",
+      "text": "Security audit rule SEC_AUDIT_RULE_4492 triggers whenever a user account gains administrator privileges outside standard business hours."
+    },
+    {
+      "id": "chunk-exact-12",
+      "doc_id": "doc-exact-12",
+      "context": "global",
+      "name": "ops/spec-12.md",
+      "heading": "# Specifications",
+      "text": "Environment variable ENV_LLAMA_GPU_LAYERS specifies how many tensor calculation layers are offloaded to VRAM during inference."
+    },
+    {
+      "id": "chunk-exact-13",
+      "doc_id": "doc-exact-13",
+      "context": "global",
+      "name": "ops/spec-13.md",
+      "heading": "# Specifications",
+      "text": "Kubernetes configmap K8S_CM_CORE_ROUTING holds virtual service destination rules and canary percentage splits for ingress-nginx."
+    },
+    {
+      "id": "chunk-exact-14",
+      "doc_id": "doc-exact-14",
+      "context": "global",
+      "name": "ops/spec-14.md",
+      "heading": "# Specifications",
+      "text": "Release binary signature SHA_SIGNATURE_8f7b2c verified integrity against the Cosign transparency ledger for version 2.14.0."
+    },
+    {
+      "id": "chunk-exact-15",
+      "doc_id": "doc-exact-15",
+      "context": "global",
+      "name": "ops/spec-15.md",
+      "heading": "# Specifications",
+      "text": "The sysctl parameter SYS_CTL_VM_OVERCOMMIT=2 prevents memory allocations from exceeding physical swap and RAM limits."
+    },
+    {
+      "id": "chunk-exact-16",
+      "doc_id": "doc-exact-16",
+      "context": "global",
+      "name": "ops/spec-16.md",
+      "heading": "# Specifications",
+      "text": "Pinned package dependency PKG_GO_SQLITE3_V0203 ensures compatibility with sqlite-vec WebAssembly atomics."
+    },
+    {
+      "id": "chunk-exact-17",
+      "doc_id": "doc-exact-17",
+      "context": "global",
+      "name": "ops/spec-17.md",
+      "heading": "# Specifications",
+      "text": "Webhook consumers must call API_ENDPOINT_V3_REVALIDATE within 300 seconds to confirm delivery of customer state mutations."
+    },
+    {
+      "id": "chunk-exact-18",
+      "doc_id": "doc-exact-18",
+      "context": "global",
+      "name": "ops/spec-18.md",
+      "heading": "# Specifications",
+      "text": "Enabling FLAG_STRICT_CONSISTENCY forces synchronous Raft log consensus before acknowledging HTTP write requests."
+    },
+    {
+      "id": "chunk-exact-19",
+      "doc_id": "doc-exact-19",
+      "context": "global",
+      "name": "ops/spec-19.md",
+      "heading": "# Specifications",
+      "text": "Scheduled task CRON_CLEANUP_HOURLY_JOB purges expired temporary contexts and runs WAL checkpoints every 60 minutes."
+    },
+    {
+      "id": "chunk-exact-20",
+      "doc_id": "doc-exact-20",
+      "context": "global",
+      "name": "ops/spec-20.md",
+      "heading": "# Specifications",
+      "text": "All outgoing HTTP requests from agent sidecars must include HEADER_X_MEM_CORRELATION_ID for distributed log tracing."
+    },
+    {
+      "id": "chunk-conf-01-a",
+      "doc_id": "doc-conf-01",
+      "context": "global",
+      "name": "clusters/Redis Cache.md",
+      "heading": "# Redis Cache",
+      "text": "Staging Redis Cache: Redis Sentinel instance runs on port 26379 with master name cluster-stg-redis."
+    },
+    {
+      "id": "chunk-conf-01-b",
+      "doc_id": "doc-conf-01",
+      "context": "global",
+      "name": "clusters/Redis Cache.md",
+      "heading": "# Redis Cache",
+      "text": "Production Redis Cache: Redis Cluster nodes run on port 6379 across 6 shards with TLS encryption enabled."
+    },
+    {
+      "id": "chunk-conf-01-c",
+      "doc_id": "doc-conf-01",
+      "context": "global",
+      "name": "clusters/Redis Cache.md",
+      "heading": "# Redis Cache",
+      "text": "Development Redis Cache: Standalone Redis server runs on port 6380 with local passwordless socket binding."
+    },
+    {
+      "id": "chunk-conf-02-a",
+      "doc_id": "doc-conf-02",
+      "context": "global",
+      "name": "clusters/PostgreSQL Pooler.md",
+      "heading": "# PostgreSQL Pooler",
+      "text": "PgBouncer Staging Setup: Transaction pooling mode listens on port 6432 with default pool size of 25 connections."
+    },
+    {
+      "id": "chunk-conf-02-b",
+      "doc_id": "doc-conf-02",
+      "context": "global",
+      "name": "clusters/PostgreSQL Pooler.md",
+      "heading": "# PostgreSQL Pooler",
+      "text": "PgBouncer Production Setup: Session pooling mode listens on port 6433 with default pool size of 200 connections."
+    },
+    {
+      "id": "chunk-conf-02-c",
+      "doc_id": "doc-conf-02",
+      "context": "global",
+      "name": "clusters/PostgreSQL Pooler.md",
+      "heading": "# PostgreSQL Pooler",
+      "text": "PgBouncer Analytics Setup: Statement pooling mode listens on port 6434 with query timeout set to 60 seconds."
+    },
+    {
+      "id": "chunk-conf-03-a",
+      "doc_id": "doc-conf-03",
+      "context": "global",
+      "name": "clusters/Kafka Ingestion.md",
+      "heading": "# Kafka Ingestion",
+      "text": "Kafka Ingestion Topic telemetry-v1: Encoded using JSON schema, partition count 16, retention period 24 hours."
+    },
+    {
+      "id": "chunk-conf-03-b",
+      "doc_id": "doc-conf-03",
+      "context": "global",
+      "name": "clusters/Kafka Ingestion.md",
+      "heading": "# Kafka Ingestion",
+      "text": "Kafka Ingestion Topic telemetry-v2: Encoded using Protobuf schema, partition count 64, retention period 7 days."
+    },
+    {
+      "id": "chunk-conf-03-c",
+      "doc_id": "doc-conf-03",
+      "context": "global",
+      "name": "clusters/Kafka Ingestion.md",
+      "heading": "# Kafka Ingestion",
+      "text": "Kafka Ingestion Topic telemetry-raw: Uncompressed raw binary stream, partition count 8, retention period 12 hours."
+    },
+    {
+      "id": "chunk-conf-04-a",
+      "doc_id": "doc-conf-04",
+      "context": "global",
+      "name": "clusters/Memory Store Schema.md",
+      "heading": "# Memory Store Schema",
+      "text": "Memory Store v1 Schema: The memory table defines context_id as a UUID column foreign-keying to contexts(uuid)."
+    },
+    {
+      "id": "chunk-conf-04-b",
+      "doc_id": "doc-conf-04",
+      "context": "global",
+      "name": "clusters/Memory Store Schema.md",
+      "heading": "# Memory Store Schema",
+      "text": "Memory Store v2 Schema: The memory table defines context as a text slug column foreign-keying to contexts(slug)."
+    },
+    {
+      "id": "chunk-conf-04-c",
+      "doc_id": "doc-conf-04",
+      "context": "global",
+      "name": "clusters/Memory Store Schema.md",
+      "heading": "# Memory Store Schema",
+      "text": "Memory Store v3 Preview: The memory table defines context as an integer partition key foreign-keying to contexts(id)."
+    },
+    {
+      "id": "chunk-conf-05-a",
+      "doc_id": "doc-conf-05",
+      "context": "global",
+      "name": "clusters/Prometheus Exporter.md",
+      "heading": "# Prometheus Exporter",
+      "text": "Node Exporter Staging: Scrapes system metrics on port 9100 with disk IO collectors disabled."
+    },
+    {
+      "id": "chunk-conf-05-b",
+      "doc_id": "doc-conf-05",
+      "context": "global",
+      "name": "clusters/Prometheus Exporter.md",
+      "heading": "# Prometheus Exporter",
+      "text": "Node Exporter Production: Scrapes system metrics on port 9101 with all collectors enabled including bcache and btrfs."
+    },
+    {
+      "id": "chunk-conf-05-c",
+      "doc_id": "doc-conf-05",
+      "context": "global",
+      "name": "clusters/Prometheus Exporter.md",
+      "heading": "# Prometheus Exporter",
+      "text": "Node Exporter Edge: Scrapes system metrics on port 9102 restricted to CPU and memory usage only."
+    },
+    {
+      "id": "chunk-conf-06-a",
+      "doc_id": "doc-conf-06",
+      "context": "global",
+      "name": "clusters/Auth Token Signer.md",
+      "heading": "# Auth Token Signer",
+      "text": "JWT Authentication Signer RSA: Signs tokens using RS256 algorithm with 4096-bit RSA keys rotated weekly."
+    },
+    {
+      "id": "chunk-conf-06-b",
+      "doc_id": "doc-conf-06",
+      "context": "global",
+      "name": "clusters/Auth Token Signer.md",
+      "heading": "# Auth Token Signer",
+      "text": "JWT Authentication Signer ECDSA: Signs tokens using ES256 algorithm with NIST P-256 elliptic curve rotated monthly."
+    },
+    {
+      "id": "chunk-conf-06-c",
+      "doc_id": "doc-conf-06",
+      "context": "global",
+      "name": "clusters/Auth Token Signer.md",
+      "heading": "# Auth Token Signer",
+      "text": "JWT Authentication Signer HMAC: Signs tokens using HS256 algorithm with shared 512-bit secret keys for legacy services."
+    },
+    {
+      "id": "chunk-conf-07-a",
+      "doc_id": "doc-conf-07",
+      "context": "global",
+      "name": "clusters/Llama Server Embed Sidecar.md",
+      "heading": "# Llama Server Embed Sidecar",
+      "text": "Embedding Sidecar Config: Starts llama-server with --embedding -c 512 -t 8 on dynamic localhost port with 5m idle kill."
+    },
+    {
+      "id": "chunk-conf-07-b",
+      "doc_id": "doc-conf-07",
+      "context": "global",
+      "name": "clusters/Llama Server Embed Sidecar.md",
+      "heading": "# Llama Server Embed Sidecar",
+      "text": "Reranking Sidecar Config: Starts llama-server with --rerank -c 8192 -t 8 on dynamic localhost port with 5m idle kill."
+    },
+    {
+      "id": "chunk-conf-07-c",
+      "doc_id": "doc-conf-07",
+      "context": "global",
+      "name": "clusters/Llama Server Embed Sidecar.md",
+      "heading": "# Llama Server Embed Sidecar",
+      "text": "Completion Sidecar Config: Starts llama-server with -c 4096 -t 16 --continuous-batching on fixed port 8080."
+    },
+    {
+      "id": "chunk-conf-08-a",
+      "doc_id": "doc-conf-08",
+      "context": "global",
+      "name": "clusters/Backup Retention Policy.md",
+      "heading": "# Backup Retention Policy",
+      "text": "Daily Backup Policy: Retains incremental snapshots for 14 days in S3 Standard Infrequent Access storage tier."
+    },
+    {
+      "id": "chunk-conf-08-b",
+      "doc_id": "doc-conf-08",
+      "context": "global",
+      "name": "clusters/Backup Retention Policy.md",
+      "heading": "# Backup Retention Policy",
+      "text": "Weekly Backup Policy: Retains full cluster snapshots for 90 days in Glacier Flexible Retrieval storage tier."
+    },
+    {
+      "id": "chunk-conf-08-c",
+      "doc_id": "doc-conf-08",
+      "context": "global",
+      "name": "clusters/Backup Retention Policy.md",
+      "heading": "# Backup Retention Policy",
+      "text": "Monthly Backup Policy: Retains encrypted immutable archive snapshots for 7 years in Glacier Deep Archive tier."
+    },
+    {
+      "id": "chunk-conf-09-a",
+      "doc_id": "doc-conf-09",
+      "context": "global",
+      "name": "clusters/gRPC Gateway Port.md",
+      "heading": "# gRPC Gateway Port",
+      "text": "Internal Gateway Staging: Routes gRPC-Web traffic on port 8443 with self-signed development certificates."
+    },
+    {
+      "id": "chunk-conf-09-b",
+      "doc_id": "doc-conf-09",
+      "context": "global",
+      "name": "clusters/gRPC Gateway Port.md",
+      "heading": "# gRPC Gateway Port",
+      "text": "Internal Gateway Production: Routes gRPC-Web traffic on port 443 with Let's Encrypt automated ACME certificates."
+    },
+    {
+      "id": "chunk-conf-09-c",
+      "doc_id": "doc-conf-09",
+      "context": "global",
+      "name": "clusters/gRPC Gateway Port.md",
+      "heading": "# gRPC Gateway Port",
+      "text": "Internal Gateway Canary: Routes gRPC-Web traffic on port 9443 with test traffic mirroring enabled."
+    },
+    {
+      "id": "chunk-conf-10-a",
+      "doc_id": "doc-conf-10",
+      "context": "global",
+      "name": "clusters/Elasticsearch Cluster.md",
+      "heading": "# Elasticsearch Cluster",
+      "text": "Logging Elasticsearch Cluster: Comprises 3 master nodes and 12 data nodes with 30TB NVMe storage on AWS i3en instances."
+    },
+    {
+      "id": "chunk-conf-10-b",
+      "doc_id": "doc-conf-10",
+      "context": "global",
+      "name": "clusters/Elasticsearch Cluster.md",
+      "heading": "# Elasticsearch Cluster",
+      "text": "Search Elasticsearch Cluster: Comprises 3 master nodes and 6 data nodes with 10TB SSD storage on AWS r6i instances."
+    },
+    {
+      "id": "chunk-conf-10-c",
+      "doc_id": "doc-conf-10",
+      "context": "global",
+      "name": "clusters/Elasticsearch Cluster.md",
+      "heading": "# Elasticsearch Cluster",
+      "text": "Metrics Elasticsearch Cluster: Comprises 2 master nodes and 4 data nodes with 5TB magnetic storage on AWS m5 instances."
+    },
+    {
+      "id": "chunk-multi-01",
+      "doc_id": "doc-multi-01",
+      "context": "global",
+      "name": "knowledge/guide-01.md",
+      "heading": "# Operational Guide",
+      "text": "Run CLI command 'mem migrate up' to execute database migrations. Set environment variable MEM_LOG_LEVEL=debug to print detailed SQL execution traces."
+    },
+    {
+      "id": "chunk-multi-02",
+      "doc_id": "doc-multi-02",
+      "context": "global",
+      "name": "knowledge/guide-02.md",
+      "heading": "# Operational Guide",
+      "text": "The indexer uses chunks_vec with int8[384] quantization to minimize RAM. Full text search uses chunks_fts with the porter unicode61 tokenizer."
+    },
+    {
+      "id": "chunk-multi-03",
+      "doc_id": "doc-multi-03",
+      "context": "global",
+      "name": "knowledge/guide-03.md",
+      "heading": "# Operational Guide",
+      "text": "Deploy PostgreSQL with max_connections set to 500 and shared_buffers set to 8GB for servers with 32GB RAM."
+    },
+    {
+      "id": "chunk-multi-04",
+      "doc_id": "doc-multi-04",
+      "context": "global",
+      "name": "knowledge/guide-04.md",
+      "heading": "# Operational Guide",
+      "text": "The Go memory sidecar launches on 127.0.0.1 with --embedding -c 512, and terminates automatically after 5 minutes of inactivity."
+    },
+    {
+      "id": "chunk-multi-05",
+      "doc_id": "doc-multi-05",
+      "context": "global",
+      "name": "knowledge/guide-05.md",
+      "heading": "# Operational Guide",
+      "text": "Redis cluster nodes communicate via cluster bus port 16379, while client queries are served on standard port 6379."
+    },
+    {
+      "id": "chunk-multi-06",
+      "doc_id": "doc-multi-06",
+      "context": "global",
+      "name": "knowledge/guide-06.md",
+      "heading": "# Operational Guide",
+      "text": "The Prometheus server scrapes metrics every 15 seconds from /metrics, and retains historical series data for 30 days on disk."
+    },
+    {
+      "id": "chunk-multi-07",
+      "doc_id": "doc-multi-07",
+      "context": "global",
+      "name": "knowledge/guide-07.md",
+      "heading": "# Operational Guide",
+      "text": "Encrypt customer sensitive records using AES-256-GCM authenticated cipher, and rotate data encryption keys every 90 days via KMS."
+    },
+    {
+      "id": "chunk-multi-08",
+      "doc_id": "doc-multi-08",
+      "context": "global",
+      "name": "knowledge/guide-08.md",
+      "heading": "# Operational Guide",
+      "text": "The HTTP API rate limiter allows 100 requests per minute per IP address, returning HTTP 429 Too Many Requests upon limit breach."
+    },
+    {
+      "id": "chunk-multi-09",
+      "doc_id": "doc-multi-09",
+      "context": "global",
+      "name": "knowledge/guide-09.md",
+      "heading": "# Operational Guide",
+      "text": "Docker container healthchecks execute 'curl -f http://localhost:8080/health' every 10 seconds, marking container unhealthy after 3 retries."
+    },
+    {
+      "id": "chunk-multi-10",
+      "doc_id": "doc-multi-10",
+      "context": "global",
+      "name": "knowledge/guide-10.md",
+      "heading": "# Operational Guide",
+      "text": "In Kafka configuration, set acks=all to ensure replication durability, and set min.insync.replicas=2 across three broker nodes."
+    },
+    {
+      "id": "chunk-multi-11",
+      "doc_id": "doc-multi-11",
+      "context": "global",
+      "name": "knowledge/guide-11.md",
+      "heading": "# Operational Guide",
+      "text": "The CI pipeline runs unit tests under Go 1.23 using 'go test -race ./...' with a hard execution timeout of 10 minutes."
+    },
+    {
+      "id": "chunk-multi-12",
+      "doc_id": "doc-multi-12",
+      "context": "global",
+      "name": "knowledge/guide-12.md",
+      "heading": "# Operational Guide",
+      "text": "Session cookies must configure Secure=true to mandate HTTPS transmission, and SameSite=Strict to block cross-site request forgery."
+    },
+    {
+      "id": "chunk-multi-13",
+      "doc_id": "doc-multi-13",
+      "context": "global",
+      "name": "knowledge/guide-13.md",
+      "heading": "# Operational Guide",
+      "text": "Kubernetes ingress annotations require nginx.ingress.kubernetes.io/proxy-body-size: 50m and proxy-read-timeout: '120'."
+    },
+    {
+      "id": "chunk-multi-14",
+      "doc_id": "doc-multi-14",
+      "context": "global",
+      "name": "knowledge/guide-14.md",
+      "heading": "# Operational Guide",
+      "text": "SQLite WAL checkpoints run with PRAGMA wal_checkpoint(PASSIVE), while busy handler timeout is configured with PRAGMA busy_timeout=5000."
+    },
+    {
+      "id": "chunk-multi-15",
+      "doc_id": "doc-multi-15",
+      "context": "global",
+      "name": "knowledge/guide-15.md",
+      "heading": "# Operational Guide",
+      "text": "The Envoy proxy access log writes to /dev/stdout using json_format, with timestamp formatting set to RFC3339Nano."
+    },
+    {
+      "id": "chunk-multi-16",
+      "doc_id": "doc-multi-16",
+      "context": "global",
+      "name": "knowledge/guide-16.md",
+      "heading": "# Operational Guide",
+      "text": "Elasticsearch index mappings set number_of_shards to 5 and number_of_replicas to 1 for high availability across availability zones."
+    },
+    {
+      "id": "chunk-multi-17",
+      "doc_id": "doc-multi-17",
+      "context": "global",
+      "name": "knowledge/guide-17.md",
+      "heading": "# Operational Guide",
+      "text": "Configure AWS S3 bucket lifecycle to transition objects to Glacier after 30 days, and permanently expire objects after 365 days."
+    },
+    {
+      "id": "chunk-multi-18",
+      "doc_id": "doc-multi-18",
+      "context": "global",
+      "name": "knowledge/guide-18.md",
+      "heading": "# Operational Guide",
+      "text": "The OAuth token introspection endpoint responds with active: true and scope: 'read write' for valid bearer tokens."
+    },
+    {
+      "id": "chunk-multi-19",
+      "doc_id": "doc-multi-19",
+      "context": "global",
+      "name": "knowledge/guide-19.md",
+      "heading": "# Operational Guide",
+      "text": "The background sweeper task runs every 10 minutes, pruning expired temporary contexts where expires_at \u003c CURRENT_TIMESTAMP."
+    },
+    {
+      "id": "chunk-multi-20",
+      "doc_id": "doc-multi-20",
+      "context": "global",
+      "name": "knowledge/guide-20.md",
+      "heading": "# Operational Guide",
+      "text": "Hybrid search combines vector KNN top 50 with BM25 top 50 using RRF fusion with k=60, before cross-encoder reranking the top 30."
+    },
+    {
+      "id": "chunk-distract-001",
+      "doc_id": "doc-distract-001",
+      "context": "global",
+      "name": "notes/note-001.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #1: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-002",
+      "doc_id": "doc-distract-002",
+      "context": "global",
+      "name": "notes/note-002.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #2: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-003",
+      "doc_id": "doc-distract-003",
+      "context": "global",
+      "name": "notes/note-003.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #3: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-004",
+      "doc_id": "doc-distract-004",
+      "context": "global",
+      "name": "notes/note-004.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #4: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-005",
+      "doc_id": "doc-distract-005",
+      "context": "global",
+      "name": "notes/note-005.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #5: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-006",
+      "doc_id": "doc-distract-006",
+      "context": "global",
+      "name": "notes/note-006.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #6: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-007",
+      "doc_id": "doc-distract-007",
+      "context": "global",
+      "name": "notes/note-007.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #7: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-008",
+      "doc_id": "doc-distract-008",
+      "context": "global",
+      "name": "notes/note-008.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #8: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-009",
+      "doc_id": "doc-distract-009",
+      "context": "global",
+      "name": "notes/note-009.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #9: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-010",
+      "doc_id": "doc-distract-010",
+      "context": "global",
+      "name": "notes/note-010.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #10: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-011",
+      "doc_id": "doc-distract-011",
+      "context": "global",
+      "name": "notes/note-011.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #11: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-012",
+      "doc_id": "doc-distract-012",
+      "context": "global",
+      "name": "notes/note-012.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #12: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-013",
+      "doc_id": "doc-distract-013",
+      "context": "global",
+      "name": "notes/note-013.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #13: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-014",
+      "doc_id": "doc-distract-014",
+      "context": "global",
+      "name": "notes/note-014.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #14: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-015",
+      "doc_id": "doc-distract-015",
+      "context": "global",
+      "name": "notes/note-015.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #15: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-016",
+      "doc_id": "doc-distract-016",
+      "context": "global",
+      "name": "notes/note-016.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #16: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-017",
+      "doc_id": "doc-distract-017",
+      "context": "global",
+      "name": "notes/note-017.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #17: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-018",
+      "doc_id": "doc-distract-018",
+      "context": "global",
+      "name": "notes/note-018.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #18: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-019",
+      "doc_id": "doc-distract-019",
+      "context": "global",
+      "name": "notes/note-019.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #19: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-020",
+      "doc_id": "doc-distract-020",
+      "context": "global",
+      "name": "notes/note-020.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #20: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-021",
+      "doc_id": "doc-distract-021",
+      "context": "global",
+      "name": "notes/note-021.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #21: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-022",
+      "doc_id": "doc-distract-022",
+      "context": "global",
+      "name": "notes/note-022.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #22: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-023",
+      "doc_id": "doc-distract-023",
+      "context": "global",
+      "name": "notes/note-023.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #23: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-024",
+      "doc_id": "doc-distract-024",
+      "context": "global",
+      "name": "notes/note-024.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #24: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-025",
+      "doc_id": "doc-distract-025",
+      "context": "global",
+      "name": "notes/note-025.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #25: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-026",
+      "doc_id": "doc-distract-026",
+      "context": "global",
+      "name": "notes/note-026.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #26: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-027",
+      "doc_id": "doc-distract-027",
+      "context": "global",
+      "name": "notes/note-027.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #27: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-028",
+      "doc_id": "doc-distract-028",
+      "context": "global",
+      "name": "notes/note-028.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #28: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-029",
+      "doc_id": "doc-distract-029",
+      "context": "global",
+      "name": "notes/note-029.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #29: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-030",
+      "doc_id": "doc-distract-030",
+      "context": "global",
+      "name": "notes/note-030.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #30: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-031",
+      "doc_id": "doc-distract-031",
+      "context": "global",
+      "name": "notes/note-031.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #31: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-032",
+      "doc_id": "doc-distract-032",
+      "context": "global",
+      "name": "notes/note-032.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #32: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-033",
+      "doc_id": "doc-distract-033",
+      "context": "global",
+      "name": "notes/note-033.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #33: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-034",
+      "doc_id": "doc-distract-034",
+      "context": "global",
+      "name": "notes/note-034.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #34: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-035",
+      "doc_id": "doc-distract-035",
+      "context": "global",
+      "name": "notes/note-035.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #35: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-036",
+      "doc_id": "doc-distract-036",
+      "context": "global",
+      "name": "notes/note-036.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #36: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-037",
+      "doc_id": "doc-distract-037",
+      "context": "global",
+      "name": "notes/note-037.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #37: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-038",
+      "doc_id": "doc-distract-038",
+      "context": "global",
+      "name": "notes/note-038.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #38: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-039",
+      "doc_id": "doc-distract-039",
+      "context": "global",
+      "name": "notes/note-039.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #39: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-040",
+      "doc_id": "doc-distract-040",
+      "context": "global",
+      "name": "notes/note-040.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #40: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-041",
+      "doc_id": "doc-distract-041",
+      "context": "global",
+      "name": "notes/note-041.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #41: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-042",
+      "doc_id": "doc-distract-042",
+      "context": "global",
+      "name": "notes/note-042.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #42: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-043",
+      "doc_id": "doc-distract-043",
+      "context": "global",
+      "name": "notes/note-043.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #43: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-044",
+      "doc_id": "doc-distract-044",
+      "context": "global",
+      "name": "notes/note-044.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #44: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-045",
+      "doc_id": "doc-distract-045",
+      "context": "global",
+      "name": "notes/note-045.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #45: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-046",
+      "doc_id": "doc-distract-046",
+      "context": "global",
+      "name": "notes/note-046.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #46: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-047",
+      "doc_id": "doc-distract-047",
+      "context": "global",
+      "name": "notes/note-047.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #47: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-048",
+      "doc_id": "doc-distract-048",
+      "context": "global",
+      "name": "notes/note-048.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #48: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-049",
+      "doc_id": "doc-distract-049",
+      "context": "global",
+      "name": "notes/note-049.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #49: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-050",
+      "doc_id": "doc-distract-050",
+      "context": "global",
+      "name": "notes/note-050.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #50: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-051",
+      "doc_id": "doc-distract-051",
+      "context": "global",
+      "name": "notes/note-051.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #51: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-052",
+      "doc_id": "doc-distract-052",
+      "context": "global",
+      "name": "notes/note-052.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #52: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-053",
+      "doc_id": "doc-distract-053",
+      "context": "global",
+      "name": "notes/note-053.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #53: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-054",
+      "doc_id": "doc-distract-054",
+      "context": "global",
+      "name": "notes/note-054.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #54: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-055",
+      "doc_id": "doc-distract-055",
+      "context": "global",
+      "name": "notes/note-055.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #55: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-056",
+      "doc_id": "doc-distract-056",
+      "context": "global",
+      "name": "notes/note-056.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #56: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-057",
+      "doc_id": "doc-distract-057",
+      "context": "global",
+      "name": "notes/note-057.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #57: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-058",
+      "doc_id": "doc-distract-058",
+      "context": "global",
+      "name": "notes/note-058.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #58: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-059",
+      "doc_id": "doc-distract-059",
+      "context": "global",
+      "name": "notes/note-059.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #59: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-060",
+      "doc_id": "doc-distract-060",
+      "context": "global",
+      "name": "notes/note-060.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #60: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-061",
+      "doc_id": "doc-distract-061",
+      "context": "global",
+      "name": "notes/note-061.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #61: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-062",
+      "doc_id": "doc-distract-062",
+      "context": "global",
+      "name": "notes/note-062.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #62: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-063",
+      "doc_id": "doc-distract-063",
+      "context": "global",
+      "name": "notes/note-063.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #63: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-064",
+      "doc_id": "doc-distract-064",
+      "context": "global",
+      "name": "notes/note-064.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #64: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-065",
+      "doc_id": "doc-distract-065",
+      "context": "global",
+      "name": "notes/note-065.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #65: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-066",
+      "doc_id": "doc-distract-066",
+      "context": "global",
+      "name": "notes/note-066.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #66: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-067",
+      "doc_id": "doc-distract-067",
+      "context": "global",
+      "name": "notes/note-067.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #67: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-068",
+      "doc_id": "doc-distract-068",
+      "context": "global",
+      "name": "notes/note-068.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #68: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-069",
+      "doc_id": "doc-distract-069",
+      "context": "global",
+      "name": "notes/note-069.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #69: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-070",
+      "doc_id": "doc-distract-070",
+      "context": "global",
+      "name": "notes/note-070.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #70: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-071",
+      "doc_id": "doc-distract-071",
+      "context": "global",
+      "name": "notes/note-071.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #71: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-072",
+      "doc_id": "doc-distract-072",
+      "context": "global",
+      "name": "notes/note-072.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #72: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-073",
+      "doc_id": "doc-distract-073",
+      "context": "global",
+      "name": "notes/note-073.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #73: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-074",
+      "doc_id": "doc-distract-074",
+      "context": "global",
+      "name": "notes/note-074.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #74: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-075",
+      "doc_id": "doc-distract-075",
+      "context": "global",
+      "name": "notes/note-075.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #75: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-076",
+      "doc_id": "doc-distract-076",
+      "context": "global",
+      "name": "notes/note-076.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #76: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-077",
+      "doc_id": "doc-distract-077",
+      "context": "global",
+      "name": "notes/note-077.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #77: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-078",
+      "doc_id": "doc-distract-078",
+      "context": "global",
+      "name": "notes/note-078.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #78: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-079",
+      "doc_id": "doc-distract-079",
+      "context": "global",
+      "name": "notes/note-079.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #79: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-080",
+      "doc_id": "doc-distract-080",
+      "context": "global",
+      "name": "notes/note-080.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #80: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-081",
+      "doc_id": "doc-distract-081",
+      "context": "global",
+      "name": "notes/note-081.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #81: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-082",
+      "doc_id": "doc-distract-082",
+      "context": "global",
+      "name": "notes/note-082.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #82: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-083",
+      "doc_id": "doc-distract-083",
+      "context": "global",
+      "name": "notes/note-083.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #83: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-084",
+      "doc_id": "doc-distract-084",
+      "context": "global",
+      "name": "notes/note-084.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #84: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-085",
+      "doc_id": "doc-distract-085",
+      "context": "global",
+      "name": "notes/note-085.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #85: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-086",
+      "doc_id": "doc-distract-086",
+      "context": "global",
+      "name": "notes/note-086.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #86: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-087",
+      "doc_id": "doc-distract-087",
+      "context": "global",
+      "name": "notes/note-087.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #87: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-088",
+      "doc_id": "doc-distract-088",
+      "context": "global",
+      "name": "notes/note-088.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #88: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-089",
+      "doc_id": "doc-distract-089",
+      "context": "global",
+      "name": "notes/note-089.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #89: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-090",
+      "doc_id": "doc-distract-090",
+      "context": "global",
+      "name": "notes/note-090.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #90: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-091",
+      "doc_id": "doc-distract-091",
+      "context": "global",
+      "name": "notes/note-091.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #91: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-092",
+      "doc_id": "doc-distract-092",
+      "context": "global",
+      "name": "notes/note-092.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #92: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-093",
+      "doc_id": "doc-distract-093",
+      "context": "global",
+      "name": "notes/note-093.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #93: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-094",
+      "doc_id": "doc-distract-094",
+      "context": "global",
+      "name": "notes/note-094.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #94: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-095",
+      "doc_id": "doc-distract-095",
+      "context": "global",
+      "name": "notes/note-095.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #95: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-096",
+      "doc_id": "doc-distract-096",
+      "context": "global",
+      "name": "notes/note-096.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #96: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-097",
+      "doc_id": "doc-distract-097",
+      "context": "global",
+      "name": "notes/note-097.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #97: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-098",
+      "doc_id": "doc-distract-098",
+      "context": "global",
+      "name": "notes/note-098.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #98: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-099",
+      "doc_id": "doc-distract-099",
+      "context": "global",
+      "name": "notes/note-099.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #99: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-100",
+      "doc_id": "doc-distract-100",
+      "context": "global",
+      "name": "notes/note-100.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #100: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-101",
+      "doc_id": "doc-distract-101",
+      "context": "global",
+      "name": "notes/note-101.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #101: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-102",
+      "doc_id": "doc-distract-102",
+      "context": "global",
+      "name": "notes/note-102.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #102: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-103",
+      "doc_id": "doc-distract-103",
+      "context": "global",
+      "name": "notes/note-103.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #103: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-104",
+      "doc_id": "doc-distract-104",
+      "context": "global",
+      "name": "notes/note-104.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #104: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-105",
+      "doc_id": "doc-distract-105",
+      "context": "global",
+      "name": "notes/note-105.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #105: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-106",
+      "doc_id": "doc-distract-106",
+      "context": "global",
+      "name": "notes/note-106.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #106: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-107",
+      "doc_id": "doc-distract-107",
+      "context": "global",
+      "name": "notes/note-107.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #107: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-108",
+      "doc_id": "doc-distract-108",
+      "context": "global",
+      "name": "notes/note-108.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #108: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-109",
+      "doc_id": "doc-distract-109",
+      "context": "global",
+      "name": "notes/note-109.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #109: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-110",
+      "doc_id": "doc-distract-110",
+      "context": "global",
+      "name": "notes/note-110.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #110: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-111",
+      "doc_id": "doc-distract-111",
+      "context": "global",
+      "name": "notes/note-111.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #111: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-112",
+      "doc_id": "doc-distract-112",
+      "context": "global",
+      "name": "notes/note-112.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #112: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-113",
+      "doc_id": "doc-distract-113",
+      "context": "global",
+      "name": "notes/note-113.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #113: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-114",
+      "doc_id": "doc-distract-114",
+      "context": "global",
+      "name": "notes/note-114.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #114: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-115",
+      "doc_id": "doc-distract-115",
+      "context": "global",
+      "name": "notes/note-115.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #115: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-116",
+      "doc_id": "doc-distract-116",
+      "context": "global",
+      "name": "notes/note-116.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #116: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-117",
+      "doc_id": "doc-distract-117",
+      "context": "global",
+      "name": "notes/note-117.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #117: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-118",
+      "doc_id": "doc-distract-118",
+      "context": "global",
+      "name": "notes/note-118.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #118: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-119",
+      "doc_id": "doc-distract-119",
+      "context": "global",
+      "name": "notes/note-119.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #119: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-120",
+      "doc_id": "doc-distract-120",
+      "context": "global",
+      "name": "notes/note-120.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #120: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-121",
+      "doc_id": "doc-distract-121",
+      "context": "global",
+      "name": "notes/note-121.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #121: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-122",
+      "doc_id": "doc-distract-122",
+      "context": "global",
+      "name": "notes/note-122.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #122: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-123",
+      "doc_id": "doc-distract-123",
+      "context": "global",
+      "name": "notes/note-123.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #123: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-124",
+      "doc_id": "doc-distract-124",
+      "context": "global",
+      "name": "notes/note-124.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #124: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-125",
+      "doc_id": "doc-distract-125",
+      "context": "global",
+      "name": "notes/note-125.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #125: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-126",
+      "doc_id": "doc-distract-126",
+      "context": "global",
+      "name": "notes/note-126.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #126: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-127",
+      "doc_id": "doc-distract-127",
+      "context": "global",
+      "name": "notes/note-127.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #127: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-128",
+      "doc_id": "doc-distract-128",
+      "context": "global",
+      "name": "notes/note-128.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #128: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-129",
+      "doc_id": "doc-distract-129",
+      "context": "global",
+      "name": "notes/note-129.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #129: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-130",
+      "doc_id": "doc-distract-130",
+      "context": "global",
+      "name": "notes/note-130.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #130: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-131",
+      "doc_id": "doc-distract-131",
+      "context": "global",
+      "name": "notes/note-131.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #131: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-132",
+      "doc_id": "doc-distract-132",
+      "context": "global",
+      "name": "notes/note-132.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #132: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-133",
+      "doc_id": "doc-distract-133",
+      "context": "global",
+      "name": "notes/note-133.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #133: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-134",
+      "doc_id": "doc-distract-134",
+      "context": "global",
+      "name": "notes/note-134.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #134: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-135",
+      "doc_id": "doc-distract-135",
+      "context": "global",
+      "name": "notes/note-135.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #135: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-136",
+      "doc_id": "doc-distract-136",
+      "context": "global",
+      "name": "notes/note-136.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #136: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-137",
+      "doc_id": "doc-distract-137",
+      "context": "global",
+      "name": "notes/note-137.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #137: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-138",
+      "doc_id": "doc-distract-138",
+      "context": "global",
+      "name": "notes/note-138.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #138: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-139",
+      "doc_id": "doc-distract-139",
+      "context": "global",
+      "name": "notes/note-139.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #139: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-140",
+      "doc_id": "doc-distract-140",
+      "context": "global",
+      "name": "notes/note-140.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #140: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-141",
+      "doc_id": "doc-distract-141",
+      "context": "global",
+      "name": "notes/note-141.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #141: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-142",
+      "doc_id": "doc-distract-142",
+      "context": "global",
+      "name": "notes/note-142.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #142: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-143",
+      "doc_id": "doc-distract-143",
+      "context": "global",
+      "name": "notes/note-143.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #143: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-144",
+      "doc_id": "doc-distract-144",
+      "context": "global",
+      "name": "notes/note-144.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #144: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-145",
+      "doc_id": "doc-distract-145",
+      "context": "global",
+      "name": "notes/note-145.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #145: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-146",
+      "doc_id": "doc-distract-146",
+      "context": "global",
+      "name": "notes/note-146.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #146: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-147",
+      "doc_id": "doc-distract-147",
+      "context": "global",
+      "name": "notes/note-147.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #147: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-148",
+      "doc_id": "doc-distract-148",
+      "context": "global",
+      "name": "notes/note-148.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #148: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-149",
+      "doc_id": "doc-distract-149",
+      "context": "global",
+      "name": "notes/note-149.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #149: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-150",
+      "doc_id": "doc-distract-150",
+      "context": "global",
+      "name": "notes/note-150.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #150: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-151",
+      "doc_id": "doc-distract-151",
+      "context": "global",
+      "name": "notes/note-151.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #151: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-152",
+      "doc_id": "doc-distract-152",
+      "context": "global",
+      "name": "notes/note-152.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #152: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-153",
+      "doc_id": "doc-distract-153",
+      "context": "global",
+      "name": "notes/note-153.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #153: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-154",
+      "doc_id": "doc-distract-154",
+      "context": "global",
+      "name": "notes/note-154.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #154: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-155",
+      "doc_id": "doc-distract-155",
+      "context": "global",
+      "name": "notes/note-155.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #155: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-156",
+      "doc_id": "doc-distract-156",
+      "context": "global",
+      "name": "notes/note-156.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #156: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-157",
+      "doc_id": "doc-distract-157",
+      "context": "global",
+      "name": "notes/note-157.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #157: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-158",
+      "doc_id": "doc-distract-158",
+      "context": "global",
+      "name": "notes/note-158.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #158: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-159",
+      "doc_id": "doc-distract-159",
+      "context": "global",
+      "name": "notes/note-159.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #159: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-160",
+      "doc_id": "doc-distract-160",
+      "context": "global",
+      "name": "notes/note-160.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #160: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-161",
+      "doc_id": "doc-distract-161",
+      "context": "global",
+      "name": "notes/note-161.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #161: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-162",
+      "doc_id": "doc-distract-162",
+      "context": "global",
+      "name": "notes/note-162.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #162: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-163",
+      "doc_id": "doc-distract-163",
+      "context": "global",
+      "name": "notes/note-163.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #163: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-164",
+      "doc_id": "doc-distract-164",
+      "context": "global",
+      "name": "notes/note-164.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #164: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-165",
+      "doc_id": "doc-distract-165",
+      "context": "global",
+      "name": "notes/note-165.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #165: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-166",
+      "doc_id": "doc-distract-166",
+      "context": "global",
+      "name": "notes/note-166.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #166: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-167",
+      "doc_id": "doc-distract-167",
+      "context": "global",
+      "name": "notes/note-167.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #167: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-168",
+      "doc_id": "doc-distract-168",
+      "context": "global",
+      "name": "notes/note-168.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #168: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-169",
+      "doc_id": "doc-distract-169",
+      "context": "global",
+      "name": "notes/note-169.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #169: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-170",
+      "doc_id": "doc-distract-170",
+      "context": "global",
+      "name": "notes/note-170.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #170: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-171",
+      "doc_id": "doc-distract-171",
+      "context": "global",
+      "name": "notes/note-171.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #171: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-172",
+      "doc_id": "doc-distract-172",
+      "context": "global",
+      "name": "notes/note-172.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #172: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-173",
+      "doc_id": "doc-distract-173",
+      "context": "global",
+      "name": "notes/note-173.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #173: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-174",
+      "doc_id": "doc-distract-174",
+      "context": "global",
+      "name": "notes/note-174.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #174: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-175",
+      "doc_id": "doc-distract-175",
+      "context": "global",
+      "name": "notes/note-175.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #175: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-176",
+      "doc_id": "doc-distract-176",
+      "context": "global",
+      "name": "notes/note-176.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #176: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-177",
+      "doc_id": "doc-distract-177",
+      "context": "global",
+      "name": "notes/note-177.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #177: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-178",
+      "doc_id": "doc-distract-178",
+      "context": "global",
+      "name": "notes/note-178.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #178: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-179",
+      "doc_id": "doc-distract-179",
+      "context": "global",
+      "name": "notes/note-179.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #179: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-180",
+      "doc_id": "doc-distract-180",
+      "context": "global",
+      "name": "notes/note-180.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #180: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-181",
+      "doc_id": "doc-distract-181",
+      "context": "global",
+      "name": "notes/note-181.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #181: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-182",
+      "doc_id": "doc-distract-182",
+      "context": "global",
+      "name": "notes/note-182.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #182: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-183",
+      "doc_id": "doc-distract-183",
+      "context": "global",
+      "name": "notes/note-183.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #183: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-184",
+      "doc_id": "doc-distract-184",
+      "context": "global",
+      "name": "notes/note-184.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #184: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-185",
+      "doc_id": "doc-distract-185",
+      "context": "global",
+      "name": "notes/note-185.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #185: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-186",
+      "doc_id": "doc-distract-186",
+      "context": "global",
+      "name": "notes/note-186.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #186: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-187",
+      "doc_id": "doc-distract-187",
+      "context": "global",
+      "name": "notes/note-187.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #187: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-188",
+      "doc_id": "doc-distract-188",
+      "context": "global",
+      "name": "notes/note-188.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #188: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-189",
+      "doc_id": "doc-distract-189",
+      "context": "global",
+      "name": "notes/note-189.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #189: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-190",
+      "doc_id": "doc-distract-190",
+      "context": "global",
+      "name": "notes/note-190.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #190: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-191",
+      "doc_id": "doc-distract-191",
+      "context": "global",
+      "name": "notes/note-191.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #191: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-192",
+      "doc_id": "doc-distract-192",
+      "context": "global",
+      "name": "notes/note-192.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #192: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-193",
+      "doc_id": "doc-distract-193",
+      "context": "global",
+      "name": "notes/note-193.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #193: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-194",
+      "doc_id": "doc-distract-194",
+      "context": "global",
+      "name": "notes/note-194.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #194: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-195",
+      "doc_id": "doc-distract-195",
+      "context": "global",
+      "name": "notes/note-195.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #195: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-196",
+      "doc_id": "doc-distract-196",
+      "context": "global",
+      "name": "notes/note-196.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #196: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-197",
+      "doc_id": "doc-distract-197",
+      "context": "global",
+      "name": "notes/note-197.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #197: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-198",
+      "doc_id": "doc-distract-198",
+      "context": "global",
+      "name": "notes/note-198.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #198: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-199",
+      "doc_id": "doc-distract-199",
+      "context": "global",
+      "name": "notes/note-199.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #199: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-200",
+      "doc_id": "doc-distract-200",
+      "context": "global",
+      "name": "notes/note-200.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #200: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-201",
+      "doc_id": "doc-distract-201",
+      "context": "global",
+      "name": "notes/note-201.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #201: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-202",
+      "doc_id": "doc-distract-202",
+      "context": "global",
+      "name": "notes/note-202.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #202: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-203",
+      "doc_id": "doc-distract-203",
+      "context": "global",
+      "name": "notes/note-203.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #203: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-204",
+      "doc_id": "doc-distract-204",
+      "context": "global",
+      "name": "notes/note-204.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #204: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-205",
+      "doc_id": "doc-distract-205",
+      "context": "global",
+      "name": "notes/note-205.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #205: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-206",
+      "doc_id": "doc-distract-206",
+      "context": "global",
+      "name": "notes/note-206.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #206: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-207",
+      "doc_id": "doc-distract-207",
+      "context": "global",
+      "name": "notes/note-207.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #207: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-208",
+      "doc_id": "doc-distract-208",
+      "context": "global",
+      "name": "notes/note-208.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #208: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-209",
+      "doc_id": "doc-distract-209",
+      "context": "global",
+      "name": "notes/note-209.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #209: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-210",
+      "doc_id": "doc-distract-210",
+      "context": "global",
+      "name": "notes/note-210.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #210: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-211",
+      "doc_id": "doc-distract-211",
+      "context": "global",
+      "name": "notes/note-211.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #211: Security Advisory: Update OpenSSL libraries to address CVE-2024-1029 buffer overread in TLS certificate parsing. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-212",
+      "doc_id": "doc-distract-212",
+      "context": "global",
+      "name": "notes/note-212.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #212: Agent Memory Guideline: When storing memories, keep each markdown file focused on a single topic with structured headings. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-213",
+      "doc_id": "doc-distract-213",
+      "context": "global",
+      "name": "notes/note-213.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #213: CI/CD Pipeline Note: GitHub Actions runner caches Go module downloads in ~/.cache/go-build to speed up workflow builds. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-214",
+      "doc_id": "doc-distract-214",
+      "context": "global",
+      "name": "notes/note-214.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #214: DNS Resolution Rule: Use CoreDNS caching plugin with prefetch enabled to reduce latency for external API domains. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-215",
+      "doc_id": "doc-distract-215",
+      "context": "global",
+      "name": "notes/note-215.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #215: Load Balancer Architecture: Terminate TLS at the AWS Network Load Balancer using AWS Certificate Manager certificates. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-216",
+      "doc_id": "doc-distract-216",
+      "context": "global",
+      "name": "notes/note-216.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #216: System Architecture: Decouple event ingestion from notification delivery using AWS SQS dead letter queues. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-217",
+      "doc_id": "doc-distract-217",
+      "context": "global",
+      "name": "notes/note-217.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #217: Frontend Optimization: Code split React route components with React.lazy and Suspense to minimize initial bundle download. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-218",
+      "doc_id": "doc-distract-218",
+      "context": "global",
+      "name": "notes/note-218.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #218: Golang Practice: Avoid using context.Background() inside HTTP handlers; always pass r.Context() to propagate client cancellation. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-219",
+      "doc_id": "doc-distract-219",
+      "context": "global",
+      "name": "notes/note-219.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #219: Database Schema Migration: Always use idempotent DDL with IF NOT EXISTS when writing automated schema migration scripts. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-220",
+      "doc_id": "doc-distract-220",
+      "context": "global",
+      "name": "notes/note-220.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #220: Backup Verification: Automatically restore random database snapshots into an isolated sandbox weekly to prove restore viability. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-221",
+      "doc_id": "doc-distract-221",
+      "context": "global",
+      "name": "notes/note-221.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #221: User Preference: Developer preferred dark mode interface with 2-space indentation in YAML files. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-222",
+      "doc_id": "doc-distract-222",
+      "context": "global",
+      "name": "notes/note-222.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #222: Meeting Note: Architecture review approved migration from REST to gRPC for user profile service. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-223",
+      "doc_id": "doc-distract-223",
+      "context": "global",
+      "name": "notes/note-223.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #223: Decision Record: ADR-014 adopted sqlite-vec WASM driver to achieve zero-cgo cross-compilation across platforms. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-224",
+      "doc_id": "doc-distract-224",
+      "context": "global",
+      "name": "notes/note-224.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #224: Incident Summary: High latency spike on checkout service caused by unindexed foreign key in order_items table. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-225",
+      "doc_id": "doc-distract-225",
+      "context": "global",
+      "name": "notes/note-225.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #225: Shell Command Tip: Use 'find . -name \"*.log\" -mtime +7 -delete' to clean up historical build logs. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-226",
+      "doc_id": "doc-distract-226",
+      "context": "global",
+      "name": "notes/note-226.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #226: Git Workflow Rule: Squash and merge feature branches into main with conventional commit prefixes like feat: or fix:. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-227",
+      "doc_id": "doc-distract-227",
+      "context": "global",
+      "name": "notes/note-227.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #227: Performance Note: Enabling jemalloc memory allocator reduced resident set size by 25% under sustained high allocation workloads. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-228",
+      "doc_id": "doc-distract-228",
+      "context": "global",
+      "name": "notes/note-228.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #228: Configuration Snippet: Set GOMAXPROCS to container CPU quota to avoid CFS throttling on multi-tenant Kubernetes worker nodes. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-229",
+      "doc_id": "doc-distract-229",
+      "context": "global",
+      "name": "notes/note-229.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #229: Database Maintenance: Run VACUUM ANALYZE every Sunday midnight to optimize PostgreSQL query planner statistics. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    },
+    {
+      "id": "chunk-distract-230",
+      "doc_id": "doc-distract-230",
+      "context": "global",
+      "name": "notes/note-230.md",
+      "heading": "# Notes",
+      "text": "Agent Memory Note #230: Observability Practice: Add OpenTelemetry baggage to propagate tenant identity across asynchronous messaging boundaries. Additional operational context: System monitoring shows nominal metrics with healthy error budgets."
+    }
+  ],
+  "queries": [
+    {
+      "id": "q-para-01",
+      "class": "paraphrase",
+      "query": "recovering from abrupt electrical shutoff in persistent stateful daemon",
+      "relevant_ids": [
+        "chunk-para-01"
+      ]
+    },
+    {
+      "id": "q-para-02",
+      "class": "paraphrase",
+      "query": "inactivity timeout policy forcing secondary credential presentation",
+      "relevant_ids": [
+        "chunk-para-02"
+      ]
+    },
+    {
+      "id": "q-para-03",
+      "class": "paraphrase",
+      "query": "avoiding socket setup overhead through reusable channel allocations",
+      "relevant_ids": [
+        "chunk-para-03"
+      ]
+    },
+    {
+      "id": "q-para-04",
+      "class": "paraphrase",
+      "query": "kernel mechanism sacrificing high-consumption programs under severe RAM exhaustion",
+      "relevant_ids": [
+        "chunk-para-04"
+      ]
+    },
+    {
+      "id": "q-para-05",
+      "class": "paraphrase",
+      "query": "protecting write masters by offloading read operations onto secondary nodes",
+      "relevant_ids": [
+        "chunk-para-05"
+      ]
+    },
+    {
+      "id": "q-para-06",
+      "class": "paraphrase",
+      "query": "preventing upstream server inundation using request throttling budgets",
+      "relevant_ids": [
+        "chunk-para-06"
+      ]
+    },
+    {
+      "id": "q-para-07",
+      "class": "paraphrase",
+      "query": "gradually introducing updated software versions to minimize blast radius",
+      "relevant_ids": [
+        "chunk-para-07"
+      ]
+    },
+    {
+      "id": "q-para-08",
+      "class": "paraphrase",
+      "query": "thwarting precomputed dictionary attacks through randomized entropy appended to user credentials",
+      "relevant_ids": [
+        "chunk-para-08"
+      ]
+    },
+    {
+      "id": "q-para-09",
+      "class": "paraphrase",
+      "query": "reducing memory sweep pause durations using fixed reusable structures",
+      "relevant_ids": [
+        "chunk-para-09"
+      ]
+    },
+    {
+      "id": "q-para-10",
+      "class": "paraphrase",
+      "query": "adjusting compute worker instances proportionally to processing backlog size",
+      "relevant_ids": [
+        "chunk-para-10"
+      ]
+    },
+    {
+      "id": "q-para-11",
+      "class": "paraphrase",
+      "query": "preventing cascading downstream failures by halting requests to unresponsive endpoints",
+      "relevant_ids": [
+        "chunk-para-11"
+      ]
+    },
+    {
+      "id": "q-para-12",
+      "class": "paraphrase",
+      "query": "lowering telemetry retention costs through efficient algorithmic shrinking",
+      "relevant_ids": [
+        "chunk-para-12"
+      ]
+    },
+    {
+      "id": "q-para-13",
+      "class": "paraphrase",
+      "query": "browser security rules governing third-party client communications",
+      "relevant_ids": [
+        "chunk-para-13"
+      ]
+    },
+    {
+      "id": "q-para-14",
+      "class": "paraphrase",
+      "query": "skipping irrelevant storage shards to accelerate bounded range queries",
+      "relevant_ids": [
+        "chunk-para-14"
+      ]
+    },
+    {
+      "id": "q-para-15",
+      "class": "paraphrase",
+      "query": "forbidding in-place server edits in favor of pristine machine redeployment",
+      "relevant_ids": [
+        "chunk-para-15"
+      ]
+    },
+    {
+      "id": "q-para-16",
+      "class": "paraphrase",
+      "query": "multi-site geographic resilience preventing localized cloud outages",
+      "relevant_ids": [
+        "chunk-para-16"
+      ]
+    },
+    {
+      "id": "q-para-17",
+      "class": "paraphrase",
+      "query": "tracing asynchronous request life cycles to isolate slow components",
+      "relevant_ids": [
+        "chunk-para-17"
+      ]
+    },
+    {
+      "id": "q-para-18",
+      "class": "paraphrase",
+      "query": "caching media near users to reduce round-trip transit times",
+      "relevant_ids": [
+        "chunk-para-18"
+      ]
+    },
+    {
+      "id": "q-para-19",
+      "class": "paraphrase",
+      "query": "ensuring client-server contract conformance before code integration",
+      "relevant_ids": [
+        "chunk-para-19"
+      ]
+    },
+    {
+      "id": "q-para-20",
+      "class": "paraphrase",
+      "query": "bidirectional identity verification for all internal microservice calls",
+      "relevant_ids": [
+        "chunk-para-20"
+      ]
+    },
+    {
+      "id": "q-exact-01",
+      "class": "exact_id",
+      "query": "What does error ERR_AUTH_EXPIRED_4019 indicate and how is it resolved?",
+      "relevant_ids": [
+        "chunk-exact-01"
+      ]
+    },
+    {
+      "id": "q-exact-02",
+      "class": "exact_id",
+      "query": "Fix for ERR_DB_LOCK_DEADLOCK_8821",
+      "relevant_ids": [
+        "chunk-exact-02"
+      ]
+    },
+    {
+      "id": "q-exact-03",
+      "class": "exact_id",
+      "query": "Which startup flag activates --enable-zerocopy-allocator?",
+      "relevant_ids": [
+        "chunk-exact-03"
+      ]
+    },
+    {
+      "id": "q-exact-04",
+      "class": "exact_id",
+      "query": "What does --max-wal-segment-mb control?",
+      "relevant_ids": [
+        "chunk-exact-04"
+      ]
+    },
+    {
+      "id": "q-exact-05",
+      "class": "exact_id",
+      "query": "Where are static resources defined in /etc/envoy/envoy.yaml?",
+      "relevant_ids": [
+        "chunk-exact-05"
+      ]
+    },
+    {
+      "id": "q-exact-06",
+      "class": "exact_id",
+      "query": "Which log file stores alerts in /var/log/suricata/eve.json?",
+      "relevant_ids": [
+        "chunk-exact-06"
+      ]
+    },
+    {
+      "id": "q-exact-07",
+      "class": "exact_id",
+      "query": "Lookup details for UUID-9f8e7d6c-5b4a-3210",
+      "relevant_ids": [
+        "chunk-exact-07"
+      ]
+    },
+    {
+      "id": "q-exact-08",
+      "class": "exact_id",
+      "query": "Status of migration batch UUID-a1b2c3d4-e5f6-7890",
+      "relevant_ids": [
+        "chunk-exact-08"
+      ]
+    },
+    {
+      "id": "q-exact-09",
+      "class": "exact_id",
+      "query": "Port PORT_PROMETHEUS_METRICS_9091 configuration",
+      "relevant_ids": [
+        "chunk-exact-09"
+      ]
+    },
+    {
+      "id": "q-exact-10",
+      "class": "exact_id",
+      "query": "Internal communication on PORT_GRPC_INTERNAL_50051",
+      "relevant_ids": [
+        "chunk-exact-10"
+      ]
+    },
+    {
+      "id": "q-exact-11",
+      "class": "exact_id",
+      "query": "What event triggers SEC_AUDIT_RULE_4492?",
+      "relevant_ids": [
+        "chunk-exact-11"
+      ]
+    },
+    {
+      "id": "q-exact-12",
+      "class": "exact_id",
+      "query": "Usage of environment variable ENV_LLAMA_GPU_LAYERS",
+      "relevant_ids": [
+        "chunk-exact-12"
+      ]
+    },
+    {
+      "id": "q-exact-13",
+      "class": "exact_id",
+      "query": "What routing rules are held in K8S_CM_CORE_ROUTING?",
+      "relevant_ids": [
+        "chunk-exact-13"
+      ]
+    },
+    {
+      "id": "q-exact-14",
+      "class": "exact_id",
+      "query": "Verification of SHA_SIGNATURE_8f7b2c",
+      "relevant_ids": [
+        "chunk-exact-14"
+      ]
+    },
+    {
+      "id": "q-exact-15",
+      "class": "exact_id",
+      "query": "Setting SYS_CTL_VM_OVERCOMMIT=2 impact",
+      "relevant_ids": [
+        "chunk-exact-15"
+      ]
+    },
+    {
+      "id": "q-exact-16",
+      "class": "exact_id",
+      "query": "Reason for pinning PKG_GO_SQLITE3_V0203",
+      "relevant_ids": [
+        "chunk-exact-16"
+      ]
+    },
+    {
+      "id": "q-exact-17",
+      "class": "exact_id",
+      "query": "Timeout for calling API_ENDPOINT_V3_REVALIDATE",
+      "relevant_ids": [
+        "chunk-exact-17"
+      ]
+    },
+    {
+      "id": "q-exact-18",
+      "class": "exact_id",
+      "query": "Behavior when FLAG_STRICT_CONSISTENCY is enabled",
+      "relevant_ids": [
+        "chunk-exact-18"
+      ]
+    },
+    {
+      "id": "q-exact-19",
+      "class": "exact_id",
+      "query": "What actions are executed by CRON_CLEANUP_HOURLY_JOB?",
+      "relevant_ids": [
+        "chunk-exact-19"
+      ]
+    },
+    {
+      "id": "q-exact-20",
+      "class": "exact_id",
+      "query": "Required header HEADER_X_MEM_CORRELATION_ID for agents",
+      "relevant_ids": [
+        "chunk-exact-20"
+      ]
+    },
+    {
+      "id": "q-conf-01-1",
+      "class": "confusable",
+      "query": "Which port does the staging Redis Sentinel run on?",
+      "relevant_ids": [
+        "chunk-conf-01-a"
+      ]
+    },
+    {
+      "id": "q-conf-01-2",
+      "class": "confusable",
+      "query": "How many shards does the production Redis cluster utilize and on which port?",
+      "relevant_ids": [
+        "chunk-conf-01-b"
+      ]
+    },
+    {
+      "id": "q-conf-02-1",
+      "class": "confusable",
+      "query": "What is the connection pool size and port for staging PgBouncer in transaction mode?",
+      "relevant_ids": [
+        "chunk-conf-02-a"
+      ]
+    },
+    {
+      "id": "q-conf-02-2",
+      "class": "confusable",
+      "query": "Which pooling mode and port is used for PgBouncer analytics?",
+      "relevant_ids": [
+        "chunk-conf-02-c"
+      ]
+    },
+    {
+      "id": "q-conf-03-1",
+      "class": "confusable",
+      "query": "What is the schema format and partition count for Kafka topic telemetry-v2?",
+      "relevant_ids": [
+        "chunk-conf-03-b"
+      ]
+    },
+    {
+      "id": "q-conf-03-2",
+      "class": "confusable",
+      "query": "What is the retention period and partition count for Kafka topic telemetry-v1?",
+      "relevant_ids": [
+        "chunk-conf-03-a"
+      ]
+    },
+    {
+      "id": "q-conf-04-1",
+      "class": "confusable",
+      "query": "In memory store v2 schema, what is the column type and name for context foreign key?",
+      "relevant_ids": [
+        "chunk-conf-04-b"
+      ]
+    },
+    {
+      "id": "q-conf-04-2",
+      "class": "confusable",
+      "query": "In memory store v1 schema, how was context_id defined?",
+      "relevant_ids": [
+        "chunk-conf-04-a"
+      ]
+    },
+    {
+      "id": "q-conf-05-1",
+      "class": "confusable",
+      "query": "Which disk collectors are enabled on production Node Exporter and what is its port?",
+      "relevant_ids": [
+        "chunk-conf-05-b"
+      ]
+    },
+    {
+      "id": "q-conf-05-2",
+      "class": "confusable",
+      "query": "What metrics are scraped by the edge Node Exporter and on which port?",
+      "relevant_ids": [
+        "chunk-conf-05-c"
+      ]
+    },
+    {
+      "id": "q-conf-06-1",
+      "class": "confusable",
+      "query": "Which curve and rotation frequency is used by the ECDSA JWT signer?",
+      "relevant_ids": [
+        "chunk-conf-06-b"
+      ]
+    },
+    {
+      "id": "q-conf-06-2",
+      "class": "confusable",
+      "query": "What key size and rotation schedule is used by the RSA JWT signer?",
+      "relevant_ids": [
+        "chunk-conf-06-a"
+      ]
+    },
+    {
+      "id": "q-conf-07-1",
+      "class": "confusable",
+      "query": "What context size (-c) and mode flag is configured for the embedding sidecar?",
+      "relevant_ids": [
+        "chunk-conf-07-a"
+      ]
+    },
+    {
+      "id": "q-conf-07-2",
+      "class": "confusable",
+      "query": "What context size (-c) is configured for the reranking sidecar?",
+      "relevant_ids": [
+        "chunk-conf-07-b"
+      ]
+    },
+    {
+      "id": "q-conf-08-1",
+      "class": "confusable",
+      "query": "How long are incremental snapshots retained under the daily backup policy and in which storage tier?",
+      "relevant_ids": [
+        "chunk-conf-08-a"
+      ]
+    },
+    {
+      "id": "q-conf-08-2",
+      "class": "confusable",
+      "query": "What is the retention duration and storage tier for monthly backup archives?",
+      "relevant_ids": [
+        "chunk-conf-08-c"
+      ]
+    },
+    {
+      "id": "q-conf-09-1",
+      "class": "confusable",
+      "query": "Which port and certificate setup is used for the production internal gateway?",
+      "relevant_ids": [
+        "chunk-conf-09-b"
+      ]
+    },
+    {
+      "id": "q-conf-09-2",
+      "class": "confusable",
+      "query": "What feature is enabled on the canary internal gateway and what port does it use?",
+      "relevant_ids": [
+        "chunk-conf-09-c"
+      ]
+    },
+    {
+      "id": "q-conf-10-1",
+      "class": "confusable",
+      "query": "What instance type and data node count is configured for the search Elasticsearch cluster?",
+      "relevant_ids": [
+        "chunk-conf-10-b"
+      ]
+    },
+    {
+      "id": "q-conf-10-2",
+      "class": "confusable",
+      "query": "How many data nodes and what storage capacity is used for the logging Elasticsearch cluster?",
+      "relevant_ids": [
+        "chunk-conf-10-a"
+      ]
+    },
+    {
+      "id": "q-multi-01",
+      "class": "multi_fact",
+      "query": "Which command runs database migrations and what environment variable enables debug SQL traces?",
+      "relevant_ids": [
+        "chunk-multi-01"
+      ]
+    },
+    {
+      "id": "q-multi-02",
+      "class": "multi_fact",
+      "query": "What vector quantization type is used in chunks_vec and what tokenizer is used in chunks_fts?",
+      "relevant_ids": [
+        "chunk-multi-02"
+      ]
+    },
+    {
+      "id": "q-multi-03",
+      "class": "multi_fact",
+      "query": "What are the recommended values for max_connections and shared_buffers on a 32GB RAM PostgreSQL server?",
+      "relevant_ids": [
+        "chunk-multi-03"
+      ]
+    },
+    {
+      "id": "q-multi-04",
+      "class": "multi_fact",
+      "query": "What localhost host and context size does the embedding sidecar use, and what is its idle timeout?",
+      "relevant_ids": [
+        "chunk-multi-04"
+      ]
+    },
+    {
+      "id": "q-multi-05",
+      "class": "multi_fact",
+      "query": "Which port is used for Redis cluster bus communication and which port handles client queries?",
+      "relevant_ids": [
+        "chunk-multi-05"
+      ]
+    },
+    {
+      "id": "q-multi-06",
+      "class": "multi_fact",
+      "query": "What is the scrape interval and disk retention period for the Prometheus server?",
+      "relevant_ids": [
+        "chunk-multi-06"
+      ]
+    },
+    {
+      "id": "q-multi-07",
+      "class": "multi_fact",
+      "query": "Which cipher is used for sensitive record encryption and how frequently are data encryption keys rotated?",
+      "relevant_ids": [
+        "chunk-multi-07"
+      ]
+    },
+    {
+      "id": "q-multi-08",
+      "class": "multi_fact",
+      "query": "What is the request rate limit per IP and what HTTP status code is returned on breach?",
+      "relevant_ids": [
+        "chunk-multi-08"
+      ]
+    },
+    {
+      "id": "q-multi-09",
+      "class": "multi_fact",
+      "query": "What endpoint does the Docker healthcheck poll and how many retries are permitted before marking unhealthy?",
+      "relevant_ids": [
+        "chunk-multi-09"
+      ]
+    },
+    {
+      "id": "q-multi-10",
+      "class": "multi_fact",
+      "query": "What should acks and min.insync.replicas be set to for Kafka replication durability?",
+      "relevant_ids": [
+        "chunk-multi-10"
+      ]
+    },
+    {
+      "id": "q-multi-11",
+      "class": "multi_fact",
+      "query": "What Go command and execution timeout is configured for running unit tests with race detection in CI?",
+      "relevant_ids": [
+        "chunk-multi-11"
+      ]
+    },
+    {
+      "id": "q-multi-12",
+      "class": "multi_fact",
+      "query": "Which two cookie attributes are required to mandate HTTPS and prevent CSRF attacks?",
+      "relevant_ids": [
+        "chunk-multi-12"
+      ]
+    },
+    {
+      "id": "q-multi-13",
+      "class": "multi_fact",
+      "query": "What are the required ingress annotations for max proxy body size and proxy read timeout?",
+      "relevant_ids": [
+        "chunk-multi-13"
+      ]
+    },
+    {
+      "id": "q-multi-14",
+      "class": "multi_fact",
+      "query": "Which PRAGMA command performs passive WAL checkpoints and how is busy timeout set to 5000ms in SQLite?",
+      "relevant_ids": [
+        "chunk-multi-14"
+      ]
+    },
+    {
+      "id": "q-multi-15",
+      "class": "multi_fact",
+      "query": "Where does Envoy write its access log and what timestamp format is used in json_format?",
+      "relevant_ids": [
+        "chunk-multi-15"
+      ]
+    },
+    {
+      "id": "q-multi-16",
+      "class": "multi_fact",
+      "query": "What is the recommended shard and replica count for high availability Elasticsearch index mappings?",
+      "relevant_ids": [
+        "chunk-multi-16"
+      ]
+    },
+    {
+      "id": "q-multi-17",
+      "class": "multi_fact",
+      "query": "After how many days do S3 objects transition to Glacier and when do they permanently expire?",
+      "relevant_ids": [
+        "chunk-multi-17"
+      ]
+    },
+    {
+      "id": "q-multi-18",
+      "class": "multi_fact",
+      "query": "What JSON response fields indicate an active token and its permissions at the OAuth introspection endpoint?",
+      "relevant_ids": [
+        "chunk-multi-18"
+      ]
+    },
+    {
+      "id": "q-multi-19",
+      "class": "multi_fact",
+      "query": "How often does the background sweeper execute and what condition identifies expired contexts?",
+      "relevant_ids": [
+        "chunk-multi-19"
+      ]
+    },
+    {
+      "id": "q-multi-20",
+      "class": "multi_fact",
+      "query": "How many candidates are retrieved from KNN and BM25, what RRF constant k is used, and how many are fed to the reranker?",
+      "relevant_ids": [
+        "chunk-multi-20"
+      ]
+    }
+  ]
+}

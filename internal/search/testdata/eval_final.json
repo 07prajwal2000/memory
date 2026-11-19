@@ -1,0 +1,639 @@
+{
+  "queries": [
+    {
+      "id": "q-fin-para-01",
+      "class": "paraphrase",
+      "query": "engineer UI styling preference specifying dark color scheme and two space indentation in configuration files",
+      "relevant_ids": [
+        "chunk-distract-001",
+        "chunk-distract-021",
+        "chunk-distract-041",
+        "chunk-distract-061",
+        "chunk-distract-081",
+        "chunk-distract-101",
+        "chunk-distract-121",
+        "chunk-distract-141",
+        "chunk-distract-161",
+        "chunk-distract-181",
+        "chunk-distract-201",
+        "chunk-distract-221"
+      ]
+    },
+    {
+      "id": "q-fin-para-02",
+      "class": "paraphrase",
+      "query": "consensus to transition user account microservice communications to google remote procedure calls",
+      "relevant_ids": [
+        "chunk-distract-002",
+        "chunk-distract-022",
+        "chunk-distract-042",
+        "chunk-distract-062",
+        "chunk-distract-082",
+        "chunk-distract-102",
+        "chunk-distract-122",
+        "chunk-distract-142",
+        "chunk-distract-162",
+        "chunk-distract-182",
+        "chunk-distract-202",
+        "chunk-distract-222"
+      ]
+    },
+    {
+      "id": "q-fin-para-03",
+      "class": "paraphrase",
+      "query": "technical consensus for portable vector database engine avoiding CGo compilation dependencies",
+      "relevant_ids": [
+        "chunk-distract-003",
+        "chunk-distract-023",
+        "chunk-distract-043",
+        "chunk-distract-063",
+        "chunk-distract-083",
+        "chunk-distract-103",
+        "chunk-distract-123",
+        "chunk-distract-143",
+        "chunk-distract-163",
+        "chunk-distract-183",
+        "chunk-distract-203",
+        "chunk-distract-223"
+      ]
+    },
+    {
+      "id": "q-fin-para-04",
+      "class": "paraphrase",
+      "query": "post-incident analysis of payment flow delays caused by missing relational database indexing",
+      "relevant_ids": [
+        "chunk-distract-004",
+        "chunk-distract-024",
+        "chunk-distract-044",
+        "chunk-distract-064",
+        "chunk-distract-084",
+        "chunk-distract-104",
+        "chunk-distract-124",
+        "chunk-distract-144",
+        "chunk-distract-164",
+        "chunk-distract-184",
+        "chunk-distract-204",
+        "chunk-distract-224"
+      ]
+    },
+    {
+      "id": "q-fin-para-05",
+      "class": "paraphrase",
+      "query": "how to clean up outdated build output records older than seven days",
+      "relevant_ids": [
+        "chunk-distract-005",
+        "chunk-distract-025",
+        "chunk-distract-045",
+        "chunk-distract-065",
+        "chunk-distract-085",
+        "chunk-distract-105",
+        "chunk-distract-125",
+        "chunk-distract-145",
+        "chunk-distract-165",
+        "chunk-distract-185",
+        "chunk-distract-205",
+        "chunk-distract-225"
+      ]
+    },
+    {
+      "id": "q-fin-para-06",
+      "class": "paraphrase",
+      "query": "guidelines for integrating branch changes into main branch with standardized commit messages",
+      "relevant_ids": [
+        "chunk-distract-006",
+        "chunk-distract-026",
+        "chunk-distract-046",
+        "chunk-distract-066",
+        "chunk-distract-086",
+        "chunk-distract-106",
+        "chunk-distract-126",
+        "chunk-distract-146",
+        "chunk-distract-166",
+        "chunk-distract-186",
+        "chunk-distract-206",
+        "chunk-distract-226"
+      ]
+    },
+    {
+      "id": "q-fin-para-07",
+      "class": "paraphrase",
+      "query": "reducing resident RAM consumption under heavy allocation throughput using alternative memory allocator",
+      "relevant_ids": [
+        "chunk-distract-007",
+        "chunk-distract-027",
+        "chunk-distract-047",
+        "chunk-distract-067",
+        "chunk-distract-087",
+        "chunk-distract-107",
+        "chunk-distract-127",
+        "chunk-distract-147",
+        "chunk-distract-167",
+        "chunk-distract-187",
+        "chunk-distract-207",
+        "chunk-distract-227"
+      ]
+    },
+    {
+      "id": "q-fin-para-08",
+      "class": "paraphrase",
+      "query": "preventing runtime CPU starvation on shared cluster nodes by tuning execution threads to resource limits",
+      "relevant_ids": [
+        "chunk-distract-008",
+        "chunk-distract-028",
+        "chunk-distract-048",
+        "chunk-distract-068",
+        "chunk-distract-088",
+        "chunk-distract-108",
+        "chunk-distract-128",
+        "chunk-distract-148",
+        "chunk-distract-168",
+        "chunk-distract-188",
+        "chunk-distract-208",
+        "chunk-distract-228"
+      ]
+    },
+    {
+      "id": "q-fin-para-09",
+      "class": "paraphrase",
+      "query": "weekly database maintenance routine for refreshing optimizer statistics",
+      "relevant_ids": [
+        "chunk-distract-009",
+        "chunk-distract-029",
+        "chunk-distract-049",
+        "chunk-distract-069",
+        "chunk-distract-089",
+        "chunk-distract-109",
+        "chunk-distract-129",
+        "chunk-distract-149",
+        "chunk-distract-169",
+        "chunk-distract-189",
+        "chunk-distract-209",
+        "chunk-distract-229"
+      ]
+    },
+    {
+      "id": "q-fin-para-10",
+      "class": "paraphrase",
+      "query": "carrying multi-tenant account identifiers across background event streams for end-to-end tracing",
+      "relevant_ids": [
+        "chunk-distract-010",
+        "chunk-distract-030",
+        "chunk-distract-050",
+        "chunk-distract-070",
+        "chunk-distract-090",
+        "chunk-distract-110",
+        "chunk-distract-130",
+        "chunk-distract-150",
+        "chunk-distract-170",
+        "chunk-distract-190",
+        "chunk-distract-210",
+        "chunk-distract-230"
+      ]
+    },
+    {
+      "id": "q-fin-exact-01",
+      "class": "exact_id",
+      "query": "patching CVE-2024-1029",
+      "relevant_ids": [
+        "chunk-distract-011",
+        "chunk-distract-031",
+        "chunk-distract-051",
+        "chunk-distract-071",
+        "chunk-distract-091",
+        "chunk-distract-111",
+        "chunk-distract-131",
+        "chunk-distract-151",
+        "chunk-distract-171",
+        "chunk-distract-191",
+        "chunk-distract-211"
+      ]
+    },
+    {
+      "id": "q-fin-exact-02",
+      "class": "exact_id",
+      "query": "cache directory ~/.cache/go-build",
+      "relevant_ids": [
+        "chunk-distract-013",
+        "chunk-distract-033",
+        "chunk-distract-053",
+        "chunk-distract-073",
+        "chunk-distract-093",
+        "chunk-distract-113",
+        "chunk-distract-133",
+        "chunk-distract-153",
+        "chunk-distract-173",
+        "chunk-distract-193",
+        "chunk-distract-213"
+      ]
+    },
+    {
+      "id": "q-fin-exact-03",
+      "class": "exact_id",
+      "query": "CoreDNS prefetch plugin",
+      "relevant_ids": [
+        "chunk-distract-014",
+        "chunk-distract-034",
+        "chunk-distract-054",
+        "chunk-distract-074",
+        "chunk-distract-094",
+        "chunk-distract-114",
+        "chunk-distract-134",
+        "chunk-distract-154",
+        "chunk-distract-174",
+        "chunk-distract-194",
+        "chunk-distract-214"
+      ]
+    },
+    {
+      "id": "q-fin-exact-04",
+      "class": "exact_id",
+      "query": "AWS NLB TLS termination",
+      "relevant_ids": [
+        "chunk-distract-015",
+        "chunk-distract-035",
+        "chunk-distract-055",
+        "chunk-distract-075",
+        "chunk-distract-095",
+        "chunk-distract-115",
+        "chunk-distract-135",
+        "chunk-distract-155",
+        "chunk-distract-175",
+        "chunk-distract-195",
+        "chunk-distract-215"
+      ]
+    },
+    {
+      "id": "q-fin-exact-05",
+      "class": "exact_id",
+      "query": "AWS SQS dead letter queue configuration",
+      "relevant_ids": [
+        "chunk-distract-016",
+        "chunk-distract-036",
+        "chunk-distract-056",
+        "chunk-distract-076",
+        "chunk-distract-096",
+        "chunk-distract-116",
+        "chunk-distract-136",
+        "chunk-distract-156",
+        "chunk-distract-176",
+        "chunk-distract-196",
+        "chunk-distract-216"
+      ]
+    },
+    {
+      "id": "q-fin-exact-06",
+      "class": "exact_id",
+      "query": "code splitting with React.lazy",
+      "relevant_ids": [
+        "chunk-distract-017",
+        "chunk-distract-037",
+        "chunk-distract-057",
+        "chunk-distract-077",
+        "chunk-distract-097",
+        "chunk-distract-117",
+        "chunk-distract-137",
+        "chunk-distract-157",
+        "chunk-distract-177",
+        "chunk-distract-197",
+        "chunk-distract-217"
+      ]
+    },
+    {
+      "id": "q-fin-exact-07",
+      "class": "exact_id",
+      "query": "avoid context.Background()",
+      "relevant_ids": [
+        "chunk-distract-018",
+        "chunk-distract-038",
+        "chunk-distract-058",
+        "chunk-distract-078",
+        "chunk-distract-098",
+        "chunk-distract-118",
+        "chunk-distract-138",
+        "chunk-distract-158",
+        "chunk-distract-178",
+        "chunk-distract-198",
+        "chunk-distract-218"
+      ]
+    },
+    {
+      "id": "q-fin-exact-08",
+      "class": "exact_id",
+      "query": "idempotent DDL IF NOT EXISTS",
+      "relevant_ids": [
+        "chunk-distract-019",
+        "chunk-distract-039",
+        "chunk-distract-059",
+        "chunk-distract-079",
+        "chunk-distract-099",
+        "chunk-distract-119",
+        "chunk-distract-139",
+        "chunk-distract-159",
+        "chunk-distract-179",
+        "chunk-distract-199",
+        "chunk-distract-219"
+      ]
+    },
+    {
+      "id": "q-fin-exact-09",
+      "class": "exact_id",
+      "query": "shell command find -mtime",
+      "relevant_ids": [
+        "chunk-distract-005",
+        "chunk-distract-025",
+        "chunk-distract-045",
+        "chunk-distract-065",
+        "chunk-distract-085",
+        "chunk-distract-105",
+        "chunk-distract-125",
+        "chunk-distract-145",
+        "chunk-distract-165",
+        "chunk-distract-185",
+        "chunk-distract-205",
+        "chunk-distract-225"
+      ]
+    },
+    {
+      "id": "q-fin-exact-10",
+      "class": "exact_id",
+      "query": "tuning GOMAXPROCS on Kubernetes",
+      "relevant_ids": [
+        "chunk-distract-008",
+        "chunk-distract-028",
+        "chunk-distract-048",
+        "chunk-distract-068",
+        "chunk-distract-088",
+        "chunk-distract-108",
+        "chunk-distract-128",
+        "chunk-distract-148",
+        "chunk-distract-168",
+        "chunk-distract-188",
+        "chunk-distract-208",
+        "chunk-distract-228"
+      ]
+    },
+    {
+      "id": "q-fin-conf-01",
+      "class": "confusable",
+      "query": "What port and shard count does the production Redis Cache cluster run on?",
+      "relevant_ids": [
+        "chunk-conf-01-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-02",
+      "class": "confusable",
+      "query": "What port and pool size does PgBouncer production setup use for session pooling?",
+      "relevant_ids": [
+        "chunk-conf-02-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-03",
+      "class": "confusable",
+      "query": "What is the schema format and partition count for Kafka ingestion topic telemetry-v2?",
+      "relevant_ids": [
+        "chunk-conf-03-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-04",
+      "class": "confusable",
+      "query": "How is the context column defined in Memory Store v2 Schema?",
+      "relevant_ids": [
+        "chunk-conf-04-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-05",
+      "class": "confusable",
+      "query": "Which port does production Node Exporter listen on with bcache and btrfs collectors?",
+      "relevant_ids": [
+        "chunk-conf-05-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-06",
+      "class": "confusable",
+      "query": "Which signing algorithm and rotation schedule does ECDSA JWT token signer use?",
+      "relevant_ids": [
+        "chunk-conf-06-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-07",
+      "class": "confusable",
+      "query": "What context window and flags are used for the reranking sidecar config?",
+      "relevant_ids": [
+        "chunk-conf-07-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-08",
+      "class": "confusable",
+      "query": "How many days are snapshots retained under weekly backup policy in Glacier Flexible tier?",
+      "relevant_ids": [
+        "chunk-conf-08-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-09",
+      "class": "confusable",
+      "query": "What port and certificate type does the internal production gRPC gateway route on?",
+      "relevant_ids": [
+        "chunk-conf-09-b"
+      ]
+    },
+    {
+      "id": "q-fin-conf-10",
+      "class": "confusable",
+      "query": "How many data nodes and NVMe storage capacity does Search Elasticsearch Cluster have?",
+      "relevant_ids": [
+        "chunk-conf-10-b"
+      ]
+    },
+    {
+      "id": "q-fin-multi-01",
+      "class": "multi_fact",
+      "query": "OpenSSL security patch for CVE-2024-1029 TLS certificate parsing buffer overread",
+      "relevant_ids": [
+        "chunk-distract-011",
+        "chunk-distract-031",
+        "chunk-distract-051",
+        "chunk-distract-071",
+        "chunk-distract-091",
+        "chunk-distract-111",
+        "chunk-distract-131",
+        "chunk-distract-151",
+        "chunk-distract-171",
+        "chunk-distract-191",
+        "chunk-distract-211"
+      ]
+    },
+    {
+      "id": "q-fin-multi-02",
+      "class": "multi_fact",
+      "query": "GitHub Actions CI workflow caching Go modules in ~/.cache/go-build",
+      "relevant_ids": [
+        "chunk-distract-013",
+        "chunk-distract-033",
+        "chunk-distract-053",
+        "chunk-distract-073",
+        "chunk-distract-093",
+        "chunk-distract-113",
+        "chunk-distract-133",
+        "chunk-distract-153",
+        "chunk-distract-173",
+        "chunk-distract-193",
+        "chunk-distract-213"
+      ]
+    },
+    {
+      "id": "q-fin-multi-03",
+      "class": "multi_fact",
+      "query": "CoreDNS caching plugin prefetch optimization for external API domains",
+      "relevant_ids": [
+        "chunk-distract-014",
+        "chunk-distract-034",
+        "chunk-distract-054",
+        "chunk-distract-074",
+        "chunk-distract-094",
+        "chunk-distract-114",
+        "chunk-distract-134",
+        "chunk-distract-154",
+        "chunk-distract-174",
+        "chunk-distract-194",
+        "chunk-distract-214"
+      ]
+    },
+    {
+      "id": "q-fin-multi-04",
+      "class": "multi_fact",
+      "query": "AWS Network Load Balancer TLS termination using Certificate Manager ACM certificates",
+      "relevant_ids": [
+        "chunk-distract-015",
+        "chunk-distract-035",
+        "chunk-distract-055",
+        "chunk-distract-075",
+        "chunk-distract-095",
+        "chunk-distract-115",
+        "chunk-distract-135",
+        "chunk-distract-155",
+        "chunk-distract-175",
+        "chunk-distract-195",
+        "chunk-distract-215"
+      ]
+    },
+    {
+      "id": "q-fin-multi-05",
+      "class": "multi_fact",
+      "query": "React frontend route code splitting using React.lazy and Suspense components",
+      "relevant_ids": [
+        "chunk-distract-017",
+        "chunk-distract-037",
+        "chunk-distract-057",
+        "chunk-distract-077",
+        "chunk-distract-097",
+        "chunk-distract-117",
+        "chunk-distract-137",
+        "chunk-distract-157",
+        "chunk-distract-177",
+        "chunk-distract-197",
+        "chunk-distract-217"
+      ]
+    },
+    {
+      "id": "q-fin-multi-06",
+      "class": "multi_fact",
+      "query": "Go HTTP handler best practice avoiding context.Background() and passing r.Context() for cancellation",
+      "relevant_ids": [
+        "chunk-distract-018",
+        "chunk-distract-038",
+        "chunk-distract-058",
+        "chunk-distract-078",
+        "chunk-distract-098",
+        "chunk-distract-118",
+        "chunk-distract-138",
+        "chunk-distract-158",
+        "chunk-distract-178",
+        "chunk-distract-198",
+        "chunk-distract-218"
+      ]
+    },
+    {
+      "id": "q-fin-multi-07",
+      "class": "multi_fact",
+      "query": "automated database schema migrations using idempotent DDL with IF NOT EXISTS",
+      "relevant_ids": [
+        "chunk-distract-019",
+        "chunk-distract-039",
+        "chunk-distract-059",
+        "chunk-distract-079",
+        "chunk-distract-099",
+        "chunk-distract-119",
+        "chunk-distract-139",
+        "chunk-distract-159",
+        "chunk-distract-179",
+        "chunk-distract-199",
+        "chunk-distract-219"
+      ]
+    },
+    {
+      "id": "q-fin-multi-08",
+      "class": "multi_fact",
+      "query": "ADR-014 architectural decision record choosing sqlite-vec WASM for zero-cgo cross compilation",
+      "relevant_ids": [
+        "chunk-distract-003",
+        "chunk-distract-023",
+        "chunk-distract-043",
+        "chunk-distract-063",
+        "chunk-distract-083",
+        "chunk-distract-103",
+        "chunk-distract-123",
+        "chunk-distract-143",
+        "chunk-distract-163",
+        "chunk-distract-183",
+        "chunk-distract-203",
+        "chunk-distract-223"
+      ]
+    },
+    {
+      "id": "q-fin-multi-09",
+      "class": "multi_fact",
+      "query": "jemalloc memory allocator reducing RSS footprint by 25 percent under high allocation load",
+      "relevant_ids": [
+        "chunk-distract-007",
+        "chunk-distract-027",
+        "chunk-distract-047",
+        "chunk-distract-067",
+        "chunk-distract-087",
+        "chunk-distract-107",
+        "chunk-distract-127",
+        "chunk-distract-147",
+        "chunk-distract-167",
+        "chunk-distract-187",
+        "chunk-distract-207",
+        "chunk-distract-227"
+      ]
+    },
+    {
+      "id": "q-fin-multi-10",
+      "class": "multi_fact",
+      "query": "PostgreSQL database maintenance running VACUUM ANALYZE every Sunday midnight for query planner statistics",
+      "relevant_ids": [
+        "chunk-distract-009",
+        "chunk-distract-029",
+        "chunk-distract-049",
+        "chunk-distract-069",
+        "chunk-distract-089",
+        "chunk-distract-109",
+        "chunk-distract-129",
+        "chunk-distract-149",
+        "chunk-distract-169",
+        "chunk-distract-189",
+        "chunk-distract-209",
+        "chunk-distract-229"
+      ]
+    }
+  ]
+}

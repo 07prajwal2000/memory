@@ -1,0 +1,8 @@
+bin/
+models/
+*.db
+*.db-wal
+*.db-shm
+*.zip
+*.tar.gz
+*.exe

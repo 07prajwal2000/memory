@@ -1,0 +1,75 @@
+{
+  "scope": "@CHANGE-ME",
+  "name": "mem",
+  "bin": "mem",
+  "version": "0.1.0",
+  "description": "Local long-term memory store for AI agents",
+  "repository": "https://github.com/CHANGE-ME/mem",
+  "license": "MIT",
+  "author": "CHANGE-ME",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "memory",
+    "mcp",
+    "mcp-server",
+    "vector-search",
+    "rag",
+    "cli"
+  ],
+  "platforms": [
+    {
+      "platform": "linux",
+      "arch": "x64",
+      "goos": "linux",
+      "goarch": "amd64",
+      "os": "linux",
+      "cpu": "x64"
+    },
+    {
+      "platform": "linux",
+      "arch": "arm64",
+      "goos": "linux",
+      "goarch": "arm64",
+      "os": "linux",
+      "cpu": "arm64"
+    },
+    {
+      "platform": "darwin",
+      "arch": "x64",
+      "goos": "darwin",
+      "goarch": "amd64",
+      "os": "darwin",
+      "cpu": "x64"
+    },
+    {
+      "platform": "darwin",
+      "arch": "arm64",
+      "goos": "darwin",
+      "goarch": "arm64",
+      "os": "darwin",
+      "cpu": "arm64"
+    },
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "goos": "windows",
+      "goarch": "amd64",
+      "os": "win32",
+      "cpu": "x64",
+      "exe": true
+    },
+    {
+      "platform": "win32",
+      "arch": "arm64",
+      "goos": "windows",
+      "goarch": "arm64",
+      "os": "win32",
+      "cpu": "arm64",
+      "exe": true
+    }
+  ]
+}

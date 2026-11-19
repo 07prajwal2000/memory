@@ -1,0 +1,41 @@
+.prompts/
+spike/bin/
+spike/models/
+*.db
+*.db-wal
+*.db-shm
+.commandcode
+spike/eval/data/
+spike/eval/cache/
+# eval harness cache created under the wrong cwd (spike/spike/eval/cache, 100k+ files)
+spike/spike/
+spike/eval/eval_results.json
+
+# local scratch / test leftovers
+.last_test_dir.txt
+*.part
+*.tmp
+*.log
+*.out
+*.test
+coverage/
+.DS_Store
+Thumbs.db
+
+# build outputs (Go binaries; the npm pipeline builds into packaging/dist/)
+/mem
+/mem.exe
+/cmd/mem/mem
+/cmd/mem/mem.exe
+*.exe
+node_modules/
+# dist/ is handled per package (web/.gitignore keeps the embed fallback web/dist/index.html tracked; packaging/.gitignore)
+*.tsbuildinfo
+
+# editor / agent tooling state
+.vscode/
+.idea/
+.claude/
+.antigravity/
+.agy/
+.cmdc/

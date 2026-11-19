@@ -1,0 +1,32 @@
+{
+  "name": "@CHANGE-ME/mem",
+  "version": "0.1.0",
+  "description": "Local long-term memory store for AI agents",
+  "bin": {
+    "mem": "./bin/mem.js"
+  },
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CHANGE-ME/mem"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "memory",
+    "mcp",
+    "mcp-server",
+    "vector-search",
+    "rag",
+    "cli"
+  ],
+  "optionalDependencies": {}
+}

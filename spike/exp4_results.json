@@ -1,0 +1,32 @@
+{
+  "build_throughput": {
+    "bit_tps": 29528.952089245704,
+    "float32_tps": 11902.331137016006,
+    "int8_tps": 24109.666192027707
+  },
+  "db_size_mb": {
+    "bit": 13.94140625,
+    "float32": 306.3125,
+    "int8": 79.89453125
+  },
+  "fts5_latency": {
+    "p50": 135.056,
+    "p95": 196.636
+  },
+  "knn_latencies": {
+    "float_in_p50": 87.172,
+    "float_in_p95": 184.74,
+    "float_merged_p50": 86.828,
+    "float_merged_p95": 182.903,
+    "float_single_context_p50": 40.166,
+    "float_single_context_p95": 47.269,
+    "in_error": "",
+    "in_supported": true,
+    "int8_in_p50": 34.508,
+    "int8_in_p95": 38.923,
+    "int8_merged_p50": 70.916,
+    "int8_merged_p95": 88.728,
+    "int8_single_context_p50": 16.994,
+    "int8_single_context_p95": 22.948
+  }
+}

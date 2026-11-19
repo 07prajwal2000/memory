@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Production build
+dist/*
+!dist/index.html
+dist-mock/
+
+# Test / coverage
+coverage/
+
+# Local env files
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

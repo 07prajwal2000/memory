@@ -1,0 +1,244 @@
+{
+  "queries": [
+    {
+      "id": "q-held-para-01",
+      "class": "paraphrase",
+      "query": "programmer layout settings specifying nocturnal theme and two-space nesting syntax",
+      "relevant_ids": ["chunk-distract-001"]
+    },
+    {
+      "id": "q-held-para-02",
+      "class": "paraphrase",
+      "query": "engineering consensus transitioning identity microservice from HTTP endpoints to protobuf RPC",
+      "relevant_ids": ["chunk-distract-002"]
+    },
+    {
+      "id": "q-held-para-03",
+      "class": "paraphrase",
+      "query": "root cause analysis of payment checkout slowdown traced to unconstrained relational table scan",
+      "relevant_ids": ["chunk-distract-004"]
+    },
+    {
+      "id": "q-held-para-04",
+      "class": "paraphrase",
+      "query": "alternative heap allocator decreasing resident footprint under heavy allocation pressure",
+      "relevant_ids": ["chunk-distract-007"]
+    },
+    {
+      "id": "q-held-para-05",
+      "class": "paraphrase",
+      "query": "mitigating CPU scheduling throttling inside containerized workloads on shared orchestration infrastructure",
+      "relevant_ids": ["chunk-distract-008"]
+    },
+    {
+      "id": "q-held-para-06",
+      "class": "paraphrase",
+      "query": "passing customer context attributes across message broker communication channels for distributed tracing",
+      "relevant_ids": ["chunk-distract-010"]
+    },
+    {
+      "id": "q-held-para-07",
+      "class": "paraphrase",
+      "query": "domain name lookup optimization utilizing eager prefetching to accelerate egress web requests",
+      "relevant_ids": ["chunk-distract-014"]
+    },
+    {
+      "id": "q-held-para-08",
+      "class": "paraphrase",
+      "query": "asynchronous decoupling of incoming webhook processing from alert dispatching using message queues",
+      "relevant_ids": ["chunk-distract-016"]
+    },
+    {
+      "id": "q-held-para-09",
+      "class": "paraphrase",
+      "query": "canceling downstream server operations when client connection terminates prematurely in web endpoints",
+      "relevant_ids": ["chunk-distract-018"]
+    },
+    {
+      "id": "q-held-para-10",
+      "class": "paraphrase",
+      "query": "scheduled rehearsal of database dump recovery within segregated test environment",
+      "relevant_ids": ["chunk-distract-020"]
+    },
+    {
+      "id": "q-held-exact-01",
+      "class": "exact_id",
+      "query": "Which architectural decision record is ADR-014?",
+      "relevant_ids": ["chunk-distract-003"]
+    },
+    {
+      "id": "q-held-exact-02",
+      "class": "exact_id",
+      "query": "What shell command cleans files with find -mtime +7 -delete?",
+      "relevant_ids": ["chunk-distract-005"]
+    },
+    {
+      "id": "q-held-exact-03",
+      "class": "exact_id",
+      "query": "What environment variable sets GOMAXPROCS for Kubernetes?",
+      "relevant_ids": ["chunk-distract-008"]
+    },
+    {
+      "id": "q-held-exact-04",
+      "class": "exact_id",
+      "query": "When is the scheduled VACUUM ANALYZE maintenance executed?",
+      "relevant_ids": ["chunk-distract-009"]
+    },
+    {
+      "id": "q-held-exact-05",
+      "class": "exact_id",
+      "query": "Remediation steps for vulnerability CVE-2024-1029 in TLS parser",
+      "relevant_ids": ["chunk-distract-011"]
+    },
+    {
+      "id": "q-held-exact-06",
+      "class": "exact_id",
+      "query": "Where does GitHub Actions cache Go modules in ~/.cache/go-build?",
+      "relevant_ids": ["chunk-distract-013"]
+    },
+    {
+      "id": "q-held-exact-07",
+      "class": "exact_id",
+      "query": "How does React.lazy and Suspense achieve code splitting?",
+      "relevant_ids": ["chunk-distract-017"]
+    },
+    {
+      "id": "q-held-exact-08",
+      "class": "exact_id",
+      "query": "Why should handlers avoid context.Background() in Go?",
+      "relevant_ids": ["chunk-distract-018"]
+    },
+    {
+      "id": "q-held-exact-09",
+      "class": "exact_id",
+      "query": "Why use idempotent DDL with IF NOT EXISTS in migrations?",
+      "relevant_ids": ["chunk-distract-019"]
+    },
+    {
+      "id": "q-held-exact-10",
+      "class": "exact_id",
+      "query": "How much did jemalloc allocator decrease RSS memory usage?",
+      "relevant_ids": ["chunk-distract-007"]
+    },
+    {
+      "id": "q-held-conf-01",
+      "class": "confusable",
+      "query": "Which Redis instance runs on port 6380 with local passwordless socket?",
+      "relevant_ids": ["chunk-conf-01-c"]
+    },
+    {
+      "id": "q-held-conf-02",
+      "class": "confusable",
+      "query": "Which PgBouncer setup uses session pooling on port 6433 with 200 connections?",
+      "relevant_ids": ["chunk-conf-02-b"]
+    },
+    {
+      "id": "q-held-conf-03",
+      "class": "confusable",
+      "query": "Which Kafka ingestion topic uses uncompressed raw binary stream with 12 hours retention?",
+      "relevant_ids": ["chunk-conf-03-c"]
+    },
+    {
+      "id": "q-held-conf-04",
+      "class": "confusable",
+      "query": "Which Memory Store schema defines context as an integer partition key?",
+      "relevant_ids": ["chunk-conf-04-c"]
+    },
+    {
+      "id": "q-held-conf-05",
+      "class": "confusable",
+      "query": "Which Prometheus Node Exporter scrapes system metrics on port 9100 with disk IO disabled?",
+      "relevant_ids": ["chunk-conf-05-a"]
+    },
+    {
+      "id": "q-held-conf-06",
+      "class": "confusable",
+      "query": "Which JWT signer uses HS256 algorithm with shared 512-bit secret keys for legacy services?",
+      "relevant_ids": ["chunk-conf-06-c"]
+    },
+    {
+      "id": "q-held-conf-07",
+      "class": "confusable",
+      "query": "Which sidecar configuration starts llama-server on fixed port 8080 with continuous-batching?",
+      "relevant_ids": ["chunk-conf-07-c"]
+    },
+    {
+      "id": "q-held-conf-08",
+      "class": "confusable",
+      "query": "Which backup retention policy retains full snapshots for 90 days in Glacier Flexible Retrieval?",
+      "relevant_ids": ["chunk-conf-08-b"]
+    },
+    {
+      "id": "q-held-conf-09",
+      "class": "confusable",
+      "query": "Which gRPC gateway routes traffic on port 8443 with self-signed development certificates?",
+      "relevant_ids": ["chunk-conf-09-a"]
+    },
+    {
+      "id": "q-held-conf-10",
+      "class": "confusable",
+      "query": "Which Elasticsearch cluster comprises 2 master nodes and 4 data nodes with 5TB magnetic storage?",
+      "relevant_ids": ["chunk-conf-10-c"]
+    },
+    {
+      "id": "q-held-multi-01",
+      "class": "multi_fact",
+      "query": "User preferences for editor dark mode theme and two spaces indentation in YAML",
+      "relevant_ids": ["chunk-distract-001"]
+    },
+    {
+      "id": "q-held-multi-02",
+      "class": "multi_fact",
+      "query": "ADR-014 decision choosing sqlite-vec WASM for cross-platform zero-cgo compilation",
+      "relevant_ids": ["chunk-distract-003"]
+    },
+    {
+      "id": "q-held-multi-03",
+      "class": "multi_fact",
+      "query": "Conventional commit prefixes feat or fix for squash and merge into main",
+      "relevant_ids": ["chunk-distract-006"]
+    },
+    {
+      "id": "q-held-multi-04",
+      "class": "multi_fact",
+      "query": "Configuring GOMAXPROCS with container CPU quota to prevent CFS throttling on Kubernetes",
+      "relevant_ids": ["chunk-distract-008"]
+    },
+    {
+      "id": "q-held-multi-05",
+      "class": "multi_fact",
+      "query": "Database maintenance running VACUUM ANALYZE Sunday midnight for query planner statistics",
+      "relevant_ids": ["chunk-distract-009"]
+    },
+    {
+      "id": "q-held-multi-06",
+      "class": "multi_fact",
+      "query": "OpenSSL security update for CVE-2024-1029 TLS certificate parsing buffer overread",
+      "relevant_ids": ["chunk-distract-011"]
+    },
+    {
+      "id": "q-held-multi-07",
+      "class": "multi_fact",
+      "query": "GitHub Actions CI pipeline caching Go module downloads in ~/.cache/go-build",
+      "relevant_ids": ["chunk-distract-013"]
+    },
+    {
+      "id": "q-held-multi-08",
+      "class": "multi_fact",
+      "query": "CoreDNS caching plugin configuration with prefetch enabled for external domain latency",
+      "relevant_ids": ["chunk-distract-014"]
+    },
+    {
+      "id": "q-held-multi-09",
+      "class": "multi_fact",
+      "query": "AWS Network Load Balancer architecture terminating TLS with Certificate Manager certificates",
+      "relevant_ids": ["chunk-distract-015"]
+    },
+    {
+      "id": "q-held-multi-10",
+      "class": "multi_fact",
+      "query": "HTTP handler practice avoiding context.Background() and passing r.Context() for cancellation",
+      "relevant_ids": ["chunk-distract-018"]
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "held_out": {
+    "OVERALL": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "confusable": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "exact_id": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "multi_fact": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "paraphrase": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    }
+  },
+  "tuning": {
+    "OVERALL": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "confusable": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "exact_id": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "multi_fact": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    },
+    "paraphrase": {
+      "bm25": {},
+      "hybrid_boost": {},
+      "hybrid_rrf_base": {},
+      "hybrid_twostage": {},
+      "hybrid_weighted": {},
+      "rerank_bgem3": {},
+      "rerank_jina": {},
+      "rerank_margin": {},
+      "vec_f32": {},
+      "vec_i8": {}
+    }
+  }
+}

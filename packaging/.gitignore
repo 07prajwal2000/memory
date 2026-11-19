@@ -1,0 +1,4 @@
+dist/
+tarballs/
+*.tgz
+node_modules/

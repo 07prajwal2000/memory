@@ -1,0 +1,263 @@
+{
+  "db_file_size_mb": 215.359375,
+  "insert_throughput": 4420.10258589571,
+  "reports": [
+    {
+      "scale": "10k",
+      "mode": "Exact-int8",
+      "embed": {
+        "p50_ms": 5.839,
+        "p95_ms": 7.148
+      },
+      "vec_knn": {
+        "p50_ms": 17.338,
+        "p95_ms": 24.07
+      },
+      "fts": {
+        "p50_ms": 123.247,
+        "p95_ms": 191.798
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0.535
+      },
+      "hydration": {
+        "p50_ms": 0.518,
+        "p95_ms": 1.016
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0.532
+      },
+      "total": {
+        "p50_ms": 123.511,
+        "p95_ms": 192.511
+      }
+    },
+    {
+      "scale": "10k",
+      "mode": "Two-Stage-bit",
+      "embed": {
+        "p50_ms": 6.161,
+        "p95_ms": 8.653
+      },
+      "vec_knn": {
+        "p50_ms": 6.727,
+        "p95_ms": 9.007
+      },
+      "fts": {
+        "p50_ms": 104.04,
+        "p95_ms": 167.961
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0.528
+      },
+      "hydration": {
+        "p50_ms": 0,
+        "p95_ms": 2.395
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0.519
+      },
+      "total": {
+        "p50_ms": 104.954,
+        "p95_ms": 167.961
+      }
+    },
+    {
+      "scale": "39k",
+      "mode": "Exact-int8",
+      "embed": {
+        "p50_ms": 6.198,
+        "p95_ms": 8.682
+      },
+      "vec_knn": {
+        "p50_ms": 48.139,
+        "p95_ms": 62.398
+      },
+      "fts": {
+        "p50_ms": 257.16,
+        "p95_ms": 346.861
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0.512
+      },
+      "hydration": {
+        "p50_ms": 0,
+        "p95_ms": 2.524
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0.518
+      },
+      "total": {
+        "p50_ms": 257.721,
+        "p95_ms": 347.383
+      }
+    },
+    {
+      "scale": "39k",
+      "mode": "Two-Stage-bit",
+      "embed": {
+        "p50_ms": 6.518,
+        "p95_ms": 9.086
+      },
+      "vec_knn": {
+        "p50_ms": 7.245,
+        "p95_ms": 10.037
+      },
+      "fts": {
+        "p50_ms": 249.164,
+        "p95_ms": 346.578
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0.51
+      },
+      "hydration": {
+        "p50_ms": 0,
+        "p95_ms": 3.047
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0.54
+      },
+      "total": {
+        "p50_ms": 249.58,
+        "p95_ms": 348.151
+      }
+    },
+    {
+      "scale": "100k",
+      "mode": "Exact-int8",
+      "embed": {
+        "p50_ms": 6.381,
+        "p95_ms": 9.536
+      },
+      "vec_knn": {
+        "p50_ms": 120.099,
+        "p95_ms": 141.949
+      },
+      "fts": {
+        "p50_ms": 591.793,
+        "p95_ms": 763.075
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0.532
+      },
+      "hydration": {
+        "p50_ms": 0,
+        "p95_ms": 2.038
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0.544
+      },
+      "total": {
+        "p50_ms": 593.33,
+        "p95_ms": 768.7
+      }
+    },
+    {
+      "scale": "100k",
+      "mode": "Two-Stage-bit",
+      "embed": {
+        "p50_ms": 6.299,
+        "p95_ms": 8.321
+      },
+      "vec_knn": {
+        "p50_ms": 7.862,
+        "p95_ms": 12.071
+      },
+      "fts": {
+        "p50_ms": 578.025,
+        "p95_ms": 773.469
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0
+      },
+      "hydration": {
+        "p50_ms": 0,
+        "p95_ms": 2.53
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0
+      },
+      "total": {
+        "p50_ms": 578.025,
+        "p95_ms": 773.469
+      }
+    },
+    {
+      "scale": "200k",
+      "mode": "Exact-int8",
+      "embed": {
+        "p50_ms": 6.086,
+        "p95_ms": 8.641
+      },
+      "vec_knn": {
+        "p50_ms": 239.272,
+        "p95_ms": 282.433
+      },
+      "fts": {
+        "p50_ms": 1171.696,
+        "p95_ms": 1522.276
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0.596
+      },
+      "hydration": {
+        "p50_ms": 0,
+        "p95_ms": 2.515
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0.524
+      },
+      "total": {
+        "p50_ms": 1173.35,
+        "p95_ms": 1523.992
+      }
+    },
+    {
+      "scale": "200k",
+      "mode": "Two-Stage-bit",
+      "embed": {
+        "p50_ms": 6.142,
+        "p95_ms": 8.535
+      },
+      "vec_knn": {
+        "p50_ms": 9.813,
+        "p95_ms": 16.134
+      },
+      "fts": {
+        "p50_ms": 1132.784,
+        "p95_ms": 1424.146
+      },
+      "fusion": {
+        "p50_ms": 0,
+        "p95_ms": 0.589
+      },
+      "hydration": {
+        "p50_ms": 0,
+        "p95_ms": 2.024
+      },
+      "unaccounted": {
+        "p50_ms": 0,
+        "p95_ms": 0.546
+      },
+      "total": {
+        "p50_ms": 1132.784,
+        "p95_ms": 1424.146
+      }
+    }
+  ],
+  "total_chunks_indexed": 200000
+}
