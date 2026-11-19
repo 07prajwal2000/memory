@@ -1,5 +1,20 @@
 # mem
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/@07prajwal2000/agent-memory"><img alt="npm version" src="https://img.shields.io/npm/v/@07prajwal2000/agent-memory?style=for-the-badge&logo=npm&logoColor=white&color=cb3837"></a>
+  <a href="https://07prajwal2000.github.io/memory/"><img alt="Documentation" src="https://img.shields.io/badge/docs-read%20the%20docs-4f46e5?style=for-the-badge&logo=readthedocs&logoColor=white"></a>
+  <a href="https://github.com/07prajwal2000/memory/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/07prajwal2000/memory?style=for-the-badge&logo=github&color=24292f"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/07prajwal2000/memory/actions/workflows/release.yml"><img alt="Release workflow" src="https://img.shields.io/github/actions/workflow/status/07prajwal2000/memory/release.yml?style=flat-square&logo=githubactions&logoColor=white&label=build"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/07prajwal2000/memory?style=flat-square&color=blue"></a>
+  <a href="https://www.npmjs.com/package/@07prajwal2000/agent-memory"><img alt="Node 18 or newer" src="https://img.shields.io/node/v/@07prajwal2000/agent-memory?style=flat-square&logo=nodedotjs&logoColor=white&color=339933"></a>
+  <img alt="Platforms: Windows, macOS, Linux" src="https://img.shields.io/badge/platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey?style=flat-square">
+  <img alt="MCP server" src="https://img.shields.io/badge/MCP-stdio%20server-8a2be2?style=flat-square">
+  <img alt="Works offline" src="https://img.shields.io/badge/runs-100%25%20local-success?style=flat-square">
+</p>
+
 Local long-term memory store for AI agents (Claude, Antigravity, ChatGPT).
 
 `mem` is a fast single-binary memory daemon with a command-line interface, a Model Context Protocol (MCP) server over stdio, an embedded web UI dashboard, and hybrid search combining BM25 keyword matching and vector search with embedded SQLite and wazero WASM runtime.
